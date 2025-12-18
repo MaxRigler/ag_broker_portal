@@ -47,8 +47,8 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
       <div className="relative z-10 container mx-auto px-4 py-16 lg:py-24">
         {/* Logo/Brand */}
-        <div className="mb-16">
-          <img src={logo} alt="Equity Advance" className="h-12 w-auto" />
+        <div className="mb-16 flex justify-center">
+          <img src={logo} alt="Equity Advance" className="h-20 w-auto" />
         </div>
 
         {/* Main Content */}
