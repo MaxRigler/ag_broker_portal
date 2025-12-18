@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Building2, CreditCard, TrendingUp } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 interface HeroProps {
   onCheckEligibility: (address: string) => void;
@@ -46,11 +47,8 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
       <div className="relative z-10 container mx-auto px-4 py-16 lg:py-24">
         {/* Logo/Brand */}
-        <div className="flex items-center gap-2 mb-16">
-          <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
-            <Building2 className="w-6 h-6 text-accent-foreground" />
-          </div>
-          <span className="text-xl font-bold text-primary-foreground">Equity Advance</span>
+        <div className="mb-16">
+          <img src={logo} alt="Equity Advance" className="h-12 w-auto" />
         </div>
 
         {/* Main Content */}
