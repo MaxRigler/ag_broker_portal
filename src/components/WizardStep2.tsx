@@ -39,7 +39,7 @@ export function WizardStep2({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Home className="w-5 h-5 text-accent" />
-            <span className="text-muted-foreground">Starting Home Value</span>
+            <span className="text-muted-foreground">Estimated Property Value</span>
           </div>
           <span className="text-2xl font-bold text-accent">{formatCurrency(homeValue)}</span>
         </div>
