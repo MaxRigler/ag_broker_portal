@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, Calendar, TrendingUp, Calculator, Shield, RefreshCw } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { DollarSign, Calendar, TrendingUp, Calculator, Shield, RefreshCw, Home } from 'lucide-react';
 import { calculateHEACost, formatCurrency, formatPercentage } from '@/lib/heaCalculator';
 
 interface WizardStep3Props {
@@ -14,13 +15,20 @@ interface WizardStep3Props {
 }
 
 export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: WizardStep3Props) {
+  const [adjustedHomeValue, setAdjustedHomeValue] = useState(homeValue);
   const [fundingAmount, setFundingAmount] = useState(maxInvestment);
   const [settlementYear, setSettlementYear] = useState(10);
   const [hpaRate, setHpaRate] = useState(0.03); // 3% default
 
+  const handleHomeValueInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    const numValue = parseInt(value) || 175000;
+    setAdjustedHomeValue(Math.min(Math.max(numValue, 175000), 3000000));
+  };
+
   const calculation = useMemo(() => {
-    return calculateHEACost(fundingAmount, homeValue, settlementYear, hpaRate);
-  }, [fundingAmount, homeValue, settlementYear, hpaRate]);
+    return calculateHEACost(fundingAmount, adjustedHomeValue, settlementYear, hpaRate);
+  }, [fundingAmount, adjustedHomeValue, settlementYear, hpaRate]);
 
   return (
     <div className="space-y-8">
@@ -32,6 +40,34 @@ export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: Wizar
 
       {/* Interactive Sliders */}
       <div className="space-y-8">
+        {/* Estimated Home Value */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label className="text-base flex items-center gap-2">
+              <Home className="w-4 h-4 text-accent" />
+              Estimated Home Value
+            </Label>
+            <Input
+              type="text"
+              value={formatCurrency(adjustedHomeValue)}
+              onChange={handleHomeValueInputChange}
+              className="w-36 text-right font-bold text-accent"
+            />
+          </div>
+          <Slider
+            value={[adjustedHomeValue]}
+            onValueChange={(value) => setAdjustedHomeValue(value[0])}
+            min={175000}
+            max={3000000}
+            step={10000}
+            className="py-2"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>{formatCurrency(175000)}</span>
+            <span>{formatCurrency(3000000)}</span>
+          </div>
+        </div>
+
         {/* Funding Amount */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
