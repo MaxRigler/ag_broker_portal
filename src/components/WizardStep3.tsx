@@ -15,7 +15,7 @@ interface WizardStep3Props {
 
 export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: WizardStep3Props) {
   const [fundingAmount, setFundingAmount] = useState(maxInvestment);
-  const [settlementYear, setSettlementYear] = useState(5);
+  const [settlementYear, setSettlementYear] = useState(10);
   const [hpaRate, setHpaRate] = useState(0.03); // 3% default
 
   const calculation = useMemo(() => {
