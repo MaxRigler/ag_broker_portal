@@ -27,7 +27,7 @@ export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: Wizar
       {/* Maximum Funding Header */}
       <div className="text-center p-6 bg-[hsl(var(--navy-deep))] rounded-xl">
         <p className="text-sm text-primary-foreground/70 mb-1">Maximum Potential Funding</p>
-        <p className="text-4xl md:text-5xl font-bold text-gradient-gold">{formatCurrency(maxInvestment)}</p>
+        <p className="text-4xl md:text-5xl font-bold text-gradient-blue">{formatCurrency(maxInvestment)}</p>
       </div>
 
       {/* Interactive Sliders */}
@@ -154,7 +154,7 @@ export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: Wizar
         <Button variant="outline" onClick={onBack} className="flex-1">
           Back
         </Button>
-        <Button variant="gold" onClick={onReset} className="flex-1">
+        <Button variant="blue" onClick={onReset} className="flex-1">
           <RefreshCw className="w-4 h-4 mr-2" />
           New Qualification
         </Button>

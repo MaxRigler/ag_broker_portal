@@ -183,7 +183,7 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
           Back
         </Button>
         {!validation ? (
-          <Button variant="gold" onClick={handleValidate} className="flex-1">
+          <Button variant="blue" onClick={handleValidate} className="flex-1">
             Validate Property
           </Button>
         ) : validation.isValid ? (
@@ -191,7 +191,7 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
             Continue to Step 2
           </Button>
         ) : (
-          <Button variant="gold" onClick={handleValidate} className="flex-1">
+          <Button variant="blue" onClick={handleValidate} className="flex-1">
             Re-validate
           </Button>
         )}

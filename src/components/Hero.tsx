@@ -57,7 +57,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in">
             Unlock up to{' '}
-            <span className="text-gradient-gold">$500,000</span>
+            <span className="text-gradient-blue">$500,000</span>
             <br />in Business Funding via Home Equity
           </h1>
           
@@ -78,7 +78,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
                   className="pl-12 h-14 bg-card border-0 text-foreground placeholder:text-muted-foreground text-base"
                 />
               </div>
-              <Button type="submit" variant="gold" size="xl" className="w-full sm:w-auto">
+              <Button type="submit" variant="blue" size="xl" className="w-full sm:w-auto">
                 Check Eligibility
               </Button>
             </div>
