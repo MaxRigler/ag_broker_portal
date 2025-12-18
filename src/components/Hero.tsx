@@ -69,13 +69,13 @@ export function Hero({ onCheckEligibility }: HeroProps) {
           {/* Subheadline - Responsive checkmark list */}
           <div className="mb-12 max-w-3xl mx-auto animate-slide-up">
             {/* Desktop: Horizontal row with dividers */}
-            <div className="hidden md:flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
+            <div className="hidden md:flex flex-nowrap justify-center items-center gap-x-2">
               {subheadlineItems.map((item, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-accent" />
-                  <span className="text-primary-foreground/80">{item}</span>
+                <div key={index} className="flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-accent flex-shrink-0" />
+                  <span className="text-primary-foreground/80 text-sm whitespace-nowrap">{item}</span>
                   {index < subheadlineItems.length - 1 && (
-                    <div className="w-px h-5 bg-primary-foreground/30 ml-4" />
+                    <div className="w-px h-4 bg-primary-foreground/30 ml-2" />
                   )}
                 </div>
               ))}
