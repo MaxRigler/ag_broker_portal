@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
 import { CheckCircle2, XCircle, Loader2, Home, MapPin, Building, User } from 'lucide-react';
 import { ELIGIBLE_STATES, validateProperty, formatCurrency } from '@/lib/heaCalculator';
 
@@ -46,6 +48,17 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
 
     return () => clearTimeout(timer);
   }, [address]);
+
+  const handleHomeValueChange = (value: number) => {
+    setHomeValue(value);
+    setValidation(null); // Clear validation when value changes
+  };
+
+  const handleHomeValueInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    const numValue = parseInt(value) || 175000;
+    handleHomeValueChange(Math.min(Math.max(numValue, 175000), 3000000));
+  };
 
   const handleValidate = () => {
     const result = validateProperty(state, propertyType, ownershipType, homeValue);
@@ -135,13 +148,30 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label className="flex items-center gap-2">
-            <Home className="w-4 h-4" />
-            Estimated Home Value
-          </Label>
-          <div className="h-10 px-3 py-2 bg-secondary rounded-md flex items-center">
-            <span className="text-lg font-semibold text-accent">{formatCurrency(homeValue)}</span>
+        <div className="space-y-2 md:col-span-2">
+          <div className="flex items-center justify-between">
+            <Label className="flex items-center gap-2">
+              <Home className="w-4 h-4" />
+              Estimated Home Value
+            </Label>
+            <Input
+              type="text"
+              value={formatCurrency(homeValue)}
+              onChange={handleHomeValueInputChange}
+              className="w-36 text-right font-bold text-accent"
+            />
+          </div>
+          <Slider
+            value={[homeValue]}
+            onValueChange={(value) => handleHomeValueChange(value[0])}
+            min={175000}
+            max={3000000}
+            step={10000}
+            className="py-2"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>{formatCurrency(175000)}</span>
+            <span>{formatCurrency(3000000)}</span>
           </div>
         </div>
       </div>
