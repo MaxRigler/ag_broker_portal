@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Building2, CreditCard, TrendingUp } from 'lucide-react';
+import { Search, Building2, CreditCard, TrendingUp, Check } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
 interface HeroProps {
   onCheckEligibility: (address: string) => void;
 }
+
+const subheadlineItems = [
+  'No monthly payments',
+  'No income requirements',
+  'No DTI impact',
+  'No need for perfect credit'
+];
 
 const valueProps = [
   {
@@ -59,9 +66,31 @@ export function Hero({ onCheckEligibility }: HeroProps) {
             <br />in Business Funding via Home Equity
           </h1>
           
-          <p className="text-lg md:text-xl text-primary-foreground/80 mb-12 max-w-2xl mx-auto animate-slide-up">
-            No monthly payments. No income/revenue requirements. No DTI impact. No need for perfect credit.
-          </p>
+          {/* Subheadline - Responsive checkmark list */}
+          <div className="mb-12 max-w-3xl mx-auto animate-slide-up">
+            {/* Desktop: Horizontal row with dividers */}
+            <div className="hidden md:flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
+              {subheadlineItems.map((item, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <Check className="w-5 h-5 text-accent" />
+                  <span className="text-primary-foreground/80">{item}</span>
+                  {index < subheadlineItems.length - 1 && (
+                    <div className="w-px h-5 bg-primary-foreground/30 ml-4" />
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            {/* Mobile: Vertical stacked list */}
+            <div className="flex md:hidden flex-col items-start gap-3 px-4">
+              {subheadlineItems.map((item, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <Check className="w-5 h-5 text-accent flex-shrink-0" />
+                  <span className="text-primary-foreground/80 text-left">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Address Input Form */}
           <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-16 animate-slide-up" style={{ animationDelay: '0.1s' }}>
