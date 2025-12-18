@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, XCircle, Loader2, Home, MapPin, Building, User } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, MapPin, Building, User } from 'lucide-react';
 import { ELIGIBLE_STATES, validateProperty, formatCurrency } from '@/lib/heaCalculator';
 
 interface WizardStep1Props {
@@ -33,6 +33,7 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
   const [ownershipType, setOwnershipType] = useState('');
   const [validation, setValidation] = useState<{ isValid: boolean; errors: string[] } | null>(null);
   const [homeValue, setHomeValue] = useState(0);
+  const [propertyOwner, setPropertyOwner] = useState('');
 
   // Simulate API data fetch
   useEffect(() => {
@@ -44,6 +45,7 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
       setPropertyType('Single Family');
       setOwnershipType('Personal');
       setHomeValue(MOCK_HOME_VALUES[detectedState] || MOCK_HOME_VALUES.default);
+      setPropertyOwner('Stacy & John Smith as community property');
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -51,7 +53,7 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
 
   const handleHomeValueChange = (value: number) => {
     setHomeValue(value);
-    setValidation(null); // Clear validation when value changes
+    setValidation(null);
   };
 
   const handleHomeValueInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,24 +86,63 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
 
   return (
     <div className="space-y-6">
-      {/* Address Display */}
-      <div className="p-4 bg-secondary rounded-lg flex items-start gap-3">
-        <MapPin className="w-5 h-5 text-accent mt-0.5" />
-        <div>
-          <p className="text-sm text-muted-foreground">Property Address</p>
-          <p className="font-medium text-foreground">{address}</p>
+      {/* Section 1: Estimated Property Value */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground">Step 1: Estimated Property Value</h2>
+          <Input
+            type="text"
+            value={formatCurrency(homeValue)}
+            onChange={handleHomeValueInputChange}
+            className="w-40 text-right font-bold text-accent border-2 border-accent bg-transparent rounded-lg"
+          />
+        </div>
+        <Slider
+          value={[homeValue]}
+          onValueChange={(value) => handleHomeValueChange(value[0])}
+          min={175000}
+          max={3000000}
+          step={10000}
+          className="py-2"
+        />
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>{formatCurrency(175000)}</span>
+          <span>{formatCurrency(3000000)}</span>
+        </div>
+        <p className="text-sm text-muted-foreground italic">
+          This property value was determined automatically based on market data and is subject to change.
+        </p>
+      </div>
+
+      {/* Section 2: Property Address & Property Owner */}
+      <div className="p-5 bg-secondary rounded-xl border border-border">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="flex items-start gap-3">
+            <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm text-muted-foreground font-medium">Property Address</p>
+              <p className="font-medium text-foreground">{address}</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm text-muted-foreground font-medium">Property Owner</p>
+              <p className="font-medium text-foreground">{propertyOwner}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Property Details Form */}
-      <div className="grid md:grid-cols-2 gap-6">
+      {/* Section 3: Three Dropdowns in One Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
-            <MapPin className="w-4 h-4" />
+          <Label className="flex items-center gap-2 text-sm">
+            <MapPin className="w-4 h-4 text-accent" />
             State
           </Label>
           <Select value={state} onValueChange={setState}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue placeholder="Select state" />
             </SelectTrigger>
             <SelectContent>
@@ -115,12 +156,12 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
-            <Building className="w-4 h-4" />
+          <Label className="flex items-center gap-2 text-sm">
+            <Building className="w-4 h-4 text-accent" />
             Property Type
           </Label>
           <Select value={propertyType} onValueChange={setPropertyType}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
@@ -132,12 +173,12 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
-            <User className="w-4 h-4" />
+          <Label className="flex items-center gap-2 text-sm">
+            <User className="w-4 h-4 text-accent" />
             Ownership Type
           </Label>
           <Select value={ownershipType} onValueChange={setOwnershipType}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue placeholder="Select ownership" />
             </SelectTrigger>
             <SelectContent>
@@ -146,33 +187,6 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
               ))}
             </SelectContent>
           </Select>
-        </div>
-
-        <div className="space-y-2 md:col-span-2">
-          <div className="flex items-center justify-between">
-            <Label className="flex items-center gap-2">
-              <Home className="w-4 h-4" />
-              Estimated Home Value
-            </Label>
-            <Input
-              type="text"
-              value={formatCurrency(homeValue)}
-              onChange={handleHomeValueInputChange}
-              className="w-36 text-right font-bold text-accent"
-            />
-          </div>
-          <Slider
-            value={[homeValue]}
-            onValueChange={(value) => handleHomeValueChange(value[0])}
-            min={175000}
-            max={3000000}
-            step={10000}
-            className="py-2"
-          />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>{formatCurrency(175000)}</span>
-            <span>{formatCurrency(3000000)}</span>
-          </div>
         </div>
       </div>
 
@@ -207,7 +221,7 @@ export function WizardStep1({ address, onComplete, onBack }: WizardStep1Props) {
         </div>
       )}
 
-      {/* Actions */}
+      {/* Section 4: Action Buttons */}
       <div className="flex gap-3 pt-4">
         <Button variant="outline" onClick={onBack} className="flex-1">
           Back
