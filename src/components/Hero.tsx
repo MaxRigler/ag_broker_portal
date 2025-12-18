@@ -9,10 +9,10 @@ interface HeroProps {
 }
 
 const subheadlineItems = [
-  'No monthly payments',
-  'No income requirements',
-  'No DTI impact',
-  'No need for perfect credit'
+  'No Monthly Payments',
+  'No Income Requirements',
+  'No DTI Impact',
+  'No Need For Perfect Credit'
 ];
 
 const valueProps = [
