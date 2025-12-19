@@ -207,7 +207,7 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
       />
       
       {isOpen && predictions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-popover border border-border rounded-lg shadow-lg overflow-hidden z-[100]">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-border rounded-lg shadow-xl overflow-hidden z-[9999] isolate">
           {predictions.map((prediction, index) => (
             <button
               key={prediction.place_id}
@@ -216,8 +216,8 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
               onMouseEnter={() => setHighlightedIndex(index)}
               className={`w-full px-4 py-3 text-left text-foreground transition-colors ${
                 index === highlightedIndex 
-                  ? 'bg-accent/20' 
-                  : 'hover:bg-accent/10'
+                  ? 'bg-slate-100 dark:bg-slate-800' 
+                  : 'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
               {prediction.description}
@@ -227,13 +227,13 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
       )}
       
       {loadError && (
-        <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm z-[100]">
+        <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-white dark:bg-slate-900 border border-destructive/20 rounded-lg text-destructive text-sm z-[9999] isolate">
           {loadError}
         </div>
       )}
       
       {!isLoaded && !loadError && inputValue.trim() && (
-        <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-popover border border-border rounded-lg text-muted-foreground text-sm z-[100]">
+        <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-white dark:bg-slate-900 border border-border rounded-lg text-muted-foreground text-sm z-[9999] isolate">
           Loading address suggestions...
         </div>
       )}
