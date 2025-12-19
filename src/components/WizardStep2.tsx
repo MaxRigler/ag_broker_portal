@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
+import { DollarSign, TrendingUp, AlertCircle, X } from 'lucide-react';
 import { formatCurrency, calculateMaxInvestment } from '@/lib/heaCalculator';
 
 interface WizardStep2Props {
@@ -94,7 +94,9 @@ export function WizardStep2({
                 className={`h-full transition-all duration-300 ${currentCLTV > 80 ? 'bg-destructive' : 'bg-accent'}`} 
                 style={{ width: `${Math.min(currentCLTV, 100)}%` }} 
               />
-              <div className="absolute top-0 left-[80%] w-0.5 h-full bg-foreground/30" />
+              <div className="absolute top-1/2 left-[80%] -translate-x-1/2 -translate-y-1/2">
+                <X className="w-4 h-4 text-destructive" strokeWidth={3} />
+              </div>
             </div>
             <div className="flex justify-between text-[10px] text-muted-foreground">
               <span>0%</span>
