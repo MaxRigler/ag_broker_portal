@@ -60,7 +60,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
         {/* Main Content */}
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-right md:text-center text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in line-clamp-3 md:line-clamp-none">
+          <h1 className="text-left md:text-center text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in line-clamp-3 md:line-clamp-none">
             Unlock up to{' '}
             <span className="text-gradient-blue">$500,000</span>
             {' '}in Business Funding via Home Equity
