@@ -49,10 +49,11 @@ export function Hero({ onCheckEligibility }: HeroProps) {
               <span className="block">in Business Funding</span>
               <span className="block">via Home Equity</span>
             </span>
-            {/* Desktop: 2-line layout */}
+            {/* Desktop: 3-line layout */}
             <span className="hidden md:inline">
-              <span className="block whitespace-nowrap">Unlock up to <span className="text-gradient-blue">$500,000</span> in Business</span>
-              <span className="block whitespace-nowrap">Funding Via Home Equity</span>
+              <span className="block whitespace-nowrap">Unlock up to <span className="text-gradient-blue">$500,000</span></span>
+              <span className="block whitespace-nowrap">in Business Funding</span>
+              <span className="block whitespace-nowrap">via Home Equity</span>
             </span>
           </h1>
           
