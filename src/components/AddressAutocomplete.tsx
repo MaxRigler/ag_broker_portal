@@ -207,7 +207,7 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
       />
       
       {isOpen && predictions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-popover border border-border rounded-lg shadow-lg overflow-hidden z-[100]">
           {predictions.map((prediction, index) => (
             <button
               key={prediction.place_id}
@@ -227,13 +227,13 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
       )}
       
       {loadError && (
-        <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+        <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm z-[100]">
           {loadError}
         </div>
       )}
       
       {!isLoaded && !loadError && inputValue.trim() && (
-        <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-card border border-border rounded-lg text-muted-foreground text-sm">
+        <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-popover border border-border rounded-lg text-muted-foreground text-sm z-[100]">
           Loading address suggestions...
         </div>
       )}
