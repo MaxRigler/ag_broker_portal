@@ -80,7 +80,10 @@ export function Hero({ onCheckEligibility }: HeroProps) {
           <form onSubmit={handleSubmit} className="relative z-50 max-w-2xl mx-auto mb-8 md:mt-12 md:mb-12 animate-slide-up" style={{ animationDelay: '0.1s' }}>
             <div className="flex flex-col sm:flex-row gap-3 p-2 bg-card/10 backdrop-blur-sm rounded-xl border border-primary-foreground/10">
               <AddressAutocomplete 
-                onSelect={(selectedAddress) => setAddress(selectedAddress)}
+                onSelect={(selectedAddress) => {
+                  setAddress(selectedAddress);
+                  onCheckEligibility(selectedAddress);
+                }}
                 placeholder="Enter Client's Property Address"
               />
               <Button type="submit" variant="blue" size="xl" className="w-full sm:w-auto">
