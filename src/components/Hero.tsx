@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Check } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import heroBg from '@/assets/hero-bg.png';
 
 interface HeroProps {
   onCheckEligibility: (address: string) => void;
@@ -28,8 +29,14 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
   return (
     <section className="relative min-h-screen bg-[hsl(var(--navy-deep))] overflow-hidden">
+      {/* Background image layer */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBg})` }}
+      />
+      
       {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--navy-deep))] via-[hsl(var(--navy-medium))] to-[hsl(var(--navy-deep))] opacity-90" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--navy-deep))] via-[hsl(var(--navy-medium))] to-[hsl(var(--navy-deep))] opacity-95" />
       
       {/* Animated decorative elements with combined float + glow */}
       <div className="absolute top-20 right-10 w-72 h-72 bg-accent rounded-full blur-3xl animate-float-glow" />
