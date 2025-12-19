@@ -29,7 +29,7 @@ const valueProps = [
   {
     icon: TrendingUp,
     title: 'FICO Flexible',
-    description: 'Use capital to pay off debts and potentially improve credit scores.'
+    description: 'Funding FICO profiles as low as 500'
   }
 ];
 
