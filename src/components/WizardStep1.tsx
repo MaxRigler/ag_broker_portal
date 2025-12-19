@@ -118,7 +118,7 @@ export function WizardStep1({
   }
   return <div className="space-y-6">
       {/* Section 1: Estimated Property Value - Hero Section */}
-      <div className="p-6 bg-secondary rounded-2xl border border-border">
+      <div className="p-6 bg-secondary rounded-xl border border-border">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-foreground">Estimated Property Value</h2>
           <div className="flex items-center gap-2">
@@ -165,7 +165,8 @@ export function WizardStep1({
       </div>
 
       {/* Section 3: Three Dropdowns in One Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="p-5 bg-secondary rounded-xl border border-border">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label className="flex items-center gap-2 text-sm">
             <MapPin className="w-4 h-4 text-accent" />
@@ -232,7 +233,8 @@ export function WizardStep1({
                 </SelectItem>
               ))}
             </SelectContent>
-          </Select>
+        </Select>
+        </div>
         </div>
       </div>
 
@@ -256,17 +258,19 @@ export function WizardStep1({
         </div>}
 
       {/* Section 4: Action Buttons */}
-      <div className="flex gap-3 pt-4">
-        <Button variant="outline" onClick={onBack} className="flex-1">
-          Back
-        </Button>
-        {!validation ? <Button variant="blue" onClick={handleValidate} className="flex-1">
-            Validate Property
-          </Button> : validation.isValid ? <Button variant="success" onClick={handleContinue} className="flex-1">
-            Continue to Step 2
-          </Button> : <Button variant="blue" onClick={handleValidate} className="flex-1">
-            Re-validate
-          </Button>}
+      <div className="p-5 bg-secondary rounded-xl border border-border">
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={onBack} className="flex-1">
+            Back
+          </Button>
+          {!validation ? <Button variant="blue" onClick={handleValidate} className="flex-1">
+              Validate Property
+            </Button> : validation.isValid ? <Button variant="success" onClick={handleContinue} className="flex-1">
+              Continue to Step 2
+            </Button> : <Button variant="blue" onClick={handleValidate} className="flex-1">
+              Re-validate
+            </Button>}
+        </div>
       </div>
     </div>;
 }
