@@ -3,8 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus, AlertCircle } from 'lucide-react';
 import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency } from '@/lib/heaCalculator';
+import { lookupProperty, detectOwnershipType } from '@/lib/api/rentcast';
+import { toast } from 'sonner';
 
 interface WizardStep1Props {
   address: string;
@@ -36,7 +38,8 @@ const ALL_STATES: { abbr: string; name: string }[] = [
   { abbr: 'WI', name: 'Wisconsin' }, { abbr: 'WY', name: 'Wyoming' }, { abbr: 'DC', name: 'District of Columbia' }
 ];
 
-const PROPERTY_TYPES = ['Single Family', 'Condo', 'Townhouse', 'Multi-Family (2-4 units)', 'Mobile Home', 'Commercial'];
+// Property types matching RentCast values
+const PROPERTY_TYPES = ['Single Family', 'Condo', 'Townhouse', 'Multi-Family', 'Manufactured', 'Apartment', 'Land'];
 const OWNERSHIP_TYPES = ['Personal', 'LLC', 'Corporation', 'Trust', 'Partnership'];
 
 // Helper functions for eligibility
@@ -45,21 +48,13 @@ const isPropertyTypeEligible = (type: string) => !INELIGIBLE_PROPERTY_TYPES.incl
 const isOwnershipTypeEligible = (type: string) => !INELIGIBLE_OWNERSHIP_TYPES.includes(type);
 const getStateName = (abbr: string) => ALL_STATES.find(s => s.abbr === abbr)?.name || abbr;
 
-// Mock home values based on state
-const MOCK_HOME_VALUES: Record<string, number> = {
-  'CA': 950000,
-  'FL': 520000,
-  'TX': 380000,
-  'AZ': 450000,
-  'NV': 480000,
-  'default': 800000
-};
 export function WizardStep1({
   address,
   onComplete,
   onBack
 }: WizardStep1Props) {
   const [isLoading, setIsLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [state, setState] = useState('');
   const [propertyType, setPropertyType] = useState('');
   const [ownershipType, setOwnershipType] = useState('');
@@ -70,36 +65,72 @@ export function WizardStep1({
   const [homeValue, setHomeValue] = useState(0);
   const [propertyOwner, setPropertyOwner] = useState('');
 
-  // Simulate API data fetch
+  // Fetch property data from RentCast API
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      // Mock detected values from address
-      const detectedState = 'CA';
-      setState(detectedState);
-      setPropertyType('Single Family');
-      setOwnershipType('Personal');
-      setHomeValue(MOCK_HOME_VALUES[detectedState] || MOCK_HOME_VALUES.default);
-      setPropertyOwner('Stacy & John Smith as community property');
-    }, 3000);
-    return () => clearTimeout(timer);
+    const fetchPropertyData = async () => {
+      try {
+        setIsLoading(true);
+        setApiError(null);
+        
+        const data = await lookupProperty(address);
+        
+        // Set state from RentCast
+        setState(data.state);
+        
+        // Set property type from RentCast
+        setPropertyType(data.propertyType);
+        
+        // Set home value from AVM
+        setHomeValue(data.estimatedValue || 500000);
+        
+        // Set property owner (exact title holder)
+        setPropertyOwner(data.ownerNames);
+        
+        // Auto-detect ownership type from owner names
+        setOwnershipType(detectOwnershipType(data.ownerNames));
+        
+        toast.success('Property data loaded successfully');
+      } catch (error) {
+        console.error('Failed to fetch property data:', error);
+        setApiError(error instanceof Error ? error.message : 'Failed to fetch property data');
+        toast.error('Failed to load property data');
+        
+        // Set default values on error
+        setState('');
+        setPropertyType('Single Family');
+        setOwnershipType('Personal');
+        setHomeValue(500000);
+        setPropertyOwner('Unknown');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (address) {
+      fetchPropertyData();
+    }
   }, [address]);
+
   const handleHomeValueChange = (value: number) => {
     const clampedValue = Math.min(Math.max(value, 175000), 3000000);
     setHomeValue(clampedValue);
     setValidation(null);
   };
+
   const handleHomeValueInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     const numValue = parseInt(value) || 175000;
     handleHomeValueChange(numValue);
   };
+
   const incrementValue = () => handleHomeValueChange(homeValue + 10000);
   const decrementValue = () => handleHomeValueChange(homeValue - 10000);
+
   const handleValidate = () => {
     const result = validateProperty(state, propertyType, ownershipType, homeValue);
     setValidation(result);
   };
+
   const handleContinue = () => {
     if (validation?.isValid) {
       onComplete({
@@ -108,15 +139,29 @@ export function WizardStep1({
       });
     }
   };
+
   if (isLoading) {
     return <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8">
         <Loader2 className="w-16 h-16 text-accent animate-spin mb-6" />
         <h3 className="text-xl font-semibold text-foreground mb-2">Analyzing Property Data</h3>
-        <p className="text-muted-foreground">Pulling information from real estate databases...</p>
+        <p className="text-muted-foreground">Pulling information from RentCast...</p>
         <p className="text-sm text-muted-foreground mt-2">{address}</p>
       </div>;
   }
+
   return <div className="space-y-6">
+      {/* API Error Alert */}
+      {apiError && (
+        <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium text-destructive">Failed to load property data</p>
+            <p className="text-sm text-destructive/80">{apiError}</p>
+            <p className="text-sm text-muted-foreground mt-1">Please verify the address or enter values manually below.</p>
+          </div>
+        </div>
+      )}
+
       {/* Section 1: Estimated Property Value - Hero Section */}
       <div className="p-6 bg-secondary rounded-xl border border-border">
         <div className="flex items-center justify-between">
