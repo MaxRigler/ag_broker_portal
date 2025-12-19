@@ -43,8 +43,9 @@ export function Hero({ onCheckEligibility }: HeroProps) {
             <img src={logo} alt="Equity Advance" className="h-20 w-auto" />
           </div>
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in">
-            <span className="block">Unlock up to <span className="text-gradient-blue">$500,000</span> in Business Funding</span>
-            <span className="block">via Home Equity</span>
+            <span className="block md:inline">Unlock up to <span className="text-gradient-blue">$500,000</span></span>
+            <span className="block md:inline"> in Business Funding</span>
+            <span className="block md:inline"> via Home Equity</span>
           </h1>
           
           {/* Subheadline - Responsive checkmark list */}
