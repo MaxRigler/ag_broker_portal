@@ -31,7 +31,7 @@ export const ELIGIBLE_STATES = [
 export const INELIGIBLE_PROPERTY_TYPES = ['Manufactured', 'Apartment', 'Land'];
 
 // Ownership types that are NOT eligible
-export const INELIGIBLE_OWNERSHIP_TYPES = ['LLC', 'Corporation', 'Trust', 'Partnership'];
+export const INELIGIBLE_OWNERSHIP_TYPES = ['LLC', 'Corporation', 'Partnership'];
 
 /**
  * Calculates the HEA Payoff using the 19.9% Annualized Cost Cap logic
