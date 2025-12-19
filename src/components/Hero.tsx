@@ -28,7 +28,7 @@ const valueProps = [
   },
   {
     icon: TrendingUp,
-    title: 'Credit Flexible',
+    title: 'FICO Flexible',
     description: 'Use capital to pay off debts and potentially improve credit scores.'
   }
 ];
