@@ -60,10 +60,10 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
         {/* Main Content */}
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in">
+          <h1 className="text-right md:text-center text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in line-clamp-2 md:line-clamp-none">
             Unlock up to{' '}
             <span className="text-gradient-blue">$500,000</span>
-            <br />in Business Funding via Home Equity
+            {' '}in Business Funding via Home Equity
           </h1>
           
           {/* Subheadline - Responsive checkmark list */}
