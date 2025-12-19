@@ -98,11 +98,6 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
 
         {/* Wizard Card */}
         <Card className="shadow-lg">
-          <CardHeader className="border-b border-border">
-            <CardTitle className="text-xl">
-              Step {currentStep}: {steps[currentStep - 1].title}
-            </CardTitle>
-          </CardHeader>
           <CardContent className="p-6">
             {currentStep === 1 && (
               <WizardStep1
