@@ -31,9 +31,9 @@ export function Hero({ onCheckEligibility }: HeroProps) {
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--navy-deep))] via-[hsl(var(--navy-medium))] to-[hsl(var(--navy-deep))] opacity-90" />
       
-      {/* Animated decorative elements */}
-      <div className="absolute top-20 right-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-float-reverse" />
+      {/* Animated decorative elements with combined float + glow */}
+      <div className="absolute top-20 right-10 w-72 h-72 bg-accent rounded-full blur-3xl animate-float-glow" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-float-glow-reverse" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl animate-glow-pulse" />
 
       <div className="relative z-10 container mx-auto px-2 md:px-4 min-h-screen flex flex-col justify-center md:block md:py-16 lg:py-24">
