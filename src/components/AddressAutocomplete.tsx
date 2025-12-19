@@ -19,6 +19,7 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,6 +30,7 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey) {
       console.error('Google Maps API key is not configured');
+      setLoadError('Address lookup is not configured. Please contact support.');
       return;
     }
 
@@ -37,6 +39,10 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
       if (window.google?.maps?.places) {
         autocompleteService.current = new window.google.maps.places.AutocompleteService();
         setIsLoaded(true);
+        setLoadError(null);
+      } else {
+        // Script exists but API failed to load (likely API not enabled)
+        setLoadError('Address lookup failed to initialize. Please ensure the Places API is enabled.');
       }
       return;
     }
@@ -49,7 +55,14 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
       if (window.google?.maps?.places) {
         autocompleteService.current = new window.google.maps.places.AutocompleteService();
         setIsLoaded(true);
+        setLoadError(null);
+      } else {
+        setLoadError('Address lookup failed to initialize. Please ensure the Places API is enabled.');
       }
+    };
+    script.onerror = () => {
+      console.error('Failed to load Google Maps script');
+      setLoadError('Failed to load address lookup. Please check your internet connection.');
     };
     document.head.appendChild(script);
   }, []);
@@ -189,7 +202,13 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
         </div>
       )}
       
-      {!isLoaded && inputValue.trim() && (
+      {loadError && (
+        <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+          {loadError}
+        </div>
+      )}
+      
+      {!isLoaded && !loadError && inputValue.trim() && (
         <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-card border border-border rounded-lg text-muted-foreground text-sm">
           Loading address suggestions...
         </div>
