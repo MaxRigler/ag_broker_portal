@@ -34,38 +34,62 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
       return;
     }
 
-    // Check if script already exists
-    if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+    const initializeService = () => {
       if (window.google?.maps?.places) {
         autocompleteService.current = new window.google.maps.places.AutocompleteService();
         setIsLoaded(true);
         setLoadError(null);
-      } else {
-        // Script exists but API failed to load (likely API not enabled)
-        setLoadError('Address lookup failed to initialize. Please ensure the Places API is enabled.');
+        return true;
       }
+      return false;
+    };
+
+    // Check if script already exists and API is ready
+    if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+      if (initializeService()) {
+        return;
+      }
+      // Script exists but API not ready - wait and retry
+      const retryInterval = setInterval(() => {
+        if (initializeService()) {
+          clearInterval(retryInterval);
+        }
+      }, 100);
+      // Give up after 5 seconds
+      setTimeout(() => {
+        clearInterval(retryInterval);
+        if (!isLoaded) {
+          setLoadError('Address lookup failed to initialize. Please ensure the Places API is enabled.');
+        }
+      }, 5000);
       return;
     }
 
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      if (window.google?.maps?.places) {
-        autocompleteService.current = new window.google.maps.places.AutocompleteService();
-        setIsLoaded(true);
-        setLoadError(null);
+    // Create unique callback name
+    const callbackName = `initGoogleMapsAutocomplete_${Date.now()}`;
+    
+    // Set up the callback BEFORE loading the script
+    (window as any)[callbackName] = () => {
+      if (initializeService()) {
+        // Success
       } else {
         setLoadError('Address lookup failed to initialize. Please ensure the Places API is enabled.');
       }
+      // Clean up the global callback
+      delete (window as any)[callbackName];
     };
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${callbackName}`;
+    script.async = true;
+    script.defer = true;
     script.onerror = () => {
       console.error('Failed to load Google Maps script');
       setLoadError('Failed to load address lookup. Please check your internet connection.');
+      delete (window as any)[callbackName];
     };
     document.head.appendChild(script);
-  }, []);
+  }, [isLoaded]);
 
   // Initialize service when Google is already loaded
   useEffect(() => {
