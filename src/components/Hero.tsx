@@ -28,6 +28,12 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
   return (
     <section className="relative min-h-screen bg-[hsl(var(--navy-deep))] overflow-hidden">
+      {/* Background image layer */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url('https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1000w,f_auto,q_auto:best/rockcms/2025-06/250611-homes-suburbs-ch-1721-69f6cf.jpg')` }}
+      />
+      
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--navy-deep))] via-[hsl(var(--navy-medium))] to-[hsl(var(--navy-deep))] opacity-95" />
       
