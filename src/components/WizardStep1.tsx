@@ -97,9 +97,6 @@ export function WizardStep1({
           <span>{formatCurrency(175000)}</span>
           <span>{formatCurrency(3000000)}</span>
         </div>
-        <p className="text-sm text-muted-foreground italic">
-          This property value was determined automatically based on market data and is subject to change.
-        </p>
       </div>
 
       {/* Section 2: Property Address & Property Owner */}
