@@ -23,7 +23,7 @@ const valueProps = [
   },
   {
     icon: CreditCard,
-    title: 'Zero Monthly Friction',
+    title: 'Zero Monthly Payments',
     description: 'No interest or monthly payments for up to 10 years.'
   },
   {
