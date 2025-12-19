@@ -39,7 +39,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
         {/* Main Content */}
         <div className="max-w-4xl mx-auto text-left md:text-center">
           {/* Logo/Brand */}
-          <div className="mb-16 flex justify-start md:justify-center">
+          <div className="mb-8 md:mb-16 flex justify-start md:justify-center">
             <img src={logo} alt="Equity Advance" className="h-20 w-auto" />
           </div>
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in">
