@@ -54,16 +54,19 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
       <div className="relative z-10 container mx-auto px-4 py-16 lg:py-24">
         {/* Logo/Brand */}
-        <div className="mb-16 flex justify-center">
+        <div className="mb-16 flex justify-start md:justify-center">
           <img src={logo} alt="Equity Advance" className="h-20 w-auto" />
         </div>
 
         {/* Main Content */}
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-left md:text-center text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in line-clamp-3 md:line-clamp-none">
+        <div className="max-w-4xl mx-auto text-left md:text-center">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in">
             Unlock up to{' '}
             <span className="text-gradient-blue">$500,000</span>
-            {' '}in Business Funding via Home Equity
+            <br className="md:hidden" />
+            {' '}in Business Funding
+            <br className="md:hidden" />
+            {' '}via Home Equity
           </h1>
           
           {/* Subheadline - Responsive checkmark list */}
