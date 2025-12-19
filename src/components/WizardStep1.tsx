@@ -87,25 +87,26 @@ export function WizardStep1({
   }
   return <div className="space-y-6">
       {/* Section 1: Estimated Property Value - Hero Section */}
-      <div className="relative p-6 bg-gradient-to-br from-secondary via-secondary to-accent/5 rounded-2xl border border-border shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <div className="flex items-center gap-2">
+      <div className="p-6 bg-gradient-to-br from-secondary to-accent/5 rounded-2xl border border-border">
+        {/* Header Row */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-baseline gap-2 pt-6">
             <span className="text-lg font-semibold text-foreground">Step 1:</span>
             <span className="text-lg text-muted-foreground">Automated Property Value Estimation</span>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Estimated Value</span>
-            <div className="relative">
-              <Input 
-                type="text" 
-                value={formatCurrency(homeValue)} 
-                onChange={handleHomeValueInputChange} 
-                className="w-52 h-14 text-right text-3xl font-bold text-accent border-2 border-accent bg-background/80 backdrop-blur-sm rounded-xl shadow-md focus:ring-2 focus:ring-accent/30" 
-              />
-            </div>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Estimated Value</span>
+            <Input 
+              type="text" 
+              value={formatCurrency(homeValue)} 
+              onChange={handleHomeValueInputChange} 
+              className="w-44 h-12 text-center text-2xl font-bold text-accent border-2 border-accent/50 bg-background rounded-xl focus:border-accent focus:ring-0" 
+            />
           </div>
         </div>
-        <Slider value={[homeValue]} onValueChange={value => handleHomeValueChange(value[0])} min={175000} max={3000000} step={10000} className="py-2" />
+        
+        {/* Slider */}
+        <Slider value={[homeValue]} onValueChange={value => handleHomeValueChange(value[0])} min={175000} max={3000000} step={10000} className="mt-2" />
         <div className="flex justify-between text-xs text-muted-foreground mt-2">
           <span>{formatCurrency(175000)}</span>
           <span>{formatCurrency(3000000)}</span>
