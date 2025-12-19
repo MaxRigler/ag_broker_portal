@@ -5,7 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { CheckCircle2, XCircle, Loader2, MapPin, Building, User } from 'lucide-react';
-import { ELIGIBLE_STATES, validateProperty, formatCurrency } from '@/lib/heaCalculator';
+import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency } from '@/lib/heaCalculator';
+
 interface WizardStep1Props {
   address: string;
   onComplete: (data: {
@@ -14,8 +15,36 @@ interface WizardStep1Props {
   }) => void;
   onBack: () => void;
 }
+
+// All 50 states with full names and abbreviations
+const ALL_STATES: { abbr: string; name: string }[] = [
+  { abbr: 'AL', name: 'Alabama' }, { abbr: 'AK', name: 'Alaska' }, { abbr: 'AZ', name: 'Arizona' },
+  { abbr: 'AR', name: 'Arkansas' }, { abbr: 'CA', name: 'California' }, { abbr: 'CO', name: 'Colorado' },
+  { abbr: 'CT', name: 'Connecticut' }, { abbr: 'DE', name: 'Delaware' }, { abbr: 'FL', name: 'Florida' },
+  { abbr: 'GA', name: 'Georgia' }, { abbr: 'HI', name: 'Hawaii' }, { abbr: 'ID', name: 'Idaho' },
+  { abbr: 'IL', name: 'Illinois' }, { abbr: 'IN', name: 'Indiana' }, { abbr: 'IA', name: 'Iowa' },
+  { abbr: 'KS', name: 'Kansas' }, { abbr: 'KY', name: 'Kentucky' }, { abbr: 'LA', name: 'Louisiana' },
+  { abbr: 'ME', name: 'Maine' }, { abbr: 'MD', name: 'Maryland' }, { abbr: 'MA', name: 'Massachusetts' },
+  { abbr: 'MI', name: 'Michigan' }, { abbr: 'MN', name: 'Minnesota' }, { abbr: 'MS', name: 'Mississippi' },
+  { abbr: 'MO', name: 'Missouri' }, { abbr: 'MT', name: 'Montana' }, { abbr: 'NE', name: 'Nebraska' },
+  { abbr: 'NV', name: 'Nevada' }, { abbr: 'NH', name: 'New Hampshire' }, { abbr: 'NJ', name: 'New Jersey' },
+  { abbr: 'NM', name: 'New Mexico' }, { abbr: 'NY', name: 'New York' }, { abbr: 'NC', name: 'North Carolina' },
+  { abbr: 'ND', name: 'North Dakota' }, { abbr: 'OH', name: 'Ohio' }, { abbr: 'OK', name: 'Oklahoma' },
+  { abbr: 'OR', name: 'Oregon' }, { abbr: 'PA', name: 'Pennsylvania' }, { abbr: 'RI', name: 'Rhode Island' },
+  { abbr: 'SC', name: 'South Carolina' }, { abbr: 'SD', name: 'South Dakota' }, { abbr: 'TN', name: 'Tennessee' },
+  { abbr: 'TX', name: 'Texas' }, { abbr: 'UT', name: 'Utah' }, { abbr: 'VT', name: 'Vermont' },
+  { abbr: 'VA', name: 'Virginia' }, { abbr: 'WA', name: 'Washington' }, { abbr: 'WV', name: 'West Virginia' },
+  { abbr: 'WI', name: 'Wisconsin' }, { abbr: 'WY', name: 'Wyoming' }, { abbr: 'DC', name: 'District of Columbia' }
+];
+
 const PROPERTY_TYPES = ['Single Family', 'Condo', 'Townhouse', 'Multi-Family (2-4 units)', 'Mobile Home', 'Commercial'];
 const OWNERSHIP_TYPES = ['Personal', 'LLC', 'Corporation', 'Trust', 'Partnership'];
+
+// Helper functions for eligibility
+const isStateEligible = (abbr: string) => ELIGIBLE_STATES.includes(abbr);
+const isPropertyTypeEligible = (type: string) => !INELIGIBLE_PROPERTY_TYPES.includes(type);
+const isOwnershipTypeEligible = (type: string) => !INELIGIBLE_OWNERSHIP_TYPES.includes(type);
+const getStateName = (abbr: string) => ALL_STATES.find(s => s.abbr === abbr)?.name || abbr;
 
 // Mock home values based on state
 const MOCK_HOME_VALUES: Record<string, number> = {
@@ -141,13 +170,19 @@ export function WizardStep1({
             State
           </Label>
           <Select value={state} onValueChange={setState}>
-            <SelectTrigger className="bg-background">
-              <SelectValue placeholder="Select state" />
+            <SelectTrigger className={`bg-background ${state ? (isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
+              <SelectValue placeholder="Select state">{state ? getStateName(state) : 'Select state'}</SelectValue>
             </SelectTrigger>
-            <SelectContent>
-              {ELIGIBLE_STATES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-              <SelectItem value="TX">TX (Not Eligible)</SelectItem>
-              <SelectItem value="NY">NY (Not Eligible)</SelectItem>
+            <SelectContent className="max-h-[300px]">
+              {ALL_STATES.map(s => (
+                <SelectItem 
+                  key={s.abbr} 
+                  value={s.abbr}
+                  className={isStateEligible(s.abbr) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                >
+                  {s.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -158,11 +193,19 @@ export function WizardStep1({
             Property Type
           </Label>
           <Select value={propertyType} onValueChange={setPropertyType}>
-            <SelectTrigger className="bg-background">
+            <SelectTrigger className={`bg-background ${propertyType ? (isPropertyTypeEligible(propertyType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
-              {PROPERTY_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
+              {PROPERTY_TYPES.map(type => (
+                <SelectItem 
+                  key={type} 
+                  value={type}
+                  className={isPropertyTypeEligible(type) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                >
+                  {type}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -173,11 +216,19 @@ export function WizardStep1({
             Ownership Type
           </Label>
           <Select value={ownershipType} onValueChange={setOwnershipType}>
-            <SelectTrigger className="bg-background">
+            <SelectTrigger className={`bg-background ${ownershipType ? (isOwnershipTypeEligible(ownershipType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
               <SelectValue placeholder="Select ownership" />
             </SelectTrigger>
             <SelectContent>
-              {OWNERSHIP_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
+              {OWNERSHIP_TYPES.map(type => (
+                <SelectItem 
+                  key={type} 
+                  value={type}
+                  className={isOwnershipTypeEligible(type) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                >
+                  {type}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
