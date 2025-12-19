@@ -70,7 +70,7 @@ export function WizardStep2({
             step={5000} 
             className="flex-1" 
           />
-          <div className="w-48">
+          <div>
             <Input 
               type="text" 
               value={formatCurrency(mortgageBalance)} 
@@ -78,7 +78,7 @@ export function WizardStep2({
                 const val = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0;
                 setMortgageBalance(Math.min(val, homeValue * 0.95));
               }} 
-              className="text-right text-2xl font-bold bg-background h-14" 
+              className="text-3xl font-bold bg-background h-16 px-[25px] w-auto text-center" 
             />
           </div>
         </div>
