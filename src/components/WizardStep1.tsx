@@ -87,9 +87,12 @@ export function WizardStep1({
   }
   return <div className="space-y-6">
       {/* Section 1: Estimated Property Value */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Automated Property Value Estimation</h2>
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-semibold text-foreground">Step 1:</span>
+            <span className="text-lg text-muted-foreground">Automated Property Value Estimation</span>
+          </div>
           <Input type="text" value={formatCurrency(homeValue)} onChange={handleHomeValueInputChange} className="w-40 text-right font-bold text-accent border-2 border-accent bg-transparent rounded-lg" />
         </div>
         <Slider value={[homeValue]} onValueChange={value => handleHomeValueChange(value[0])} min={175000} max={3000000} step={10000} className="py-2" />
