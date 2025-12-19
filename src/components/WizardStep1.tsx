@@ -136,7 +136,7 @@ export function WizardStep1({
             />
             <button
               onClick={incrementValue}
-              className="w-10 h-10 rounded-full bg-accent hover:bg-accent/90 flex items-center justify-center text-accent-foreground transition-colors"
+              className="w-10 h-10 rounded-full bg-accent/20 hover:bg-accent/30 flex items-center justify-center text-accent transition-colors"
             >
               <Plus className="w-5 h-5" />
             </button>
