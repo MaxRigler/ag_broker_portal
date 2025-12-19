@@ -53,13 +53,12 @@ export function Hero({ onCheckEligibility }: HeroProps) {
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
 
       <div className="relative z-10 container mx-auto px-4 py-16 lg:py-24">
-        {/* Logo/Brand */}
-        <div className="mb-16 flex justify-start md:justify-center">
-          <img src={logo} alt="Equity Advance" className="h-20 w-auto" />
-        </div>
-
         {/* Main Content */}
         <div className="max-w-4xl mx-auto text-left md:text-center">
+          {/* Logo/Brand */}
+          <div className="mb-16 flex justify-start md:justify-center">
+            <img src={logo} alt="Equity Advance" className="h-20 w-auto" />
+          </div>
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in">
             <span className="block md:inline">Unlock up to <span className="text-gradient-blue">$500,000</span></span>
             <span className="block md:inline"> in Business Funding</span>
