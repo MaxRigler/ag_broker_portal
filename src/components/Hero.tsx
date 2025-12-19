@@ -52,7 +52,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
       <div className="absolute top-20 right-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
 
-      <div className="relative z-10 container mx-auto px-4 py-16 lg:py-24">
+      <div className="relative z-10 container mx-auto px-4 py-8 md:py-16 lg:py-24">
         {/* Main Content */}
         <div className="max-w-4xl mx-auto text-left md:text-center">
           {/* Logo/Brand */}
