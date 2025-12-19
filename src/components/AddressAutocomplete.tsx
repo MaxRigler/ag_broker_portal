@@ -189,7 +189,7 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
         </div>
       )}
       
-      {!isLoaded && (
+      {!isLoaded && inputValue.trim() && (
         <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-card border border-border rounded-lg text-muted-foreground text-sm">
           Loading address suggestions...
         </div>
