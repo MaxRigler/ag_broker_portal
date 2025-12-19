@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Building2, CreditCard, TrendingUp, Check } from 'lucide-react';
+import { Search, Check } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
 interface HeroProps {
@@ -15,23 +15,6 @@ const subheadlineItems = [
   'No Need For Perfect Credit'
 ];
 
-const valueProps = [
-  {
-    icon: Building2,
-    title: 'Non-Debt Capital',
-    description: 'Not a loan; it is an equity investment in the property.'
-  },
-  {
-    icon: CreditCard,
-    title: 'Zero Monthly Payments',
-    description: 'No interest or monthly payments for up to 10 years.'
-  },
-  {
-    icon: TrendingUp,
-    title: 'FICO Flexible',
-    description: 'Funding FICO profiles as low as 500'
-  }
-];
 
 export function Hero({ onCheckEligibility }: HeroProps) {
   const [address, setAddress] = useState('');
@@ -110,25 +93,6 @@ export function Hero({ onCheckEligibility }: HeroProps) {
             </div>
           </form>
 
-          {/* Value Props */}
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            {valueProps.map((prop, index) => (
-              <div
-                key={index}
-                className="p-6 bg-card/5 backdrop-blur-sm rounded-xl border border-primary-foreground/10 hover:bg-card/10 transition-all duration-300"
-              >
-                <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <prop.icon className="w-6 h-6 text-accent" />
-                </div>
-                <h3 className="text-lg font-semibold text-primary-foreground mb-2">
-                  {prop.title}
-                </h3>
-                <p className="text-primary-foreground/70 text-sm">
-                  {prop.description}
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>
