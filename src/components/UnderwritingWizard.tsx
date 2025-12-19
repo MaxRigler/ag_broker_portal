@@ -47,10 +47,25 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
-      <div className="container max-w-3xl mx-auto">
+    <section className="relative min-h-screen bg-[hsl(var(--navy-deep))] overflow-hidden py-8 px-4">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url('https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1000w,f_auto,q_auto:best/rockcms/2025-06/250611-homes-suburbs-ch-1721-69f6cf.jpg')` }}
+      />
+      
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--navy-deep))] via-[hsl(var(--navy-medium))] to-[hsl(var(--navy-deep))] opacity-95" />
+      
+      {/* Animated Background Elements */}
+      <div className="absolute top-20 right-10 w-72 h-72 bg-accent rounded-full blur-3xl animate-float-glow" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-float-glow-reverse" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl animate-glow-pulse" />
+
+      {/* Content */}
+      <div className="relative z-10 container max-w-3xl mx-auto">
         {/* Back to Home */}
-        <Button variant="ghost" onClick={onBack} className="mb-6">
+        <Button variant="ghost" onClick={onBack} className="mb-6 text-primary-foreground hover:text-primary-foreground/80 hover:bg-primary-foreground/10">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Button>
@@ -67,7 +82,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
                         ? 'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))]'
                         : currentStep === step.id
                         ? 'bg-accent text-accent-foreground'
-                        : 'bg-secondary text-muted-foreground'
+                        : 'bg-primary-foreground/20 text-primary-foreground/60'
                     }`}
                   >
                     {currentStep > step.id ? (
@@ -78,7 +93,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
                   </div>
                   <span
                     className={`text-xs mt-2 font-medium ${
-                      currentStep >= step.id ? 'text-foreground' : 'text-muted-foreground'
+                      currentStep >= step.id ? 'text-primary-foreground' : 'text-primary-foreground/60'
                     }`}
                   >
                     {step.title}
@@ -87,7 +102,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
                 {index < steps.length - 1 && (
                   <div
                     className={`flex-1 h-1 mx-4 rounded transition-all duration-300 ${
-                      currentStep > step.id ? 'bg-[hsl(var(--success))]' : 'bg-secondary'
+                      currentStep > step.id ? 'bg-[hsl(var(--success))]' : 'bg-primary-foreground/20'
                     }`}
                   />
                 )}
@@ -97,7 +112,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
         </div>
 
         {/* Wizard Card */}
-        <Card className="shadow-lg">
+        <Card className="shadow-lg bg-card/95 backdrop-blur-sm">
           <CardContent className="p-6">
             {currentStep === 1 && (
               <WizardStep1
@@ -124,6 +139,6 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
           </CardContent>
         </Card>
       </div>
-    </div>
+    </section>
   );
 }
