@@ -91,7 +91,7 @@ export function WizardStep2({
             <p className="text-xs text-muted-foreground">Combined Loan-to-Value (CLTV)</p>
             <div className="h-3 bg-background rounded-full overflow-hidden relative">
               <div 
-                className={`h-full transition-all duration-300 ${currentCLTV > 80 ? 'bg-destructive' : 'bg-accent'}`} 
+                className={`h-full transition-all duration-300 ${currentCLTV > 80 ? 'bg-destructive' : 'bg-[hsl(var(--success))]'}`} 
                 style={{ width: `${Math.min(currentCLTV, 100)}%` }} 
               />
               <div className="absolute top-1/2 left-[80%] -translate-x-1/2 -translate-y-1/2">
@@ -105,7 +105,7 @@ export function WizardStep2({
             </div>
           </div>
           <div className="ml-6 text-right">
-            <span className={`text-3xl font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-accent'}`}>
+            <span className={`text-3xl font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
               {currentCLTV.toFixed(1)}%
             </span>
           </div>
