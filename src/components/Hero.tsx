@@ -57,23 +57,9 @@ export function Hero({ onCheckEligibility }: HeroProps) {
             </span>
           </h1>
           
-          {/* Subheadline - Responsive checkmark list */}
-          <div className="mb-12 max-w-3xl mx-auto animate-slide-up">
-            {/* Desktop: Horizontal row with dividers */}
-            <div className="hidden md:flex flex-nowrap justify-center items-center gap-x-2">
-              {subheadlineItems.map((item, index) => (
-                <div key={index} className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-accent flex-shrink-0" />
-                  <span className="text-primary-foreground/80 text-sm whitespace-nowrap font-bold">{item}</span>
-                  {index < subheadlineItems.length - 1 && (
-                    <div className="w-px h-4 bg-primary-foreground/30 ml-2" />
-                  )}
-                </div>
-              ))}
-            </div>
-            
-            {/* Mobile: Vertical stacked list */}
-            <div className="flex md:hidden flex-col items-start gap-3">
+          {/* Mobile Subheadline - Vertical stacked list (before form on mobile) */}
+          <div className="mb-12 max-w-3xl mx-auto animate-slide-up md:hidden">
+            <div className="flex flex-col items-start gap-3">
               {subheadlineItems.map((item, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <Check className="w-5 h-5 text-accent flex-shrink-0" />
@@ -84,7 +70,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
           </div>
 
           {/* Address Input Form */}
-          <form onSubmit={handleSubmit} className="max-w-2xl mx-auto md:mb-16 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
             <div className="flex flex-col sm:flex-row gap-3 p-2 bg-card/10 backdrop-blur-sm rounded-xl border border-primary-foreground/10">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -101,6 +87,21 @@ export function Hero({ onCheckEligibility }: HeroProps) {
               </Button>
             </div>
           </form>
+
+          {/* Desktop Subheadline - Horizontal row (after form on desktop) */}
+          <div className="hidden md:block max-w-3xl mx-auto animate-slide-up">
+            <div className="flex flex-nowrap justify-center items-center gap-x-2">
+              {subheadlineItems.map((item, index) => (
+                <div key={index} className="flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-accent flex-shrink-0" />
+                  <span className="text-primary-foreground/80 text-sm whitespace-nowrap font-bold">{item}</span>
+                  {index < subheadlineItems.length - 1 && (
+                    <div className="w-px h-4 bg-primary-foreground/30 ml-2" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
 
         </div>
       </div>
