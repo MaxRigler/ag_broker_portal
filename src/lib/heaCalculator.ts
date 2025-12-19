@@ -27,8 +27,8 @@ export const ELIGIBLE_STATES = [
   'UT', 'VA', 'DC', 'WI', 'WY'
 ];
 
-// Property types that are NOT eligible
-export const INELIGIBLE_PROPERTY_TYPES = ['Mobile Home', 'Commercial'];
+// Property types that are NOT eligible (matches RentCast values)
+export const INELIGIBLE_PROPERTY_TYPES = ['Manufactured', 'Apartment', 'Land'];
 
 // Ownership types that are NOT eligible
 export const INELIGIBLE_OWNERSHIP_TYPES = ['LLC', 'Corporation', 'Trust', 'Partnership'];
