@@ -61,12 +61,9 @@ export function Hero({ onCheckEligibility }: HeroProps) {
         {/* Main Content */}
         <div className="max-w-4xl mx-auto text-left md:text-center">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-fade-in">
-            Unlock up to{' '}
-            <span className="text-gradient-blue">$500,000</span>
-            <br className="md:hidden" />
-            {' '}in Business Funding
-            <br className="md:hidden" />
-            {' '}via Home Equity
+            <span className="block md:inline">Unlock up to <span className="text-gradient-blue">$500,000</span></span>
+            <span className="block md:inline"> in Business Funding</span>
+            <span className="block md:inline"> via Home Equity</span>
           </h1>
           
           {/* Subheadline - Responsive checkmark list */}
@@ -85,7 +82,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
             </div>
             
             {/* Mobile: Vertical stacked list */}
-            <div className="flex md:hidden flex-col items-start gap-3 px-4">
+            <div className="flex md:hidden flex-col items-start gap-3">
               {subheadlineItems.map((item, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <Check className="w-5 h-5 text-accent flex-shrink-0" />
