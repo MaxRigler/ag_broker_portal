@@ -77,7 +77,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
           </div>
 
           {/* Address Input Form */}
-          <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-8 md:mt-12 md:mb-12 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <form onSubmit={handleSubmit} className="relative z-50 max-w-2xl mx-auto mb-8 md:mt-12 md:mb-12 animate-slide-up" style={{ animationDelay: '0.1s' }}>
             <div className="flex flex-col sm:flex-row gap-3 p-2 bg-card/10 backdrop-blur-sm rounded-xl border border-primary-foreground/10">
               <AddressAutocomplete 
                 onSelect={(selectedAddress) => setAddress(selectedAddress)}
@@ -90,7 +90,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
           </form>
 
           {/* Desktop Subheadline - Horizontal row (after form on desktop) */}
-          <div className="hidden md:block max-w-3xl mx-auto animate-slide-up">
+          <div className="hidden md:block max-w-3xl mx-auto animate-slide-up relative z-0">
             <div className="flex flex-nowrap justify-center items-center gap-x-2">
               {subheadlineItems.map((item, index) => (
                 <div key={index} className="flex items-center gap-1.5">
