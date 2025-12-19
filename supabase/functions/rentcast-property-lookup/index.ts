@@ -69,10 +69,11 @@ serve(async (req) => {
       console.warn('AVM lookup failed, using fallback:', avmResponse.status);
     }
 
-    // Extract and format the response data
-    const ownerNames = propertyData.owner?.names?.join(' & ') || 'Unknown Owner';
-    const state = propertyData.state || '';
-    const propertyType = propertyData.propertyType || 'Single Family';
+    // Extract and format the response data - RentCast returns an array of properties
+    const property = Array.isArray(propertyData) ? propertyData[0] : propertyData;
+    const ownerNames = property?.owner?.names?.join(' & ') || 'Unknown Owner';
+    const state = property?.state || '';
+    const propertyType = property?.propertyType || 'Single Family';
 
     const result = {
       ownerNames,
