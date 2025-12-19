@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, XCircle, Loader2, MapPin, Building, User } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus } from 'lucide-react';
 import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency } from '@/lib/heaCalculator';
 
 interface WizardStep1Props {
@@ -86,14 +85,17 @@ export function WizardStep1({
     return () => clearTimeout(timer);
   }, [address]);
   const handleHomeValueChange = (value: number) => {
-    setHomeValue(value);
+    const clampedValue = Math.min(Math.max(value, 175000), 3000000);
+    setHomeValue(clampedValue);
     setValidation(null);
   };
   const handleHomeValueInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     const numValue = parseInt(value) || 175000;
-    handleHomeValueChange(Math.min(Math.max(numValue, 175000), 3000000));
+    handleHomeValueChange(numValue);
   };
+  const incrementValue = () => handleHomeValueChange(homeValue + 10000);
+  const decrementValue = () => handleHomeValueChange(homeValue - 10000);
   const handleValidate = () => {
     const result = validateProperty(state, propertyType, ownershipType, homeValue);
     setValidation(result);
@@ -116,29 +118,29 @@ export function WizardStep1({
   }
   return <div className="space-y-6">
       {/* Section 1: Estimated Property Value - Hero Section */}
-      <div className="p-6 bg-gradient-to-br from-secondary to-accent/5 rounded-2xl border border-border">
-        {/* Header Row */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-baseline gap-2 pt-6">
-            <span className="text-lg font-semibold text-foreground">Step 1:</span>
-            <span className="text-lg text-muted-foreground">Automated Property Value Estimation</span>
-          </div>
-          <div className="flex flex-col items-end">
-            <span className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Estimated Value</span>
+      <div className="p-6 bg-secondary rounded-2xl border border-border">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-foreground">Estimated Property Value</h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={decrementValue}
+              className="w-10 h-10 rounded-full bg-accent/20 hover:bg-accent/30 flex items-center justify-center text-accent transition-colors"
+            >
+              <Minus className="w-5 h-5" />
+            </button>
             <Input 
               type="text" 
               value={formatCurrency(homeValue)} 
               onChange={handleHomeValueInputChange} 
-              className="w-44 h-12 text-center text-2xl font-bold text-accent border-2 border-accent/50 bg-background rounded-xl focus:border-accent focus:ring-0" 
+              className="w-36 h-12 text-center text-xl font-bold text-accent border-2 border-accent/30 bg-background rounded-full focus:border-accent focus:ring-0" 
             />
+            <button
+              onClick={incrementValue}
+              className="w-10 h-10 rounded-full bg-accent hover:bg-accent/90 flex items-center justify-center text-accent-foreground transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
           </div>
-        </div>
-        
-        {/* Slider */}
-        <Slider value={[homeValue]} onValueChange={value => handleHomeValueChange(value[0])} min={175000} max={3000000} step={10000} className="mt-2" />
-        <div className="flex justify-between text-xs text-muted-foreground mt-2">
-          <span>{formatCurrency(175000)}</span>
-          <span>{formatCurrency(3000000)}</span>
         </div>
       </div>
 
