@@ -132,7 +132,7 @@ export function WizardStep1({
               type="text" 
               value={formatCurrency(homeValue)} 
               onChange={handleHomeValueInputChange} 
-              className="w-36 h-12 text-center text-xl font-bold text-accent border-2 border-accent/30 bg-background rounded-full focus:border-accent focus:ring-0" 
+              className="w-36 h-12 text-center text-xl font-bold text-accent border-2 border-accent/30 bg-background rounded-md focus:border-accent focus:ring-0" 
             />
             <button
               onClick={incrementValue}
