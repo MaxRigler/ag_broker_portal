@@ -55,7 +55,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
               {subheadlineItems.map((item, index) => (
                 <div key={index} className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-accent flex-shrink-0" />
-                  <span className="text-primary-foreground/80 text-sm whitespace-nowrap">{item}</span>
+                  <span className="text-primary-foreground/80 text-sm whitespace-nowrap font-bold">{item}</span>
                   {index < subheadlineItems.length - 1 && (
                     <div className="w-px h-4 bg-primary-foreground/30 ml-2" />
                   )}
@@ -68,7 +68,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
               {subheadlineItems.map((item, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <Check className="w-5 h-5 text-accent flex-shrink-0" />
-                  <span className="text-primary-foreground/80 text-left">{item}</span>
+                  <span className="text-primary-foreground/80 text-left font-bold">{item}</span>
                 </div>
               ))}
             </div>
