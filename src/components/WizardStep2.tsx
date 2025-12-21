@@ -61,7 +61,7 @@ export function WizardStep2({
           <DollarSign className="w-4 h-4" />
           Outstanding Total Mortgage Balance
         </Label>
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 items-center p-2 rounded-xl animate-breathe">
           <Slider 
             value={[mortgageBalance]} 
             onValueChange={value => setMortgageBalance(value[0])} 
