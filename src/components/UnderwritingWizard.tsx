@@ -66,7 +66,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
       {/* Content */}
       <div className="relative z-10 w-full max-w-4xl mx-auto px-2 md:px-12">
         {/* Header Row: Logo + Back Arrow | Step Indicator (right-aligned) */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 md:mb-10">
           {/* Left: Back Arrow + Logo */}
           <div className="flex items-center gap-2 md:gap-3">
             <Button 
