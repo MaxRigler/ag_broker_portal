@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Circle, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, ArrowLeft } from 'lucide-react';
 import { WizardStep1 } from './WizardStep1';
 import { WizardStep2 } from './WizardStep2';
 import { WizardStep3 } from './WizardStep3';
+import logo from '@/assets/logo.png';
 
 interface UnderwritingWizardProps {
   address: string;
@@ -64,20 +65,32 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-2 md:px-12">
-        {/* Back to Home */}
-        <Button variant="ghost" onClick={onBack} className="mb-6 text-primary-foreground hover:text-primary-foreground/80 hover:bg-primary-foreground/10">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
-        </Button>
+        {/* Header Row: Logo + Back Arrow | Step Indicator (right-aligned) */}
+        <div className="flex items-center justify-between mb-6">
+          {/* Left: Back Arrow + Logo */}
+          <div className="flex items-center gap-2 md:gap-3">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={currentStep === 1 ? onBack : () => setCurrentStep((currentStep - 1) as Step)}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground"
+            >
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+            </Button>
+            <img 
+              src={logo} 
+              alt="Equity Advance" 
+              className="h-6 md:h-10"
+            />
+          </div>
 
-        {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+          {/* Right: Step Indicator */}
+          <div className="flex items-center">
             {steps.map((step, index) => (
-              <div key={step.id} className="flex items-center flex-1">
+              <div key={step.id} className="flex items-center">
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    className={`w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 text-xs md:text-base ${
                       currentStep > step.id
                         ? 'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))]'
                         : currentStep === step.id
@@ -86,13 +99,13 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
                     }`}
                   >
                     {currentStep > step.id ? (
-                      <CheckCircle2 className="w-5 h-5" />
+                      <CheckCircle2 className="w-3 h-3 md:w-5 md:h-5" />
                     ) : (
                       <span className="font-semibold">{step.id}</span>
                     )}
                   </div>
                   <span
-                    className={`text-xs mt-2 font-medium ${
+                    className={`text-[8px] md:text-xs mt-1 font-medium whitespace-nowrap ${
                       currentStep >= step.id ? 'text-primary-foreground' : 'text-primary-foreground/60'
                     }`}
                   >
@@ -101,7 +114,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
                 </div>
                 {index < steps.length - 1 && (
                   <div
-                    className={`flex-1 h-1 mx-4 rounded transition-all duration-300 ${
+                    className={`w-6 md:w-16 h-0.5 md:h-1 mx-1 md:mx-3 rounded transition-all duration-300 ${
                       currentStep > step.id ? 'bg-[hsl(var(--success))]' : 'bg-primary-foreground/20'
                     }`}
                   />
