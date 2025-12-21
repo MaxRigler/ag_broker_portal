@@ -166,7 +166,7 @@ export function WizardStep1({
       <div className="p-3 md:p-8 bg-secondary rounded-xl border border-border">
         <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
           <h2 className="text-xl font-semibold text-foreground text-center md:text-left">Estimated Property Value</h2>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 p-2 rounded-xl animate-breathe">
             <button
               onClick={decrementValue}
               className="w-10 h-10 rounded-full bg-accent/20 hover:bg-accent/30 flex items-center justify-center text-accent transition-colors"
