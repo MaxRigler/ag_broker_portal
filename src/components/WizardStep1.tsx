@@ -163,7 +163,7 @@ export function WizardStep1({
       )}
 
       {/* Section 1: Estimated Property Value - Hero Section */}
-      <div className="p-3 md:p-6 bg-secondary rounded-xl border border-border">
+      <div className="p-3 md:p-8 bg-secondary rounded-xl border border-border">
         <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
           <h2 className="text-xl font-semibold text-foreground text-center md:text-left">Estimated Property Value</h2>
           <div className="flex items-center gap-2">
@@ -190,7 +190,7 @@ export function WizardStep1({
       </div>
 
       {/* Section 2: Property Address & Property Owner */}
-      <div className="p-3 md:p-5 bg-secondary rounded-xl border border-border">
+      <div className="p-3 md:p-6 bg-secondary rounded-xl border border-border">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="flex items-start gap-3">
             <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
@@ -210,7 +210,7 @@ export function WizardStep1({
       </div>
 
       {/* Section 3: Three Dropdowns in One Row */}
-      <div className="p-3 md:p-5 bg-secondary rounded-xl border border-border">
+      <div className="p-3 md:p-6 bg-secondary rounded-xl border border-border">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label className="flex items-center gap-2 text-sm">
@@ -303,7 +303,7 @@ export function WizardStep1({
         </div>}
 
       {/* Section 4: Action Buttons */}
-      <div className="p-3 md:p-5 bg-secondary rounded-xl border border-border">
+      <div className="p-3 md:p-6 bg-secondary rounded-xl border border-border">
         <div className="flex gap-3">
           <Button variant="outline" onClick={onBack} className="flex-1">
             Back
