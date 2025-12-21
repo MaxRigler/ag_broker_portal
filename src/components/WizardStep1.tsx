@@ -164,8 +164,8 @@ export function WizardStep1({
 
       {/* Section 1: Estimated Property Value - Hero Section */}
       <div className="p-6 bg-secondary rounded-xl border border-border">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-foreground">Estimated Property Value</h2>
+        <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
+          <h2 className="text-xl font-semibold text-foreground text-center md:text-left">Estimated Property Value</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={decrementValue}
