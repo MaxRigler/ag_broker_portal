@@ -80,7 +80,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
             <img 
               src={logo} 
               alt="Equity Advance" 
-              className="h-6 md:h-16"
+              className="hidden md:block md:h-16"
             />
           </div>
 
