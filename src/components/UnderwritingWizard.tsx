@@ -63,7 +63,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl animate-glow-pulse" />
 
       {/* Content */}
-      <div className="relative z-10 container max-w-3xl mx-auto">
+      <div className="relative z-10 container max-w-7xl mx-auto">
         {/* Back to Home */}
         <Button variant="ghost" onClick={onBack} className="mb-6 text-primary-foreground hover:text-primary-foreground/80 hover:bg-primary-foreground/10">
           <ArrowLeft className="w-4 h-4 mr-2" />
