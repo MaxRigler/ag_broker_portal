@@ -47,7 +47,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
   };
 
   return (
-    <section className="relative min-h-screen bg-[hsl(var(--navy-deep))] overflow-hidden py-8 px-4">
+    <section className="relative min-h-screen bg-[hsl(var(--navy-deep))] overflow-hidden py-8 px-2 md:px-4">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -63,7 +63,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl animate-glow-pulse" />
 
       {/* Content */}
-      <div className="relative z-10 container max-w-7xl mx-auto">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-2 md:px-6">
         {/* Back to Home */}
         <Button variant="ghost" onClick={onBack} className="mb-6 text-primary-foreground hover:text-primary-foreground/80 hover:bg-primary-foreground/10">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -113,7 +113,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
 
         {/* Wizard Card */}
         <Card className="shadow-lg bg-card/95 backdrop-blur-sm">
-          <CardContent className="p-6">
+          <CardContent className="p-3 md:p-6">
             {currentStep === 1 && (
               <WizardStep1
                 address={address}
