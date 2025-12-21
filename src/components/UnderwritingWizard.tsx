@@ -48,7 +48,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
   };
 
   return (
-    <section className="relative min-h-screen bg-[hsl(var(--navy-deep))] overflow-hidden py-8 px-2 md:px-8">
+    <section className="relative min-h-screen bg-[hsl(var(--navy-deep))] overflow-hidden py-8 px-2 md:px-8 flex items-center justify-center">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -64,7 +64,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl animate-glow-pulse" />
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-2 md:px-12">
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-2 md:px-12">
         {/* Header Row: Logo + Back Arrow | Step Indicator (right-aligned) */}
         <div className="flex items-center justify-between mb-6">
           {/* Left: Back Arrow + Logo */}
@@ -80,7 +80,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
             <img 
               src={logo} 
               alt="Equity Advance" 
-              className="h-6 md:h-10"
+              className="h-6 md:h-16"
             />
           </div>
 
