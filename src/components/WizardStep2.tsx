@@ -40,7 +40,33 @@ export function WizardStep2({
 
   return (
     <div className="space-y-4">
-      {/* Top Row: Property Value and Outstanding Mortgage Balance */}
+      {/* Maximum Investment Result - Now First */}
+      {isEligible ? (
+        <div className="p-4 bg-secondary rounded-xl border border-accent/30">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="w-5 h-5 text-accent" />
+            <span className="font-semibold text-foreground">Maximum Potential Funding</span>
+          </div>
+          <p className="text-4xl font-bold text-[hsl(var(--success))] mb-2">{formatCurrency(maxInvestment)}</p>
+          <p className="text-sm text-muted-foreground">
+            Based on 80% max CLTV, 30% max of home value, and $500K cap
+          </p>
+        </div>
+      ) : (
+        <div className="p-4 bg-secondary rounded-xl border border-destructive/30">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertCircle className="w-5 h-5 text-destructive" />
+            <span className="font-semibold text-destructive">Does Not Qualify</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {currentCLTV > 80 
+              ? 'Current CLTV exceeds 80%. The client would need to pay down their mortgage to qualify.' 
+              : 'Available equity is too low for this program. Minimum funding is $15,000.'}
+          </p>
+        </div>
+      )}
+
+      {/* Property Value and Outstanding Mortgage Balance - Now Second */}
       <div className="grid grid-cols-2 gap-4">
         {/* Property Value */}
         <div className="p-6 bg-secondary rounded-xl border border-border">
@@ -85,7 +111,7 @@ export function WizardStep2({
         </div>
       </div>
 
-      {/* CLTV Section */}
+      {/* CLTV Section - Now Third */}
       <div className="p-4 bg-secondary rounded-xl border border-border space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex-1 space-y-2">
@@ -112,32 +138,6 @@ export function WizardStep2({
           </div>
         </div>
       </div>
-
-      {/* Maximum Investment Result */}
-      {isEligible ? (
-        <div className="p-4 bg-secondary rounded-xl border border-accent/30">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-5 h-5 text-accent" />
-            <span className="font-semibold text-foreground">Maximum Potential Funding</span>
-          </div>
-          <p className="text-4xl font-bold text-[hsl(var(--success))] mb-2">{formatCurrency(maxInvestment)}</p>
-          <p className="text-sm text-muted-foreground">
-            Based on 80% max CLTV, 30% max of home value, and $500K cap
-          </p>
-        </div>
-      ) : (
-        <div className="p-4 bg-secondary rounded-xl border border-destructive/30">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertCircle className="w-5 h-5 text-destructive" />
-            <span className="font-semibold text-destructive">Does Not Qualify</span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {currentCLTV > 80 
-              ? 'Current CLTV exceeds 80%. The client would need to pay down their mortgage to qualify.' 
-              : 'Available equity is too low for this program. Minimum funding is $15,000.'}
-          </p>
-        </div>
-      )}
 
       {/* Actions */}
       <div className="flex gap-3">
