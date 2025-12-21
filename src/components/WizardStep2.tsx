@@ -41,9 +41,9 @@ export function WizardStep2({
     <div className="space-y-6">
       {/* Top Row: Property Value, Total Equity, Usable Equity */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="p-4 bg-accent rounded-xl">
-          <p className="text-xs text-accent-foreground/70 mb-1">Property Value</p>
-          <p className="text-xl font-bold text-accent-foreground">{formatCurrency(homeValue)}</p>
+        <div className="p-4 bg-secondary rounded-xl border border-border">
+          <p className="text-xs text-muted-foreground mb-1">Property Value</p>
+          <p className="text-xl font-bold text-foreground">{formatCurrency(homeValue)}</p>
         </div>
         <div className="p-4 bg-secondary rounded-xl border border-border">
           <p className="text-xs text-muted-foreground mb-1">Total Equity</p>
