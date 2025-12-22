@@ -539,13 +539,15 @@ export function WizardStep1({
         )}
       </div>
 
-      {/* Payoff Calculator Section (shown when Calculate Cost of Funds is clicked) */}
+      {/* Settlement Estimator Section (shown when Calculate Cost of Funds is clicked) */}
       {showPayoffCalculator && (
-        <div className="space-y-4 pt-4 border-t border-border">
-          {/* Calculator Header */}
+        <div className="space-y-6 pt-4 border-t border-border">
+          {/* Settlement Estimator Header */}
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-foreground">Cost of Funds Calculator</h3>
-            <p className="text-sm text-muted-foreground">Adjust the variables below to see the payoff estimate</p>
+            <h3 className="text-lg font-bold text-foreground uppercase tracking-wide">Settlement Estimator</h3>
+            <p className="text-sm text-muted-foreground">
+              Adjust the funding amount, settlement year & annual appreciation percentage to estimate the cost of capital for your client
+            </p>
           </div>
 
           {/* Three Variable Controls */}
@@ -653,41 +655,71 @@ export function WizardStep1({
             </div>
           </div>
 
-          {/* Results Card */}
-          <div className="p-6 bg-card border border-border rounded-xl shadow-lg space-y-6">
-            <div className="flex items-center gap-2">
-              <Calculator className="w-5 h-5 text-accent" />
-              <h3 className="font-semibold text-lg text-foreground">Payoff Estimate</h3>
-              {calculation.isCapped && (
-                <Badge variant="outline" className="ml-auto bg-accent/10 text-accent border-accent/30">
-                  <Shield className="w-3 h-3 mr-1" />
-                  Cost Capped at 19.9%
-                </Badge>
-              )}
+          {/* Clarifying Agreement Structure Section */}
+          <div className="space-y-4">
+            <div className="text-center">
+              <h3 className="text-lg font-bold text-foreground uppercase tracking-wide">Clarifying Agreement Structure</h3>
+            </div>
+            
+            {/* Dynamic Intro Text */}
+            <p className="text-sm text-muted-foreground text-center px-4">
+              In exchange for {formatCurrency(fundingAmount)} in funding with no monthly payments, a lien will be recorded on the subject property securing a certain Equity Share Percentage in its future value at the time of settlement as demonstrated below.
+            </p>
+
+            {/* Visual Equation Display */}
+            <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 py-4">
+              {/* Ending Home Value Box */}
+              <div className="p-4 bg-secondary rounded-xl border border-border text-center min-w-[160px]">
+                <p className="text-xs text-muted-foreground mb-1">Ending Home Value</p>
+                <p className="text-xl font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
+              </div>
+              
+              {/* Multiplication Symbol */}
+              <span className="text-2xl font-bold text-muted-foreground">×</span>
+              
+              {/* Equity Share % Box */}
+              <div className="p-4 bg-secondary rounded-xl border border-border text-center min-w-[160px]">
+                <p className="text-xs text-muted-foreground mb-1">Equity Share %</p>
+                <p className="text-xl font-bold text-foreground">
+                  {homeValue > 0 ? `${((fundingAmount / homeValue) * 2 * 100).toFixed(0)}%` : '0%'}
+                </p>
+              </div>
+              
+              {/* Equals Symbol */}
+              <span className="text-2xl font-bold text-muted-foreground">=</span>
+              
+              {/* Total Cost of Capital Box */}
+              <div className="p-4 bg-secondary rounded-xl border border-accent/30 text-center min-w-[160px]">
+                <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
+                <p className="text-xl font-bold text-accent">{formatCurrency(calculation.totalCost)}</p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Estimated Payoff at Year {settlementYear}</p>
-                <p className="text-2xl font-bold text-foreground">{formatCurrency(calculation.payoff)}</p>
+            {/* Explanatory Text Block */}
+            <div className="p-4 bg-secondary/50 rounded-xl border border-border">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Settlement amount is calculated by multiplying the Equity Share Percentage with the Ending Home Value of the home. The equity share % will always be fixed for the duration of the agreement, however the ending home value may fluctuate due to market volatility, therefore the ending Settlement Amount is capped to ensure your client will never be charged an effective annualized rate that exceeds 19.9% resulting in the simulated outcome demonstrated below.
+              </p>
+            </div>
+
+            {/* Two Result Boxes */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Client's Share of Home After Settlement */}
+              <div className="p-5 bg-[hsl(var(--success))]/10 rounded-xl border border-[hsl(var(--success))]/30">
+                <p className="text-sm text-muted-foreground mb-2">Client's Share of Home After Settlement</p>
+                <p className="text-3xl font-bold text-[hsl(var(--success))]">
+                  {formatCurrency(calculation.endingHomeValue - calculation.payoff)}
+                </p>
               </div>
-              <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Effective Annualized Cost</p>
-                <p className="text-2xl font-bold text-accent">{formatPercentage(calculation.apr)}</p>
+              
+              {/* Effective APR % */}
+              <div className="p-5 bg-secondary rounded-xl border border-border">
+                <p className="text-sm text-muted-foreground mb-2">Effective APR %</p>
+                <p className="text-3xl font-bold text-foreground">{formatPercentage(calculation.apr)}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Total Cost of Capital</p>
-                <p className="text-xl font-semibold text-foreground">{formatCurrency(calculation.totalCost)}</p>
-              </div>
-              <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Projected Home Value (Year {settlementYear})</p>
-                <p className="text-xl font-semibold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
-              </div>
-            </div>
-
+            {/* Cost Cap Note (if applicable) */}
             {calculation.isCapped && (
               <div className="p-4 bg-accent/5 border border-accent/20 rounded-lg">
                 <p className="text-sm text-muted-foreground">
