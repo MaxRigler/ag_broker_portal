@@ -451,7 +451,7 @@ export function WizardStep1({
 
       {/* Sections shown after confirming property details */}
       {propertyDetailsConfirmed && (
-        <>
+        <div className="space-y-4 animate-fade-in">
           {/* Section Header for Mortgage */}
           <h2 className="text-lg md:text-xl font-bold text-foreground pt-2">
             2. Confirm Mortgage Details
@@ -612,7 +612,7 @@ export function WizardStep1({
               </div>
             )}
           </div>
-        </>
+        </div>
       )}
 
       {/* Settlement Estimator Section (shown when Calculate Cost of Funds is clicked) */}
