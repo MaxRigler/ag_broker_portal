@@ -135,10 +135,17 @@ export function WizardStep1({
     }
   }, [address]);
 
+  // Auto-validate whenever key values change
+  useEffect(() => {
+    if (!isLoading && state && propertyType && ownershipType && homeValue >= 175000) {
+      const result = validateProperty(state, propertyType, ownershipType, homeValue);
+      setValidation(result);
+    }
+  }, [state, propertyType, ownershipType, homeValue, isLoading]);
+
   const handleHomeValueChange = (value: number) => {
     const clampedValue = Math.min(Math.max(value, 175000), 3000000);
     setHomeValue(clampedValue);
-    setValidation(null);
   };
 
   const handleHomeValueInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
