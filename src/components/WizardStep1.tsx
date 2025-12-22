@@ -100,7 +100,17 @@ export function WizardStep1({
         setPropertyOwner(data.ownerNames);
         
         // Auto-detect ownership type from owner names
-        setOwnershipType(detectOwnershipType(data.ownerNames));
+        const detectedOwnership = detectOwnershipType(data.ownerNames);
+        setOwnershipType(detectedOwnership);
+        
+        // Auto-validate with fetched data
+        const initialValidation = validateProperty(
+          data.state, 
+          data.propertyType, 
+          detectedOwnership, 
+          fetchedHomeValue
+        );
+        setValidation(initialValidation);
         
         toast.success('Property data loaded successfully');
       } catch (error) {
