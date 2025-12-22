@@ -570,7 +570,7 @@ export function WizardStep1({
                   type="text" 
                   value={formatCurrency(fundingAmount)} 
                   onChange={handleFundingInputChange} 
-                  className="text-lg font-bold bg-background h-12 w-28 text-center" 
+                  className="text-xl font-bold bg-background h-14 w-40 text-center" 
                 />
                 <Button 
                   variant="outline" 
@@ -601,7 +601,7 @@ export function WizardStep1({
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
-                <div className="text-lg font-bold bg-background h-12 w-28 flex items-center justify-center border rounded-md">
+                <div className="text-xl font-bold bg-background h-14 w-40 flex items-center justify-center border rounded-md">
                   {settlementYear} {settlementYear === 1 ? 'Year' : 'Years'}
                 </div>
                 <Button 
@@ -637,7 +637,7 @@ export function WizardStep1({
                   type="text" 
                   value={`${hpaRate >= 0 ? '+' : ''}${hpaRate.toFixed(1)}%`} 
                   onChange={handleHpaInputChange} 
-                  className={`text-lg font-bold bg-background h-12 w-28 text-center ${hpaRate >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}
+                  className={`text-xl font-bold bg-background h-14 w-40 text-center ${hpaRate >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}
                 />
                 <Button 
                   variant="outline" 
