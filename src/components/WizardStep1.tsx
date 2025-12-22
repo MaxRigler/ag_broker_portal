@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus, AlertCircle, TrendingUp, X } from 'lucide-react';
-import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency, calculateMaxInvestment } from '@/lib/heaCalculator';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus, AlertCircle, TrendingUp, X, DollarSign, Calendar, Calculator, Shield, RefreshCw } from 'lucide-react';
+import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency, formatPercentage, calculateMaxInvestment, calculateHEACost } from '@/lib/heaCalculator';
 import { lookupProperty, detectOwnershipType } from '@/lib/api/rentcast';
 import { toast } from 'sonner';
 
@@ -67,12 +68,30 @@ export function WizardStep1({
   const [homeValue, setHomeValue] = useState(0);
   const [propertyOwner, setPropertyOwner] = useState('');
   const [mortgageBalance, setMortgageBalance] = useState(0);
+  
+  // Payoff calculator state
+  const [showPayoffCalculator, setShowPayoffCalculator] = useState(false);
+  const [fundingAmount, setFundingAmount] = useState(15000);
+  const [settlementYear, setSettlementYear] = useState(10);
+  const [hpaRate, setHpaRate] = useState(3.0); // 3% default as percentage
 
   // CLTV calculations
   const currentCLTV = homeValue > 0 ? (mortgageBalance / homeValue) * 100 : 0;
   const maxInvestment = calculateMaxInvestment(homeValue, mortgageBalance);
   const isCLTVEligible = currentCLTV <= 80 && maxInvestment >= 15000;
   const isFullyEligible = validation?.isValid && isCLTVEligible;
+  
+  // Update funding amount when maxInvestment changes
+  useEffect(() => {
+    if (maxInvestment > 0) {
+      setFundingAmount(maxInvestment);
+    }
+  }, [maxInvestment]);
+  
+  // Payoff calculation
+  const calculation = useMemo(() => {
+    return calculateHEACost(fundingAmount, homeValue, settlementYear, hpaRate / 100);
+  }, [fundingAmount, homeValue, settlementYear, hpaRate]);
 
   // Fetch property data from RentCast API
   useEffect(() => {
@@ -172,15 +191,44 @@ export function WizardStep1({
     setValidation(result);
   };
 
-  const handleContinue = () => {
-    if (isFullyEligible) {
-      onComplete({
-        homeValue,
-        state,
-        mortgageBalance,
-        maxInvestment
-      });
-    }
+  const handleShowCalculator = () => {
+    setShowPayoffCalculator(true);
+  };
+
+  const handleHideCalculator = () => {
+    setShowPayoffCalculator(false);
+  };
+
+  const handleReset = () => {
+    onBack();
+  };
+
+  // Funding amount controls
+  const adjustFunding = (amount: number) => {
+    const newValue = Math.max(15000, Math.min(fundingAmount + amount, maxInvestment));
+    setFundingAmount(newValue);
+  };
+
+  const handleFundingInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 15000;
+    setFundingAmount(Math.max(15000, Math.min(val, maxInvestment)));
+  };
+
+  // Settlement year controls
+  const adjustSettlementYear = (amount: number) => {
+    const newValue = Math.max(1, Math.min(settlementYear + amount, 10));
+    setSettlementYear(newValue);
+  };
+
+  // HPA rate controls
+  const adjustHpaRate = (amount: number) => {
+    const newValue = Math.max(-2, Math.min(hpaRate + amount, 6));
+    setHpaRate(Math.round(newValue * 10) / 10);
+  };
+
+  const handleHpaInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value.replace(/[^0-9.-]/g, '')) || 0;
+    setHpaRate(Math.max(-2, Math.min(val, 6)));
   };
 
   if (isLoading) {
@@ -491,23 +539,198 @@ export function WizardStep1({
         )}
       </div>
 
+      {/* Payoff Calculator Section (shown when Calculate Cost of Funds is clicked) */}
+      {showPayoffCalculator && (
+        <div className="space-y-4 pt-4 border-t border-border">
+          {/* Calculator Header */}
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-foreground">Cost of Funds Calculator</h3>
+            <p className="text-sm text-muted-foreground">Adjust the variables below to see the payoff estimate</p>
+          </div>
+
+          {/* Three Variable Controls */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Funding Amount */}
+            <div className="p-4 bg-secondary rounded-xl border border-border">
+              <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
+                <DollarSign className="w-4 h-4 text-accent" />
+                Funding Amount
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => adjustFunding(-5000)}
+                  disabled={fundingAmount <= 15000}
+                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Input 
+                  type="text" 
+                  value={formatCurrency(fundingAmount)} 
+                  onChange={handleFundingInputChange} 
+                  className="text-lg font-bold bg-background h-12 w-28 text-center" 
+                />
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => adjustFunding(5000)}
+                  disabled={fundingAmount >= maxInvestment}
+                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground text-center mt-2">$15K - {formatCurrency(maxInvestment)}</p>
+            </div>
+
+            {/* Settlement Year */}
+            <div className="p-4 bg-secondary rounded-xl border border-border">
+              <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
+                <Calendar className="w-4 h-4 text-accent" />
+                Settlement Year
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => adjustSettlementYear(-1)}
+                  disabled={settlementYear <= 1}
+                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <div className="text-lg font-bold bg-background h-12 w-28 flex items-center justify-center border rounded-md">
+                  {settlementYear} {settlementYear === 1 ? 'Year' : 'Years'}
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => adjustSettlementYear(1)}
+                  disabled={settlementYear >= 10}
+                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground text-center mt-2">1 - 10 Years</p>
+            </div>
+
+            {/* Home Price Appreciation */}
+            <div className="p-4 bg-secondary rounded-xl border border-border">
+              <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
+                <TrendingUp className="w-4 h-4 text-accent" />
+                Home Price Appreciation
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => adjustHpaRate(-0.5)}
+                  disabled={hpaRate <= -2}
+                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Input 
+                  type="text" 
+                  value={`${hpaRate >= 0 ? '+' : ''}${hpaRate.toFixed(1)}%`} 
+                  onChange={handleHpaInputChange} 
+                  className={`text-lg font-bold bg-background h-12 w-28 text-center ${hpaRate >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}
+                />
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => adjustHpaRate(0.5)}
+                  disabled={hpaRate >= 6}
+                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground text-center mt-2">-2% to +6%</p>
+            </div>
+          </div>
+
+          {/* Results Card */}
+          <div className="p-6 bg-card border border-border rounded-xl shadow-lg space-y-6">
+            <div className="flex items-center gap-2">
+              <Calculator className="w-5 h-5 text-accent" />
+              <h3 className="font-semibold text-lg text-foreground">Payoff Estimate</h3>
+              {calculation.isCapped && (
+                <Badge variant="outline" className="ml-auto bg-accent/10 text-accent border-accent/30">
+                  <Shield className="w-3 h-3 mr-1" />
+                  Cost Capped at 19.9%
+                </Badge>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-secondary rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Estimated Payoff at Year {settlementYear}</p>
+                <p className="text-2xl font-bold text-foreground">{formatCurrency(calculation.payoff)}</p>
+              </div>
+              <div className="p-4 bg-secondary rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Effective Annualized Cost</p>
+                <p className="text-2xl font-bold text-accent">{formatPercentage(calculation.apr)}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-secondary rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Total Cost of Capital</p>
+                <p className="text-xl font-semibold text-foreground">{formatCurrency(calculation.totalCost)}</p>
+              </div>
+              <div className="p-4 bg-secondary rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Projected Home Value (Year {settlementYear})</p>
+                <p className="text-xl font-semibold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
+              </div>
+            </div>
+
+            {calculation.isCapped && (
+              <div className="p-4 bg-accent/5 border border-accent/20 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">Note:</span> The 19.9% annualized cost cap is protecting your client. 
+                  Without the cap, the payoff would be {formatCurrency(calculation.rawUnlockShare)}.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <Button variant="outline" onClick={onBack} className="flex-1">
-          Back
-        </Button>
-        {!validation ? (
-          <Button variant="blue" onClick={handleValidate} className="flex-1">
-            Validate Property
-          </Button>
-        ) : isFullyEligible ? (
-          <Button variant="success" onClick={handleContinue} className="flex-1">
-            Continue to Step 2
-          </Button>
+        {showPayoffCalculator ? (
+          <>
+            <Button variant="outline" onClick={handleHideCalculator} className="flex-1">
+              Back
+            </Button>
+            <Button variant="blue" onClick={handleReset} className="flex-1">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              New Qualification
+            </Button>
+          </>
         ) : (
-          <Button variant="blue" onClick={handleValidate} className="flex-1">
-            Re-validate
-          </Button>
+          <>
+            <Button variant="outline" onClick={onBack} className="flex-1">
+              Back
+            </Button>
+            {!validation ? (
+              <Button variant="blue" onClick={handleValidate} className="flex-1">
+                Validate Property
+              </Button>
+            ) : isFullyEligible ? (
+              <Button variant="success" onClick={handleShowCalculator} className="flex-1">
+                Calculate Cost of Funds
+              </Button>
+            ) : (
+              <Button variant="blue" onClick={handleValidate} className="flex-1">
+                Re-validate
+              </Button>
+            )}
+          </>
         )}
       </div>
     </div>;
