@@ -241,6 +241,11 @@ export function WizardStep1({
   }
 
   return <div className="space-y-4">
+      {/* Section Header */}
+      <h2 className="text-lg md:text-xl font-bold text-foreground">
+        1. Confirm Property Details
+      </h2>
+
       {/* API Error Alert */}
       {apiError && (
         <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg flex items-start gap-3">

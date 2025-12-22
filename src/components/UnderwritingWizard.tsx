@@ -77,44 +77,10 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
             />
           </div>
 
-          {/* Right: Step Indicator */}
-          <div className="flex items-center">
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 text-xs md:text-base ${
-                      currentStep > step.id
-                        ? 'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))]'
-                        : currentStep === step.id
-                        ? 'bg-accent text-accent-foreground'
-                        : 'bg-primary-foreground/20 text-primary-foreground/60'
-                    }`}
-                  >
-                    {currentStep > step.id ? (
-                      <CheckCircle2 className="w-3 h-3 md:w-5 md:h-5" />
-                    ) : (
-                      <span className="font-semibold">{step.id}</span>
-                    )}
-                  </div>
-                  <span
-                    className={`text-[8px] md:text-xs mt-1 font-medium whitespace-nowrap ${
-                      currentStep >= step.id ? 'text-primary-foreground' : 'text-primary-foreground/60'
-                    }`}
-                  >
-                    {step.title}
-                  </span>
-                </div>
-                {index < steps.length - 1 && (
-                  <div
-                    className={`w-6 md:w-16 h-0.5 md:h-1 mx-1 md:mx-3 rounded transition-all duration-300 ${
-                      currentStep > step.id ? 'bg-[hsl(var(--success))]' : 'bg-primary-foreground/20'
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
+          {/* Right: Property Pre-Qualifier Title */}
+          <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-primary-foreground uppercase tracking-wider">
+            Property Pre-Qualifier
+          </h1>
         </div>
 
         {/* Wizard Card */}
