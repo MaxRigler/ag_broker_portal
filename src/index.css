@@ -156,6 +156,7 @@
 
   .animate-breathe {
     animation: breathe 3s ease-in-out infinite;
+    border-radius: calc(var(--radius) - 2px);
   }
 }
 
