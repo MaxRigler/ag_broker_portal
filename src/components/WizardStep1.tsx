@@ -562,7 +562,7 @@ export function WizardStep1({
                   size="icon" 
                   onClick={() => adjustFunding(-5000)}
                   disabled={fundingAmount <= 15000}
-                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -570,14 +570,14 @@ export function WizardStep1({
                   type="text" 
                   value={formatCurrency(fundingAmount)} 
                   onChange={handleFundingInputChange} 
-                  className="text-xl font-bold bg-background h-14 w-40 text-center" 
+                  className="text-lg font-bold bg-background h-14 w-40 text-center" 
                 />
                 <Button 
                   variant="outline" 
                   size="icon" 
                   onClick={() => adjustFunding(5000)}
                   disabled={fundingAmount >= maxInvestment}
-                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -597,11 +597,11 @@ export function WizardStep1({
                   size="icon" 
                   onClick={() => adjustSettlementYear(-1)}
                   disabled={settlementYear <= 1}
-                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
-                <div className="text-xl font-bold bg-background h-14 w-40 flex items-center justify-center border rounded-md">
+                <div className="text-lg font-bold bg-background h-14 w-40 flex items-center justify-center border rounded-md">
                   {settlementYear} {settlementYear === 1 ? 'Year' : 'Years'}
                 </div>
                 <Button 
@@ -609,7 +609,7 @@ export function WizardStep1({
                   size="icon" 
                   onClick={() => adjustSettlementYear(1)}
                   disabled={settlementYear >= 10}
-                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -629,7 +629,7 @@ export function WizardStep1({
                   size="icon" 
                   onClick={() => adjustHpaRate(-0.5)}
                   disabled={hpaRate <= -2}
-                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -637,14 +637,14 @@ export function WizardStep1({
                   type="text" 
                   value={`${hpaRate >= 0 ? '+' : ''}${hpaRate.toFixed(1)}%`} 
                   onChange={handleHpaInputChange} 
-                  className={`text-xl font-bold bg-background h-14 w-40 text-center ${hpaRate >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}
+                  className={`text-lg font-bold bg-background h-14 w-40 text-center ${hpaRate >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}
                 />
                 <Button 
                   variant="outline" 
                   size="icon" 
                   onClick={() => adjustHpaRate(0.5)}
                   disabled={hpaRate >= 6}
-                  className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
