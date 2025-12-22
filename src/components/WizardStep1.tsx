@@ -293,7 +293,7 @@ export function WizardStep1({
               size="icon" 
               onClick={decrementValue}
               disabled={homeValue <= 175000}
-              className="h-10 w-10"
+              className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
             >
               <Minus className="h-4 w-4" />
             </Button>
@@ -310,7 +310,7 @@ export function WizardStep1({
               size="icon" 
               onClick={incrementValue}
               disabled={homeValue >= 3000000}
-              className="h-10 w-10"
+              className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -326,7 +326,7 @@ export function WizardStep1({
               size="icon" 
               onClick={() => adjustMortgage(-5000)}
               disabled={mortgageBalance <= 0}
-              className="h-10 w-10"
+              className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
             >
               <Minus className="h-4 w-4" />
             </Button>
@@ -343,7 +343,7 @@ export function WizardStep1({
               size="icon" 
               onClick={() => adjustMortgage(5000)}
               disabled={mortgageBalance >= homeValue * 0.95}
-              className="h-10 w-10"
+              className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
             >
               <Plus className="h-4 w-4" />
             </Button>
