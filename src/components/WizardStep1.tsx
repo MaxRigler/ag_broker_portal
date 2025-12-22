@@ -551,57 +551,57 @@ export function WizardStep1({
           {/* Three Variable Controls */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Funding Amount */}
-            <div className="p-4 bg-secondary rounded-xl border border-border">
+            <div className="p-4 bg-secondary rounded-xl border border-border overflow-hidden">
               <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
                 <DollarSign className="w-4 h-4 text-accent" />
                 Funding Amount
               </p>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-2 w-full">
                 <Button 
                   variant="outline" 
                   size="icon" 
                   onClick={() => adjustFunding(-5000)}
                   disabled={fundingAmount <= 15000}
-                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
                 <Input 
                   type="text" 
                   value={formatCurrency(fundingAmount)} 
                   onChange={handleFundingInputChange} 
-                  className="text-lg font-bold bg-background h-14 w-40 text-center" 
+                  className="text-base font-bold bg-background h-12 flex-1 min-w-[80px] max-w-[140px] text-center" 
                 />
                 <Button 
                   variant="outline" 
                   size="icon" 
                   onClick={() => adjustFunding(5000)}
                   disabled={fundingAmount >= maxInvestment}
-                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground text-center mt-2">$15K - {formatCurrency(maxInvestment)}</p>
             </div>
 
             {/* Settlement Year */}
-            <div className="p-4 bg-secondary rounded-xl border border-border">
+            <div className="p-4 bg-secondary rounded-xl border border-border overflow-hidden">
               <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
                 <Calendar className="w-4 h-4 text-accent" />
                 Settlement Year
               </p>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-2 w-full">
                 <Button 
                   variant="outline" 
                   size="icon" 
                   onClick={() => adjustSettlementYear(-1)}
                   disabled={settlementYear <= 1}
-                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
-                <div className="text-lg font-bold bg-background h-14 w-40 flex items-center justify-center border rounded-md">
+                <div className="text-base font-bold bg-background h-12 flex-1 min-w-[80px] max-w-[140px] flex items-center justify-center border rounded-md whitespace-nowrap">
                   {settlementYear} {settlementYear === 1 ? 'Year' : 'Years'}
                 </div>
                 <Button 
@@ -609,44 +609,44 @@ export function WizardStep1({
                   size="icon" 
                   onClick={() => adjustSettlementYear(1)}
                   disabled={settlementYear >= 10}
-                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground text-center mt-2">1 - 10 Years</p>
             </div>
 
             {/* Annual Appreciation */}
-            <div className="p-4 bg-secondary rounded-xl border border-border">
+            <div className="p-4 bg-secondary rounded-xl border border-border overflow-hidden">
               <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
                 <Home className="w-4 h-4 text-accent" />
                 Annual Appreciation
               </p>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-2 w-full">
                 <Button 
                   variant="outline" 
                   size="icon" 
                   onClick={() => adjustHpaRate(-0.5)}
                   disabled={hpaRate <= -2}
-                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
                 <Input 
                   type="text" 
                   value={`${hpaRate >= 0 ? '+' : ''}${hpaRate.toFixed(1)}%`} 
                   onChange={handleHpaInputChange} 
-                  className={`text-lg font-bold bg-background h-14 w-40 text-center ${hpaRate >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}
+                  className={`text-base font-bold bg-background h-12 flex-1 min-w-[80px] max-w-[140px] text-center ${hpaRate >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}
                 />
                 <Button 
                   variant="outline" 
                   size="icon" 
                   onClick={() => adjustHpaRate(0.5)}
                   disabled={hpaRate >= 6}
-                  className="h-10 w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground text-center mt-2">-2% to +6%</p>
