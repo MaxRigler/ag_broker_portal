@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus, AlertCircle, TrendingUp, X, DollarSign, Calendar, Calculator, Shield, RefreshCw } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus, AlertCircle, TrendingUp, X, DollarSign, Calendar, Calculator, Shield, RefreshCw, Home } from 'lucide-react';
 import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency, formatPercentage, calculateMaxInvestment, calculateHEACost } from '@/lib/heaCalculator';
 import { lookupProperty, detectOwnershipType } from '@/lib/api/rentcast';
 import { toast } from 'sonner';
@@ -617,11 +617,11 @@ export function WizardStep1({
               <p className="text-xs text-muted-foreground text-center mt-2">1 - 10 Years</p>
             </div>
 
-            {/* Home Price Appreciation */}
+            {/* Annual Appreciation */}
             <div className="p-4 bg-secondary rounded-xl border border-border">
               <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
-                <TrendingUp className="w-4 h-4 text-accent" />
-                Home Price Appreciation
+                <Home className="w-4 h-4 text-accent" />
+                Annual Appreciation
               </p>
               <div className="flex items-center justify-center gap-2">
                 <Button 
