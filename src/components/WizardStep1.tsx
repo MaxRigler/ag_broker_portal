@@ -173,8 +173,8 @@ export function WizardStep1({
     handleHomeValueChange(numValue);
   };
 
-  const incrementValue = () => handleHomeValueChange(homeValue + 10000);
-  const decrementValue = () => handleHomeValueChange(homeValue - 10000);
+  const incrementValue = () => handleHomeValueChange(homeValue + 20000);
+  const decrementValue = () => handleHomeValueChange(homeValue - 20000);
 
   const adjustMortgage = (amount: number) => {
     const newValue = Math.max(0, Math.min(mortgageBalance + amount, homeValue * 0.95));
@@ -389,7 +389,7 @@ export function WizardStep1({
             <Button 
               variant="outline" 
               size="icon" 
-              onClick={() => adjustMortgage(-5000)}
+              onClick={() => adjustMortgage(-20000)}
               disabled={mortgageBalance <= 0}
               className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
             >
@@ -406,7 +406,7 @@ export function WizardStep1({
             <Button 
               variant="outline" 
               size="icon" 
-              onClick={() => adjustMortgage(5000)}
+              onClick={() => adjustMortgage(20000)}
               disabled={mortgageBalance >= homeValue * 0.95}
               className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
             >
