@@ -414,37 +414,30 @@ export function WizardStep1({
                 </>
               )}
             </div>
-            {validation.errors.length > 0 && (
-              <ul className="space-y-1 ml-7">
-                {validation.errors.map((error, i) => (
-                  <li key={i} className="text-sm text-destructive">{error}</li>
-                ))}
-              </ul>
-            )}
-            {validation.isValid && (
-              <ul className="space-y-1.5 ml-7 mt-2">
-                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
-                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                  <span>Eligible State: <span className="font-semibold">{getStateName(state)}</span></span>
-                </li>
-                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
-                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                  <span>Eligible Property Type: <span className="font-semibold">{propertyType}</span></span>
-                </li>
-                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
-                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                  <span>Ownership Type: <span className="font-semibold">{ownershipType}</span></span>
-                </li>
-                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
-                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                  <span>Home Value: <span className="font-semibold">{formatCurrency(homeValue)}</span></span>
-                </li>
-                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
-                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                  <span>CLTV: <span className="font-semibold">{currentCLTV.toFixed(1)}%</span> (under 80% max)</span>
-                </li>
-              </ul>
-            )}
+            
+            {/* Always show all 5 criteria with pass/fail status */}
+            <ul className="space-y-1.5 ml-7 mt-2">
+              <li className={`flex items-center gap-2 text-sm ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                {isStateEligible(state) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                <span>Eligible State: <span className="font-semibold">{getStateName(state)}</span></span>
+              </li>
+              <li className={`flex items-center gap-2 text-sm ${isPropertyTypeEligible(propertyType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                {isPropertyTypeEligible(propertyType) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                <span>Eligible Property Type: <span className="font-semibold">{propertyType}</span></span>
+              </li>
+              <li className={`flex items-center gap-2 text-sm ${isOwnershipTypeEligible(ownershipType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                {isOwnershipTypeEligible(ownershipType) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                <span>Ownership Type: <span className="font-semibold">{ownershipType}</span></span>
+              </li>
+              <li className={`flex items-center gap-2 text-sm ${homeValue >= 175000 && homeValue <= 3000000 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                {homeValue >= 175000 && homeValue <= 3000000 ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                <span>Home Value: <span className="font-semibold">{formatCurrency(homeValue)}</span></span>
+              </li>
+              <li className={`flex items-center gap-2 text-sm ${isCLTVEligible ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                {isCLTVEligible ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                <span>CLTV: <span className="font-semibold">{currentCLTV.toFixed(1)}%</span> {isCLTVEligible ? '(under 80% max)' : '(exceeds 80% max)'}</span>
+              </li>
+            </ul>
           </div>
         ) : (
           <div className="p-4 rounded-xl border border-border bg-secondary">
