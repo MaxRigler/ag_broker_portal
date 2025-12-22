@@ -3,7 +3,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ArrowLeft } from 'lucide-react';
 import { WizardStep1 } from './WizardStep1';
-import { WizardStep2 } from './WizardStep2';
 import { WizardStep3 } from './WizardStep3';
 import logo from '@/assets/logo.png';
 
@@ -12,7 +11,7 @@ interface UnderwritingWizardProps {
   onBack: () => void;
 }
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2;
 
 interface WizardData {
   homeValue: number;
@@ -23,22 +22,16 @@ interface WizardData {
 
 const steps = [
   { id: 1, title: 'Property Validation' },
-  { id: 2, title: 'Debt & CLTV Analysis' },
-  { id: 3, title: 'Payoff Estimator' },
+  { id: 2, title: 'Payoff Estimator' },
 ];
 
 export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps) {
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
 
-  const handleStep1Complete = (data: { homeValue: number; state: string }) => {
+  const handleStep1Complete = (data: { homeValue: number; state: string; mortgageBalance: number; maxInvestment: number }) => {
     setWizardData({ ...wizardData, ...data });
     setCurrentStep(2);
-  };
-
-  const handleStep2Complete = (data: { mortgageBalance: number; maxInvestment: number }) => {
-    setWizardData({ ...wizardData, ...data });
-    setCurrentStep(3);
   };
 
   const handleReset = () => {
@@ -72,7 +65,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
             <Button 
               variant="ghost" 
               size="icon"
-              onClick={currentStep === 1 ? onBack : () => setCurrentStep((currentStep - 1) as Step)}
+              onClick={currentStep === 1 ? onBack : () => setCurrentStep(1)}
               className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground"
             >
               <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
@@ -134,18 +127,11 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
                 onBack={onBack}
               />
             )}
-            {currentStep === 2 && wizardData.homeValue && (
-              <WizardStep2
-                homeValue={wizardData.homeValue}
-                onComplete={handleStep2Complete}
-                onBack={() => setCurrentStep(1)}
-              />
-            )}
-            {currentStep === 3 && wizardData.homeValue && wizardData.maxInvestment && (
+            {currentStep === 2 && wizardData.homeValue && wizardData.maxInvestment && (
               <WizardStep3
                 homeValue={wizardData.homeValue}
                 maxInvestment={wizardData.maxInvestment}
-                onBack={() => setCurrentStep(2)}
+                onBack={() => setCurrentStep(1)}
                 onReset={handleReset}
               />
             )}
