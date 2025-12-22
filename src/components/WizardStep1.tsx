@@ -405,9 +405,28 @@ export function WizardStep1({
               </ul>
             )}
             {validation.isValid && (
-              <p className="text-sm text-[hsl(var(--success))] ml-7">
-                Estimated Home Value: <span className="font-semibold">{formatCurrency(homeValue)}</span>
-              </p>
+              <ul className="space-y-1.5 ml-7 mt-2">
+                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  <span>Eligible State: <span className="font-semibold">{getStateName(state)}</span></span>
+                </li>
+                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  <span>Eligible Property Type: <span className="font-semibold">{propertyType}</span></span>
+                </li>
+                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  <span>Ownership Type: <span className="font-semibold">{ownershipType}</span></span>
+                </li>
+                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  <span>Home Value: <span className="font-semibold">{formatCurrency(homeValue)}</span></span>
+                </li>
+                <li className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  <span>CLTV: <span className="font-semibold">{currentCLTV.toFixed(1)}%</span> (under 80% max)</span>
+                </li>
+              </ul>
             )}
           </div>
         ) : (
