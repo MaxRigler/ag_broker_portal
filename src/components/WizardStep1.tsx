@@ -52,6 +52,16 @@ const isPropertyTypeEligible = (type: string) => !INELIGIBLE_PROPERTY_TYPES.incl
 const isOwnershipTypeEligible = (type: string) => !INELIGIBLE_OWNERSHIP_TYPES.includes(type);
 const getStateName = (abbr: string) => ALL_STATES.find(s => s.abbr === abbr)?.name || abbr;
 
+// CLTV color helper: green < 75%, yellow 75-79.9%, red >= 80%
+const getCLTVColorClass = (cltv: number, type: 'text' | 'badge') => {
+  if (cltv >= 80) {
+    return type === 'text' ? 'text-destructive' : 'bg-destructive text-destructive-foreground border-destructive';
+  } else if (cltv >= 75) {
+    return type === 'text' ? 'text-[hsl(var(--warning))]' : 'bg-[hsl(var(--warning))] text-[hsl(var(--warning-foreground))] border-[hsl(var(--warning))]';
+  }
+  return type === 'text' ? 'text-[hsl(var(--success))]' : 'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] border-[hsl(var(--success))]';
+};
+
 export function WizardStep1({
   address,
   onComplete,
@@ -459,7 +469,7 @@ export function WizardStep1({
                   <Percent className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">Loan-to-Value</p>
-                    <p className={`text-xl font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
+                    <p className={`text-xl font-bold ${getCLTVColorClass(currentCLTV, 'text')}`}>
                       {currentCLTV.toFixed(1)}%
                     </p>
                   </div>
@@ -656,7 +666,7 @@ export function WizardStep1({
                   <Percent className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-xs text-muted-foreground font-medium">LTV</p>
-                    <p className={`text-sm font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
+                    <p className={`text-sm font-bold ${getCLTVColorClass(currentCLTV, 'text')}`}>
                       {currentCLTV.toFixed(1)}%
                     </p>
                   </div>
@@ -789,7 +799,7 @@ export function WizardStep1({
                         >
                           <Badge 
                             variant="outline" 
-                            className={`text-sm font-bold px-2 py-0.5 ${currentCLTV > 80 ? 'bg-destructive text-destructive-foreground border-destructive' : 'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] border-[hsl(var(--success))]'}`}
+                            className={`text-sm font-bold px-2 py-0.5 ${getCLTVColorClass(currentCLTV, 'badge')}`}
                           >
                             {currentCLTV.toFixed(1)}%
                           </Badge>
@@ -861,7 +871,7 @@ export function WizardStep1({
                     >
                       <Badge 
                         variant="outline" 
-                        className={`text-sm font-bold px-2 py-0.5 ${currentCLTV > 80 ? 'bg-destructive text-destructive-foreground border-destructive' : 'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] border-[hsl(var(--success))]'}`}
+                        className={`text-sm font-bold px-2 py-0.5 ${getCLTVColorClass(currentCLTV, 'badge')}`}
                       >
                         {currentCLTV.toFixed(1)}%
                       </Badge>
