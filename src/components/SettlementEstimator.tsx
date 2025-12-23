@@ -52,34 +52,72 @@ export function SettlementEstimator({
         
         {/* Calculator Content */}
         <div className="space-y-6 p-6">
-          {/* Formula Row */}
-          <div className="flex flex-wrap items-center justify-center gap-2 text-center">
-            <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
-              <p className="text-xs text-muted-foreground mb-1">Ending Home Value</p>
-              <p className="text-lg font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
-              <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                Your home's projected value at settlement. Calculated using today's value plus annual appreciation.
-              </p>
+          {/* Formula Row - Mobile: 2 cards side by side + 1 below | Desktop: all inline */}
+          <div className="space-y-3 md:space-y-0">
+            {/* Mobile Layout */}
+            <div className="md:hidden space-y-3">
+              {/* Top row: Ending Home Value × Equity Share % = */}
+              <div className="flex items-stretch gap-2">
+                <div className="flex-1 p-3 bg-background rounded-lg border border-border">
+                  <p className="text-xs text-muted-foreground mb-1">Ending Home Value</p>
+                  <p className="text-base font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
+                  <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                    Your home's projected value at settlement.
+                  </p>
+                </div>
+                
+                <span className="flex items-center text-sm font-medium text-muted-foreground">×</span>
+                
+                <div className="flex-1 p-3 bg-background rounded-lg border border-border">
+                  <p className="text-xs text-muted-foreground mb-1">Equity Share %</p>
+                  <p className="text-base font-bold text-foreground">{equitySharePercent}%</p>
+                  <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                    2× your funding ÷ home value.
+                  </p>
+                </div>
+                
+                <span className="flex items-center text-sm font-medium text-muted-foreground">=</span>
+              </div>
+              
+              {/* Bottom row: Total Cost of Capital */}
+              <div className="p-4 bg-background rounded-lg border border-border text-center">
+                <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
+                <p className="text-xl font-bold text-[hsl(var(--success))]">{formatCurrency(calculation.totalCost)}</p>
+                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                  The total amount you'll pay to settle.
+                </p>
+              </div>
             </div>
-            
-            <span className="text-lg font-medium text-muted-foreground">×</span>
-            
-            <div className="flex-1 min-w-[140px] max-w-[180px] p-4 bg-background rounded-lg border border-border">
-              <p className="text-xs text-muted-foreground mb-1">Equity Share %</p>
-              <p className="text-lg font-bold text-foreground">{equitySharePercent}%</p>
-              <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                The percentage of your home's value we receive at settlement. This equals 2× your funding amount divided by home value.
-              </p>
-            </div>
-            
-            <span className="text-lg font-medium text-muted-foreground">=</span>
-            
-            <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
-              <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
-              <p className="text-lg font-bold text-[hsl(var(--success))]">{formatCurrency(calculation.totalCost)}</p>
-              <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                The total amount you'll pay to settle. This is the equity share percentage of your ending home value.
-              </p>
+
+            {/* Desktop Layout */}
+            <div className="hidden md:flex flex-wrap items-center justify-center gap-2 text-center">
+              <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
+                <p className="text-xs text-muted-foreground mb-1">Ending Home Value</p>
+                <p className="text-lg font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
+                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                  Your home's projected value at settlement. Calculated using today's value plus annual appreciation.
+                </p>
+              </div>
+              
+              <span className="text-lg font-medium text-muted-foreground">×</span>
+              
+              <div className="flex-1 min-w-[140px] max-w-[180px] p-4 bg-background rounded-lg border border-border">
+                <p className="text-xs text-muted-foreground mb-1">Equity Share %</p>
+                <p className="text-lg font-bold text-foreground">{equitySharePercent}%</p>
+                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                  The percentage of your home's value we receive at settlement. This equals 2× your funding amount divided by home value.
+                </p>
+              </div>
+              
+              <span className="text-lg font-medium text-muted-foreground">=</span>
+              
+              <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
+                <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
+                <p className="text-lg font-bold text-[hsl(var(--success))]">{formatCurrency(calculation.totalCost)}</p>
+                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                  The total amount you'll pay to settle. This is the equity share percentage of your ending home value.
+                </p>
+              </div>
             </div>
           </div>
 
