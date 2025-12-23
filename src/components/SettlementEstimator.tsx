@@ -95,7 +95,7 @@ export function SettlementEstimator({
                 <p className="text-xs text-muted-foreground mb-1">Ending Home Value</p>
                 <p className="text-lg font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  Your home's projected value at settlement. Calculated using today's value plus annual appreciation.
+                  Your home's projected value at settlement.
                 </p>
               </div>
               
@@ -105,7 +105,7 @@ export function SettlementEstimator({
                 <p className="text-xs text-muted-foreground mb-1">Equity Share %</p>
                 <p className="text-lg font-bold text-foreground">{equitySharePercent}%</p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  The percentage of your home's value we receive at settlement. This equals 2× your funding amount divided by home value.
+                  2× your funding ÷ home value.
                 </p>
               </div>
               
@@ -115,7 +115,7 @@ export function SettlementEstimator({
                 <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
                 <p className="text-lg font-bold text-[hsl(var(--success))]">{formatCurrency(calculation.totalCost)}</p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  The total amount you'll pay to settle. This is the equity share percentage of your ending home value.
+                  The total amount you'll pay to settle.
                 </p>
               </div>
             </div>
