@@ -50,7 +50,7 @@ export function SettlementEstimator({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] overflow-auto p-0">
+      <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] overflow-auto p-0" hideCloseButton>
         {/* Header Bar with Title */}
         <DialogHeader className="p-4 border-b border-border">
           <div className="flex items-center justify-between gap-3">
