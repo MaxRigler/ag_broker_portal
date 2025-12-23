@@ -71,7 +71,7 @@ export function WizardStep1({
   const [mortgageBalance, setMortgageBalance] = useState(0);
   
   // Progressive disclosure state
-  const [propertyValidated, setPropertyValidated] = useState(false);
+  // propertyValidated state removed - qualification shows immediately
   const [propertyDetailsConfirmed, setPropertyDetailsConfirmed] = useState(false);
   const [mortgageDetailsConfirmed, setMortgageDetailsConfirmed] = useState(false);
   
@@ -261,7 +261,7 @@ export function WizardStep1({
   return <div className="space-y-4">
       {/* Section Header */}
       <h2 className="text-lg md:text-xl font-bold text-foreground">
-        {propertyDetailsConfirmed ? 'Property Details' : (propertyValidated ? 'Confirm Property Details' : 'Validate Property Details')}
+        {propertyDetailsConfirmed ? 'Property Details' : 'Confirm Property Details'}
       </h2>
 
       {/* API Error Alert */}
@@ -677,8 +677,8 @@ export function WizardStep1({
       </div>
 
 
-      {/* Property Qualification Screen - Show after validating property details, before confirming */}
-      {propertyValidated && !propertyDetailsConfirmed && validation && (
+      {/* Property Qualification Screen - Show immediately before confirming property details */}
+      {!propertyDetailsConfirmed && validation && (
         <div className={`p-4 rounded-xl border animate-fade-in ${validation.isValid ? 'bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30' : 'bg-destructive/10 border-destructive/30'}`}>
           <div className="flex items-center gap-2 mb-3">
             {validation.isValid ? (
@@ -1176,27 +1176,23 @@ export function WizardStep1({
               New Qualification
             </Button>
           </>
-        ) : !propertyValidated ? (
+        ) : !propertyDetailsConfirmed ? (
           <>
             <Button variant="outline" onClick={onBack} className="flex-1">
               Back
             </Button>
-            <Button variant="success" onClick={() => setPropertyValidated(true)} className="flex-1">
-              Validate Property Details
-            </Button>
-          </>
-        ) : !propertyDetailsConfirmed ? (
-          <>
-            <Button variant="outline" onClick={() => setPropertyValidated(false)} className="flex-1">
-              Back
-            </Button>
-            <Button variant="success" onClick={() => setPropertyDetailsConfirmed(true)} className="flex-1">
+            <Button 
+              variant="success" 
+              onClick={() => setPropertyDetailsConfirmed(true)} 
+              className="flex-1"
+              disabled={!validation?.isValid}
+            >
               Confirm Property Details
             </Button>
           </>
         ) : !mortgageDetailsConfirmed ? (
           <>
-            <Button variant="outline" onClick={() => { setPropertyDetailsConfirmed(false); setPropertyValidated(false); }} className="flex-1">
+            <Button variant="outline" onClick={() => setPropertyDetailsConfirmed(false)} className="flex-1">
               Back
             </Button>
             <Button variant="success" onClick={() => setMortgageDetailsConfirmed(true)} className="flex-1">
