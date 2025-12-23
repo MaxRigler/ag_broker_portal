@@ -80,7 +80,7 @@ export function WizardStep2({
           </div>
           
           {/* Description */}
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Your client's {getStateName(state)} property may be approved for an Equity Advance of up to {formatCurrency(maxInvestment)} with no monthly payments for up to 10 years.
           </p>
         </div>
