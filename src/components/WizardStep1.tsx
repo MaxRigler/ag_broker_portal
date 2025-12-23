@@ -343,33 +343,33 @@ export function WizardStep1({
           {/* Bottom Row: State, Property Type, Ownership Type */}
           <div className="grid grid-cols-3 gap-4">
             {/* State */}
-            <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-              <div>
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-5 h-5 text-accent" />
                 <p className="text-sm text-muted-foreground font-medium">State</p>
-                {propertyDetailsConfirmed ? (
-                  <p className={`text-sm font-medium ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                    {getStateName(state)}
-                  </p>
-                ) : (
-                  <Select value={state} onValueChange={setState}>
-                    <SelectTrigger className={`bg-background text-sm h-10 w-40 ${state ? (isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
-                      <SelectValue placeholder="Select">{state ? state : 'Select'}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
-                      {ALL_STATES.map(s => (
-                        <SelectItem 
-                          key={s.abbr} 
-                          value={s.abbr}
-                          className={isStateEligible(s.abbr) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
-                        >
-                          {s.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
               </div>
+              {propertyDetailsConfirmed ? (
+                <p className={`text-sm font-medium ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  {getStateName(state)}
+                </p>
+              ) : (
+                <Select value={state} onValueChange={setState}>
+                  <SelectTrigger className={`bg-background text-sm h-10 w-40 ${state ? (isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
+                    <SelectValue placeholder="Select">{state ? state : 'Select'}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {ALL_STATES.map(s => (
+                      <SelectItem 
+                        key={s.abbr} 
+                        value={s.abbr}
+                        className={isStateEligible(s.abbr) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                      >
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             {/* Property Type */}
