@@ -255,7 +255,7 @@ export function WizardStep1({
   return <div className="space-y-4">
       {/* Section Header */}
       <h2 className="text-lg md:text-xl font-bold text-foreground">
-        {propertyDetailsConfirmed ? 'Property Details' : '1. Confirm Property Details'}
+        {propertyDetailsConfirmed ? 'Property Details' : 'Confirm Property Details'}
       </h2>
 
       {/* API Error Alert */}
@@ -596,7 +596,7 @@ export function WizardStep1({
         <div className="space-y-4 animate-fade-in">
           {/* Section Header for Mortgage */}
           <h2 className="text-lg md:text-xl font-bold text-foreground pt-2">
-            {mortgageDetailsConfirmed ? 'Mortgage Details' : '2. Confirm Mortgage Details'}
+            {mortgageDetailsConfirmed ? 'Mortgage Details' : 'Confirm Mortgage Details'}
           </h2>
 
           {mortgageDetailsConfirmed ? (
