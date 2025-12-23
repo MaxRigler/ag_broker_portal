@@ -18,6 +18,9 @@ interface WizardStep1Props {
     state: string;
     mortgageBalance: number;
     maxInvestment: number;
+    propertyType: string;
+    ownershipType: string;
+    currentCLTV: number;
   }) => void;
   onBack: () => void;
 }
@@ -1158,33 +1161,27 @@ export function WizardStep1({
               Confirm Property Details
             </Button>
           </>
-        ) : !mortgageDetailsConfirmed ? (
+        ) : (
           <>
             <Button variant="outline" onClick={() => setPropertyDetailsConfirmed(false)} className="flex-1">
               Back
             </Button>
-            <Button variant="success" onClick={() => setMortgageDetailsConfirmed(true)} className="flex-1">
+            <Button 
+              variant="success" 
+              onClick={() => onComplete({
+                homeValue,
+                state,
+                mortgageBalance,
+                maxInvestment,
+                propertyType,
+                ownershipType,
+                currentCLTV
+              })} 
+              className="flex-1"
+              disabled={!validation?.isValid || !isCLTVEligible}
+            >
               Confirm Mortgage Details
             </Button>
-          </>
-        ) : (
-          <>
-            <Button variant="outline" onClick={() => setMortgageDetailsConfirmed(false)} className="flex-1">
-              Back
-            </Button>
-            {!validation ? (
-              <Button variant="blue" onClick={handleValidate} className="flex-1">
-                Validate Property
-              </Button>
-            ) : isFullyEligible ? (
-              <Button variant="success" onClick={handleShowCalculator} className="flex-1">
-                Calculate Cost of Funds
-              </Button>
-            ) : (
-              <Button variant="blue" onClick={handleValidate} className="flex-1">
-                Re-validate
-              </Button>
-            )}
           </>
         )}
       </div>
