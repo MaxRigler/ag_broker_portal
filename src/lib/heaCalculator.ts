@@ -72,21 +72,35 @@ export function calculateHEACost(
   };
 }
 
+// Maximum Unlock Percentage (the future share Unlock can take)
+export const MAX_UNLOCK_PERCENTAGE = 0.499; // 49.9%
+
+// Standard Exchange Rate (multiplier)
+export const EXCHANGE_RATE = 2.0;
+
 /**
- * Calculate maximum investment based on CLTV
+ * Calculate maximum investment based on CLTV and Unlock Percentage constraints
+ * 
+ * The maximum is constrained by:
+ * 1. Unlock Percentage Cap: Maximum Unlock % (49.9%) ÷ Exchange Rate (2.0) = 24.95% of home value
+ * 2. CLTV Cap: (Home Value × 80%) - Mortgage Balance
+ * 3. Absolute Dollar Max: $500,000
  */
 export function calculateMaxInvestment(
   homeValue: number,
   mortgageBalance: number,
   maxCLTV: number = 0.8,
-  maxPercentOfValue: number = 0.3,
+  maxUnlockPercentage: number = MAX_UNLOCK_PERCENTAGE,
+  exchangeRate: number = EXCHANGE_RATE,
   absoluteMax: number = 500000
 ): number {
   // Max based on CLTV
   const cltvMax = (homeValue * maxCLTV) - mortgageBalance;
   
-  // Max based on percentage of home value (30%)
-  const percentMax = homeValue * maxPercentOfValue;
+  // Max based on Unlock Percentage constraint
+  // Investment % = Unlock % ÷ Exchange Rate = 49.9% ÷ 2.0 = 24.95%
+  const maxInvestmentPercentage = maxUnlockPercentage / exchangeRate;
+  const percentMax = homeValue * maxInvestmentPercentage;
   
   // Return the minimum of all caps
   return Math.max(0, Math.min(cltvMax, percentMax, absoluteMax));
