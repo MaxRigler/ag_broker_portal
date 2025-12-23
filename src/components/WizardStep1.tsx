@@ -779,16 +779,18 @@ export function WizardStep1({
                     </div>
                   </div>
                   
-                  {/* CLTV Slider - directly below */}
-                  <div className="pt-4">
-                    <CLTVSlider value={currentCLTV} onChange={handleCLTVSliderChange} />
-                    <div className="flex justify-between text-[10px] text-muted-foreground mt-2">
-                      <span>0%</span>
-                      <span>100%</span>
+                  {/* CLTV Slider - directly below, constrained width */}
+                  <div className="pt-4 flex justify-center">
+                    <div className="w-full max-w-xs">
+                      <CLTVSlider value={currentCLTV} onChange={handleCLTVSliderChange} />
+                      <div className="flex justify-between text-[10px] text-muted-foreground mt-2">
+                        <span>0%</span>
+                        <span>100%</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground text-center mt-2 pt-2 border-t border-border">
+                        Combined Loan-to-Value (CLTV)
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground text-center mt-2 pt-2 border-t border-border">
-                      Combined Loan-to-Value (CLTV)
-                    </p>
                   </div>
                 </div>
               </div>
