@@ -410,22 +410,26 @@ export function WizardStep1({
           {/* Top Row: Value, Address, Owner */}
           <div className="grid grid-cols-3 gap-4">
             {/* Estimated Property Value - Left */}
-            <div className="flex items-start gap-3">
-              <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-              <div>
+            <div className="flex flex-col">
+              <div className="flex items-start gap-3">
+                <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
-                {propertyDetailsConfirmed ? <p className="text-xl font-bold text-foreground">{formatCurrency(homeValue)}</p> : <div className="flex items-center gap-2 mt-1">
-                    <Button variant="outline" size="icon" onClick={decrementValue} disabled={homeValue <= 175000} className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <div className="animate-breathe">
-                      <Input type="text" value={formatCurrency(homeValue)} onChange={handleHomeValueInputChange} className="text-lg font-bold bg-background h-10 w-32 text-center" />
-                    </div>
-                    <Button variant="outline" size="icon" onClick={incrementValue} disabled={homeValue >= 3000000} className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>}
               </div>
+              {propertyDetailsConfirmed ? (
+                <p className="text-xl font-bold text-foreground ml-8">{formatCurrency(homeValue)}</p>
+              ) : (
+                <div className="flex items-center gap-2 mt-1">
+                  <Button variant="outline" size="icon" onClick={decrementValue} disabled={homeValue <= 175000} className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <div className="animate-breathe">
+                    <Input type="text" value={formatCurrency(homeValue)} onChange={handleHomeValueInputChange} className="text-lg font-bold bg-background h-10 w-32 text-center" />
+                  </div>
+                  <Button variant="outline" size="icon" onClick={incrementValue} disabled={homeValue >= 3000000} className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
             </div>
             
             {/* Property Address - Middle */}
@@ -555,22 +559,26 @@ export function WizardStep1({
         {/* Mobile Layout */}
         <div className="md:hidden space-y-4">
           {/* Estimated Property Value - FIRST */}
-          <div className="flex items-start gap-2">
-            <Home className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-            <div>
+          <div className="flex flex-col">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Home className="w-4 h-4 text-accent flex-shrink-0" />
               <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
-              {propertyDetailsConfirmed ? <p className="text-lg font-bold text-foreground">{formatCurrency(homeValue)}</p> : <div className="flex items-center gap-2 mt-1">
-                  <Button variant="outline" size="icon" onClick={decrementValue} disabled={homeValue <= 175000} className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <div className="animate-breathe">
-                    <Input type="text" value={formatCurrency(homeValue)} onChange={handleHomeValueInputChange} className="text-lg font-bold bg-background h-10 w-32 text-center" />
-                  </div>
-                  <Button variant="outline" size="icon" onClick={incrementValue} disabled={homeValue >= 3000000} className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>}
             </div>
+            {propertyDetailsConfirmed ? (
+              <p className="text-lg font-bold text-foreground text-center">{formatCurrency(homeValue)}</p>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <Button variant="outline" size="icon" onClick={decrementValue} disabled={homeValue <= 175000} className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <div className="animate-breathe">
+                  <Input type="text" value={formatCurrency(homeValue)} onChange={handleHomeValueInputChange} className="text-xl font-bold bg-background h-12 w-36 text-center" />
+                </div>
+                <Button variant="outline" size="icon" onClick={incrementValue} disabled={homeValue >= 3000000} className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Address & Owner - SECOND */}
@@ -595,16 +603,16 @@ export function WizardStep1({
           <div className="border-t border-border/50"></div>
 
           {/* State, Property Type, Ownership Type - THIRD */}
-          <div className="grid grid-cols-3 gap-2">
-            {/* State */}
-            <div className="flex items-start gap-2">
+          <div className="flex gap-2">
+            {/* State - fixed narrow width */}
+            <div className="flex items-start gap-1 w-[70px]">
               <MapPin className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
+              <div className="flex-1">
                 <p className="text-xs text-muted-foreground font-medium">State</p>
                 {propertyDetailsConfirmed ? <p className="text-xs font-medium text-foreground">
                     {getStateName(state)}
                   </p> : <Select value={state} onValueChange={setState}>
-                    <SelectTrigger className={`bg-background text-xs h-9 ${state ? isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
+                    <SelectTrigger className={`bg-background text-xs h-9 w-full ${state ? isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
                       <SelectValue placeholder="Select">{state ? state : 'Select'}</SelectValue>
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
@@ -616,15 +624,15 @@ export function WizardStep1({
               </div>
             </div>
 
-            {/* Property Type */}
-            <div className="flex items-start gap-2">
+            {/* Property Type - flex to share remaining space */}
+            <div className="flex items-start gap-1 flex-1">
               <Building className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
+              <div className="flex-1">
                 <p className="text-xs text-muted-foreground font-medium">Property</p>
                 {propertyDetailsConfirmed ? <p className="text-xs font-medium text-foreground">
                     {propertyType}
                   </p> : <Select value={propertyType} onValueChange={setPropertyType}>
-                    <SelectTrigger className={`bg-background text-xs h-9 ${propertyType ? isPropertyTypeEligible(propertyType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
+                    <SelectTrigger className={`bg-background text-xs h-9 w-full ${propertyType ? isPropertyTypeEligible(propertyType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
@@ -636,15 +644,15 @@ export function WizardStep1({
               </div>
             </div>
 
-            {/* Ownership Type */}
-            <div className="flex items-start gap-2">
+            {/* Ownership Type - flex to share remaining space */}
+            <div className="flex items-start gap-1 flex-1">
               <User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
+              <div className="flex-1">
                 <p className="text-xs text-muted-foreground font-medium">Ownership</p>
                 {propertyDetailsConfirmed ? <p className="text-xs font-medium text-foreground">
                     {ownershipType}
                   </p> : <Select value={ownershipType} onValueChange={setOwnershipType}>
-                    <SelectTrigger className={`bg-background text-xs h-9 ${ownershipType ? isOwnershipTypeEligible(ownershipType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
+                    <SelectTrigger className={`bg-background text-xs h-9 w-full ${ownershipType ? isOwnershipTypeEligible(ownershipType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
