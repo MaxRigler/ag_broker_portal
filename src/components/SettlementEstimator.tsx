@@ -81,16 +81,15 @@ export function SettlementEstimator({
             {/* Desktop Help Button - Rectangular */}
             <button
               onClick={() => setShowHelp(true)}
-              className="hidden md:flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium animate-help-bounce hover:bg-accent/90 transition-colors"
+              className="hidden md:flex items-center px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
             >
-              <span>(?) </span>
-              <span>How It Works</span>
+              How It Works
             </button>
             
             {/* Mobile Help Button - Circular Icon */}
             <button
               onClick={() => setShowHelp(true)}
-              className="md:hidden w-8 h-8 flex items-center justify-center bg-accent text-white rounded-full text-sm font-bold animate-help-bounce hover:bg-accent/90 transition-colors"
+              className="md:hidden w-8 h-8 flex items-center justify-center bg-accent text-white rounded-full text-sm font-bold hover:bg-accent/90 transition-colors"
               aria-label="How It Works"
             >
               ?
