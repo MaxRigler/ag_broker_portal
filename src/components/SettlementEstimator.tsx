@@ -56,42 +56,49 @@ export function SettlementEstimator({
           {/* Formula Row - Mobile: 2 cards side by side + 1 below | Desktop: all inline */}
           <div className="space-y-3 md:space-y-0">
             {/* Mobile Layout */}
-            <div className="md:hidden space-y-3">
-              {/* Top row: Ending Home Value × Equity Share % = */}
-              <div className="flex items-stretch gap-2">
-                <div className="flex-1 p-3 bg-background rounded-lg border border-border h-[100px] flex flex-col justify-center text-left">
-                  <p className="text-xs text-muted-foreground mb-0.5">Ending Value</p>
-                  <p className="text-base font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
-                  <p className="text-[9px] text-muted-foreground leading-tight">
+            <div className="md:hidden">
+              <div className="grid grid-cols-[1fr_24px_1fr] gap-y-2 gap-x-0 items-center">
+                {/* Row 1, Col 1: Ending Value */}
+                <div className="h-[100px] p-3 bg-background rounded-lg border border-border relative">
+                  <p className="text-xs text-muted-foreground absolute top-3 left-3">Ending Value</p>
+                  <p className="text-base font-bold text-foreground absolute top-[30px] left-3">{formatCurrency(calculation.endingHomeValue)}</p>
+                  <p className="text-[9px] text-muted-foreground absolute bottom-3 left-3 right-3 leading-tight">
                     Projected Home Value<br />at Settlement
                   </p>
                 </div>
                 
-                <span className="flex items-center text-sm font-medium text-muted-foreground">×</span>
+                {/* Row 1, Col 2: × operator */}
+                <div className="flex justify-center items-center h-[100px]">
+                  <span className="text-sm font-medium text-muted-foreground">×</span>
+                </div>
                 
-                <div className="flex-1 p-3 bg-background rounded-lg border border-border h-[100px] flex flex-col justify-center text-left">
-                  <p className="text-xs text-muted-foreground mb-0.5">Equity Share</p>
-                  <p className="text-base font-bold text-foreground">{equitySharePercent}%</p>
-                  <p className="text-[9px] text-muted-foreground leading-tight">
+                {/* Row 1, Col 3: Equity Share */}
+                <div className="h-[100px] p-3 bg-background rounded-lg border border-border relative">
+                  <p className="text-xs text-muted-foreground absolute top-3 left-3">Equity Share</p>
+                  <p className="text-base font-bold text-foreground absolute top-[30px] left-3">{equitySharePercent}%</p>
+                  <p className="text-[9px] text-muted-foreground absolute bottom-3 left-3 right-3 leading-tight">
                     2X Funding ÷ Starting<br />Home Value
                   </p>
                 </div>
                 
-                <span className="flex items-center text-sm font-medium text-muted-foreground">=</span>
-              </div>
-              
-              {/* Bottom row: Cost of Capital @ Annualized Cost */}
-              <div className="flex items-stretch gap-2">
+                {/* Row 2: Centered = sign */}
+                <div></div>
+                <div className="flex justify-center py-1">
+                  <span className="text-sm font-medium text-muted-foreground">=</span>
+                </div>
+                <div></div>
+                
+                {/* Row 3, Col 1: Cost of Capital */}
                 <div className={cn(
-                  "flex-1 p-3 bg-background rounded-lg border transition-all duration-300 h-[100px] flex flex-col justify-center text-left",
+                  "h-[100px] p-3 bg-background rounded-lg border relative transition-all duration-300",
                   calculation.isCapActive 
                     ? "border-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/30" 
                     : "border-border"
                 )}>
-                  <p className="text-xs text-muted-foreground mb-0.5">Cost of Capital</p>
-                  <p className="text-base font-bold text-foreground">{formatCurrency(calculation.totalCostOfCapital)}</p>
+                  <p className="text-xs text-muted-foreground absolute top-3 left-3">Cost of Capital</p>
+                  <p className="text-base font-bold text-foreground absolute top-[30px] left-3">{formatCurrency(calculation.totalCostOfCapital)}</p>
                   {calculation.isCapActive ? (
-                    <div className="space-y-0 animate-savings-slide">
+                    <div className="absolute bottom-3 left-3 right-3 space-y-0 animate-savings-slide">
                       <p className="text-[9px] text-muted-foreground line-through decoration-destructive decoration-1">
                         Without cap: {formatCurrency(calculation.rawTotalCostOfCapital)}
                       </p>
@@ -100,16 +107,20 @@ export function SettlementEstimator({
                       </p>
                     </div>
                   ) : (
-                    <p className="text-[9px] text-muted-foreground leading-tight">
+                    <p className="text-[9px] text-muted-foreground absolute bottom-3 left-3 right-3 leading-tight">
                       Settlement Amount -<br />Initial Funding
                     </p>
                   )}
                 </div>
                 
-                <span className="flex items-center text-sm font-medium text-muted-foreground">@</span>
+                {/* Row 3, Col 2: @ operator - aligned with × above */}
+                <div className="flex justify-center items-center h-[100px]">
+                  <span className="text-sm font-medium text-muted-foreground">@</span>
+                </div>
                 
+                {/* Row 3, Col 3: Annualized Cost */}
                 <div className={cn(
-                  "flex-1 p-3 bg-background rounded-lg border relative transition-all duration-300 h-[100px] flex flex-col justify-center text-left",
+                  "h-[100px] p-3 bg-background rounded-lg border relative transition-all duration-300",
                   calculation.isCapActive 
                     ? "border-[hsl(var(--success))] ring-2 ring-[hsl(var(--success))]/30 animate-pulse-glow" 
                     : "border-border"
@@ -123,16 +134,16 @@ export function SettlementEstimator({
                       </div>
                     </div>
                   )}
-                  <p className="text-xs text-muted-foreground mb-0.5">Annualized Cost</p>
+                  <p className="text-xs text-muted-foreground absolute top-3 left-3">Annualized Cost</p>
                   <p className={cn(
-                    "text-base font-bold transition-all duration-300",
+                    "text-base font-bold absolute top-[30px] left-3 transition-all duration-300",
                     calculation.isCapActive 
                       ? "text-[hsl(var(--success))] scale-105" 
                       : "text-[hsl(var(--success))]"
                   )}>
                     {formatPercentage(calculation.annualizedCost, 1)}
                   </p>
-                  <p className="text-[9px] text-muted-foreground leading-tight">
+                  <p className="text-[9px] text-muted-foreground absolute bottom-3 left-3 right-3 leading-tight">
                     {calculation.isCapActive ? "Protected by 19.9% cap" : "Capped at 19.9% limit"}
                   </p>
                 </div>
