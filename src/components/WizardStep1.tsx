@@ -679,6 +679,47 @@ export function WizardStep1({
       {/* Sections shown after confirming property details */}
       {propertyDetailsConfirmed && (
         <div className="space-y-4 animate-fade-in">
+          {/* Property Qualification Screen - Show after confirming property details, before confirming mortgage */}
+          {!mortgageDetailsConfirmed && validation && (
+            <div className={`p-4 rounded-xl border animate-fade-in ${validation.isValid ? 'bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30' : 'bg-destructive/10 border-destructive/30'}`}>
+              <div className="flex items-center gap-2 mb-3">
+                {validation.isValid ? (
+                  <>
+                    <CheckCircle2 className="w-5 h-5 text-[hsl(var(--success))]" />
+                    <span className="font-semibold text-[hsl(var(--success))]">Property Qualified!</span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-5 h-5 text-destructive" />
+                    <span className="font-semibold text-destructive">Property Does Not Qualify</span>
+                  </>
+                )}
+              </div>
+              <ul className="space-y-1.5 ml-7">
+                <li className={`flex items-center gap-2 text-sm ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  {isStateEligible(state) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                  <span>Eligible State: <span className="font-semibold">{getStateName(state)}</span></span>
+                </li>
+                <li className={`flex items-center gap-2 text-sm ${isPropertyTypeEligible(propertyType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  {isPropertyTypeEligible(propertyType) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                  <span>Eligible Property Type: <span className="font-semibold">{propertyType}</span></span>
+                </li>
+                <li className={`flex items-center gap-2 text-sm ${isOwnershipTypeEligible(ownershipType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  {isOwnershipTypeEligible(ownershipType) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                  <span>Ownership Type: <span className="font-semibold">{ownershipType}</span></span>
+                </li>
+                <li className={`flex items-center gap-2 text-sm ${homeValue >= 175000 && homeValue <= 3000000 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  {homeValue >= 175000 && homeValue <= 3000000 ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                  <span>Home Value: <span className="font-semibold">{formatCurrency(homeValue)}</span></span>
+                </li>
+                <li className={`flex items-center gap-2 text-sm ${currentCLTV <= 80 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  {currentCLTV <= 80 ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+                  <span>CLTV: <span className="font-semibold">{currentCLTV.toFixed(1)}%</span> (under 80% max)</span>
+                </li>
+              </ul>
+            </div>
+          )}
+
           {/* Section Header for Mortgage - only show when not confirmed */}
           {!mortgageDetailsConfirmed && (
             <h2 className="text-lg md:text-xl font-bold text-foreground pt-2">
@@ -835,65 +876,10 @@ export function WizardStep1({
             </>
           )}
 
-          {/* Combined Results - Property Qualified + Maximum Funding - Only show after mortgage confirmed, hide when calculator shown */}
+          {/* Maximum Potential Funding - Only show after mortgage confirmed, hide when calculator shown */}
           {mortgageDetailsConfirmed && !showPayoffCalculator && (
-          <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isHidingQualification ? 'animate-fade-out-up' : 'animate-slide-in-up'}`}>
-            {/* Property Validation Status */}
-            {validation ? (
-              <div className={`p-4 rounded-xl border ${validation.isValid ? 'bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30' : 'bg-destructive/10 border-destructive/30'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  {validation.isValid ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5 text-[hsl(var(--success))]" />
-                      <span className="font-semibold text-[hsl(var(--success))]">Property Qualified!</span>
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="w-5 h-5 text-destructive" />
-                      <span className="font-semibold text-destructive">Property Does Not Qualify</span>
-                    </>
-                  )}
-                </div>
-                
-                {/* Always show all 5 criteria with pass/fail status */}
-                <ul className="space-y-1.5 ml-7 mt-2">
-                  <li className={`flex items-center gap-2 text-sm ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                    {isStateEligible(state) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-                    <span>Eligible State: <span className="font-semibold">{getStateName(state)}</span></span>
-                  </li>
-                  <li className={`flex items-center gap-2 text-sm ${isPropertyTypeEligible(propertyType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                    {isPropertyTypeEligible(propertyType) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-                    <span>Eligible Property Type: <span className="font-semibold">{propertyType}</span></span>
-                  </li>
-                  <li className={`flex items-center gap-2 text-sm ${isOwnershipTypeEligible(ownershipType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                    {isOwnershipTypeEligible(ownershipType) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-                    <span>Ownership Type: <span className="font-semibold">{ownershipType}</span></span>
-                  </li>
-                  <li className={`flex items-center gap-2 text-sm ${homeValue >= 175000 && homeValue <= 3000000 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                    {homeValue >= 175000 && homeValue <= 3000000 ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-                    <span>Home Value: <span className="font-semibold">{formatCurrency(homeValue)}</span></span>
-                  </li>
-                  <li className={`flex items-center gap-2 text-sm ${isCLTVEligible ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                    {isCLTVEligible ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-                    <span>CLTV: <span className="font-semibold">{currentCLTV.toFixed(1)}%</span> {isCLTVEligible ? '(under 80% max)' : '(exceeds 80% max)'}</span>
-                  </li>
-                </ul>
-              </div>
-            ) : (
-              <div className="p-4 rounded-xl border border-border bg-secondary">
-                <div className="flex items-center gap-2 mb-2">
-                  <AlertCircle className="w-5 h-5 text-muted-foreground" />
-                  <span className="font-semibold text-muted-foreground">Validation Required</span>
-                </div>
-                <p className="text-sm text-muted-foreground ml-7">
-                  Click "Validate Property" to check eligibility
-                </p>
-              </div>
-            )}
-
-            {/* Maximum Potential Funding */}
-            {validation?.isValid ? (
-              isCLTVEligible ? (
+            <div className={`${isHidingQualification ? 'animate-fade-out-up' : 'animate-slide-in-up'}`}>
+              {validation?.isValid && isCLTVEligible ? (
                 <div className="p-4 bg-secondary rounded-xl border border-accent/30">
                   <div className="flex items-center gap-2 mb-2">
                     <TrendingUp className="w-5 h-5 text-accent" />
@@ -916,20 +902,8 @@ export function WizardStep1({
                       : 'Available equity is too low for this program. Minimum funding is $15,000.'}
                   </p>
                 </div>
-              )
-            ) : (
-              <div className="p-4 bg-secondary rounded-xl border border-border">
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="w-5 h-5 text-muted-foreground" />
-                  <span className="font-semibold text-muted-foreground">Maximum Potential Funding</span>
-                </div>
-                <p className="text-2xl font-bold text-muted-foreground mb-2">—</p>
-                <p className="text-sm text-muted-foreground">
-                  Validate property to see funding amount
-                </p>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
           )}
         </div>
       )}
