@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Home, DollarSign, MapPin } from 'lucide-react';
+import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/heaCalculator';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -161,6 +161,14 @@ export function WizardStep2({
 
       {/* Action Buttons */}
       <div className="flex gap-3">
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={onBack}
+          className="flex-shrink-0"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
         <Button 
           variant="outline" 
           onClick={handleCalculator} 
