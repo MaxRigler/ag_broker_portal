@@ -125,7 +125,7 @@ export function WizardStep2({
                 {formatCurrency(maxInvestment)}
               </p>
             </div>
-            <div className="text-right">
+            <div>
               <p className="text-xs text-muted-foreground font-medium mb-1">Monthly Payment</p>
               <p className="text-3xl md:text-4xl font-bold text-[hsl(var(--success))]">
                 $0.00
