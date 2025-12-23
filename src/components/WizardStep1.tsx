@@ -213,6 +213,7 @@ export function WizardStep1({
 
   const handleHideCalculator = () => {
     setShowPayoffCalculator(false);
+    setIsHidingQualification(false); // Reset to allow sections to fade back in
   };
 
   const handleReset = () => {
