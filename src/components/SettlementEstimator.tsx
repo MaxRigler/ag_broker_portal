@@ -101,7 +101,7 @@ export function SettlementEstimator({
               
               <span className="text-lg font-medium text-muted-foreground">×</span>
               
-              <div className="flex-1 min-w-[140px] max-w-[180px] p-4 bg-background rounded-lg border border-border">
+              <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
                 <p className="text-xs text-muted-foreground mb-1">Equity Share %</p>
                 <p className="text-lg font-bold text-foreground">{equitySharePercent}%</p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
