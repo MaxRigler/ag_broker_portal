@@ -59,20 +59,20 @@ export function SettlementEstimator({
             <div className="md:hidden space-y-3">
               {/* Top row: Ending Home Value × Equity Share % = */}
               <div className="flex items-stretch gap-2">
-                <div className="flex-1 p-3 bg-background rounded-lg border border-border">
+                <div className="flex-1 p-3 bg-background rounded-lg border border-border min-h-[100px] flex flex-col">
                   <p className="text-xs text-muted-foreground mb-1">Ending Value</p>
                   <p className="text-base font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
-                  <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                  <p className="text-[9px] text-muted-foreground mt-auto leading-tight">
                     Projected Home Value at Settlement
                   </p>
                 </div>
                 
                 <span className="flex items-center text-sm font-medium text-muted-foreground">×</span>
                 
-                <div className="flex-1 p-3 bg-background rounded-lg border border-border">
+                <div className="flex-1 p-3 bg-background rounded-lg border border-border min-h-[100px] flex flex-col">
                   <p className="text-xs text-muted-foreground mb-1">Equity Share</p>
                   <p className="text-base font-bold text-foreground">{equitySharePercent}%</p>
-                  <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                  <p className="text-[9px] text-muted-foreground mt-auto leading-tight">
                     2X Funding ÷ Starting Home Value
                   </p>
                 </div>
@@ -83,7 +83,7 @@ export function SettlementEstimator({
               {/* Bottom row: Total Cost of Capital @ Annualized Cost */}
               <div className="flex items-stretch gap-2">
                 <div className={cn(
-                  "flex-1 p-3 bg-background rounded-lg border text-center transition-all duration-300",
+                  "flex-1 p-3 bg-background rounded-lg border text-center transition-all duration-300 min-h-[100px] flex flex-col",
                   calculation.isCapActive 
                     ? "border-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/30" 
                     : "border-border"
@@ -91,7 +91,7 @@ export function SettlementEstimator({
                   <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
                   <p className="text-base font-bold text-foreground">{formatCurrency(calculation.totalCostOfCapital)}</p>
                   {calculation.isCapActive && (
-                    <div className="mt-1.5 space-y-0.5 animate-savings-slide">
+                    <div className="mt-auto space-y-0.5 animate-savings-slide">
                       <p className="text-[9px] text-muted-foreground line-through decoration-destructive decoration-1">
                         Without cap: {formatCurrency(calculation.rawTotalCostOfCapital)}
                       </p>
@@ -101,7 +101,7 @@ export function SettlementEstimator({
                     </div>
                   )}
                   {!calculation.isCapActive && (
-                    <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                    <p className="text-[9px] text-muted-foreground mt-auto leading-tight">
                       Settlement Amount - Initial Funding
                     </p>
                   )}
@@ -110,7 +110,7 @@ export function SettlementEstimator({
                 <span className="flex items-center text-sm font-medium text-muted-foreground">@</span>
                 
                 <div className={cn(
-                  "flex-1 p-3 bg-background rounded-lg border text-center relative transition-all duration-300",
+                  "flex-1 p-3 bg-background rounded-lg border text-center relative transition-all duration-300 min-h-[100px] flex flex-col",
                   calculation.isCapActive 
                     ? "border-[hsl(var(--success))] ring-2 ring-[hsl(var(--success))]/30 animate-pulse-glow" 
                     : "border-border"
@@ -133,7 +133,7 @@ export function SettlementEstimator({
                   )}>
                     {formatPercentage(calculation.annualizedCost, 1)}
                   </p>
-                  <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                  <p className="text-[9px] text-muted-foreground mt-auto leading-tight">
                     {calculation.isCapActive ? "Protected by 19.9% cap" : "Capped at 19.9% limit"}
                   </p>
                 </div>
@@ -142,20 +142,20 @@ export function SettlementEstimator({
 
             {/* Desktop Layout */}
             <div className="hidden md:flex flex-wrap items-center justify-center gap-2 text-center">
-              <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
+              <div className="flex-1 min-w-[160px] max-w-[200px] min-h-[120px] p-4 bg-background rounded-lg border border-border flex flex-col">
                 <p className="text-xs text-muted-foreground mb-1">Ending Home Value</p>
                 <p className="text-lg font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
-                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                <p className="text-[10px] text-muted-foreground mt-auto leading-tight">
                   Projected Home Value at Settlement
                 </p>
               </div>
               
               <span className="text-lg font-medium text-muted-foreground">×</span>
               
-              <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
+              <div className="flex-1 min-w-[160px] max-w-[200px] min-h-[120px] p-4 bg-background rounded-lg border border-border flex flex-col">
                 <p className="text-xs text-muted-foreground mb-1">Equity Share %</p>
                 <p className="text-lg font-bold text-foreground">{equitySharePercent}%</p>
-                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                <p className="text-[10px] text-muted-foreground mt-auto leading-tight">
                   2X Funding ÷ Starting Home Value
                 </p>
               </div>
@@ -163,7 +163,7 @@ export function SettlementEstimator({
               <span className="text-lg font-medium text-muted-foreground">=</span>
               
               <div className={cn(
-                "flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border transition-all duration-300",
+                "flex-1 min-w-[160px] max-w-[200px] min-h-[120px] p-4 bg-background rounded-lg border transition-all duration-300 flex flex-col",
                 calculation.isCapActive 
                   ? "border-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/30" 
                   : "border-border"
@@ -171,7 +171,7 @@ export function SettlementEstimator({
                 <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
                 <p className="text-lg font-bold text-foreground">{formatCurrency(calculation.totalCostOfCapital)}</p>
                 {calculation.isCapActive && (
-                  <div className="mt-2 space-y-0.5 animate-savings-slide">
+                  <div className="mt-auto space-y-0.5 animate-savings-slide">
                     <p className="text-[10px] text-muted-foreground line-through decoration-destructive decoration-2">
                       Without cap: {formatCurrency(calculation.rawTotalCostOfCapital)}
                     </p>
@@ -181,7 +181,7 @@ export function SettlementEstimator({
                   </div>
                 )}
                 {!calculation.isCapActive && (
-                  <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                  <p className="text-[10px] text-muted-foreground mt-auto leading-tight">
                     Settlement Amount - Initial Funding
                   </p>
                 )}
@@ -190,7 +190,7 @@ export function SettlementEstimator({
               <span className="text-lg font-medium text-muted-foreground">@</span>
               
               <div className={cn(
-                "flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border relative transition-all duration-300",
+                "flex-1 min-w-[160px] max-w-[200px] min-h-[120px] p-4 bg-background rounded-lg border relative transition-all duration-300 flex flex-col",
                 calculation.isCapActive 
                   ? "border-[hsl(var(--success))] ring-2 ring-[hsl(var(--success))]/30 animate-pulse-glow" 
                   : "border-border"
@@ -213,7 +213,7 @@ export function SettlementEstimator({
                 )}>
                   {formatPercentage(calculation.annualizedCost, 1)}
                 </p>
-                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                <p className="text-[10px] text-muted-foreground mt-auto leading-tight">
                   {calculation.isCapActive ? "Protected by 19.9% cap" : "Capped at 19.9% annualized cost limit"}
                 </p>
               </div>
