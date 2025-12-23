@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { Calendar, TrendingUp, DollarSign } from 'lucide-react';
+import { Calendar, TrendingUp, DollarSign, Calculator, X } from 'lucide-react';
 import { calculateHEACost, formatCurrency, formatPercentage } from '@/lib/heaCalculator';
+
 interface SettlementEstimatorProps {
   homeValue: number;
   maxInvestment: number;
@@ -11,6 +12,7 @@ interface SettlementEstimatorProps {
   setSettlementYear: (value: number) => void;
   hpaRate: number;
   setHpaRate: (value: number) => void;
+  onClose: () => void;
 }
 export function SettlementEstimator({
   homeValue,
@@ -20,13 +22,33 @@ export function SettlementEstimator({
   settlementYear,
   setSettlementYear,
   hpaRate,
-  setHpaRate
+  setHpaRate,
+  onClose
 }: SettlementEstimatorProps) {
   const calculation = useMemo(() => {
     return calculateHEACost(fundingAmount, homeValue, settlementYear, hpaRate);
   }, [fundingAmount, homeValue, settlementYear, hpaRate]);
   const equitySharePercent = (fundingAmount / homeValue * 2 * 100).toFixed(0);
-  return <div className="animate-fade-in space-y-6 mt-6 p-6 bg-secondary/50 rounded-xl border border-border">
+  
+  return (
+    <div className="animate-fade-in mt-6">
+      {/* Header Bar with Title and Close Button */}
+      <div className="flex items-center justify-between p-4 bg-secondary rounded-t-xl border border-border border-b-0">
+        <div className="flex items-center gap-2">
+          <Calculator className="w-5 h-5 text-accent" />
+          <span className="text-sm font-semibold text-foreground">Settlement Estimator</span>
+        </div>
+        <button 
+          onClick={onClose}
+          className="p-1.5 rounded-md hover:bg-background/80 transition-colors text-muted-foreground hover:text-foreground"
+          aria-label="Close calculator"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+      
+      {/* Calculator Content */}
+      <div className="space-y-6 p-6 bg-secondary/50 rounded-b-xl border border-border border-t-0">
       {/* Formula Row */}
       <div className="grid grid-cols-3 gap-4 text-center">
         <div className="p-4 bg-background rounded-lg border border-border">
@@ -105,5 +127,7 @@ export function SettlementEstimator({
           <p className="text-lg font-bold text-foreground">{formatPercentage(calculation.apr * 100, 1)}</p>
         </div>
       </div>
-    </div>;
+      </div>
+    </div>
+  );
 }

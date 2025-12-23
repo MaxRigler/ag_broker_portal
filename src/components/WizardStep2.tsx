@@ -222,6 +222,7 @@ export function WizardStep2({
           setSettlementYear={setSettlementYear}
           hpaRate={hpaRate}
           setHpaRate={setHpaRate}
+          onClose={() => setShowCalculator(false)}
         />
       )}
     </div>;
