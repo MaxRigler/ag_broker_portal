@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/heaCalculator';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { SettlementEstimator } from './SettlementEstimator';
+
 interface WizardStep2Props {
   address: string;
   homeValue: number;
@@ -86,8 +89,13 @@ export function WizardStep2({
   onReset
 }: WizardStep2Props) {
   const isMobile = useIsMobile();
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [fundingAmount, setFundingAmount] = useState(maxInvestment);
+  const [settlementYear, setSettlementYear] = useState(10);
+  const [hpaRate, setHpaRate] = useState(0.03);
+
   const handleCalculator = () => {
-    toast.info('Calculator coming soon');
+    setShowCalculator(!showCalculator);
   };
   const handleGenerateOffers = () => {
     toast.info('Generate Offer Links coming soon');
@@ -202,5 +210,20 @@ export function WizardStep2({
           Generate Offer Links
         </Button>
       </div>
+
+      {/* Animated Settlement Estimator */}
+      {showCalculator && (
+        <SettlementEstimator
+          homeValue={homeValue}
+          maxInvestment={maxInvestment}
+          fundingAmount={fundingAmount}
+          setFundingAmount={setFundingAmount}
+          settlementYear={settlementYear}
+          setSettlementYear={setSettlementYear}
+          hpaRate={hpaRate}
+          setHpaRate={setHpaRate}
+          onClose={() => setShowCalculator(false)}
+        />
+      )}
     </div>;
 }
