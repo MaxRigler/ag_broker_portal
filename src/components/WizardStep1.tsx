@@ -434,26 +434,8 @@ export function WizardStep1({
 
         {/* Mobile Layout */}
         <div className="md:hidden space-y-4">
-          {/* Address & Owner stacked */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-start gap-2">
-              <MapPin className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Property Address</p>
-                <p className="font-medium text-foreground text-xs leading-tight">{address}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2">
-              <User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Property Owner</p>
-                <p className="font-medium text-foreground text-sm">{propertyOwner}</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Estimated Property Value - left aligned */}
-          <div className="flex items-start gap-2 pt-2 border-t border-border/50">
+          {/* Estimated Property Value - FIRST */}
+          <div className="flex items-start gap-2">
             <Home className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
@@ -492,10 +474,28 @@ export function WizardStep1({
             </div>
           </div>
 
+          {/* Address & Owner - SECOND */}
+          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border/50">
+            <div className="flex items-start gap-2">
+              <MapPin className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">Property Address</p>
+                <p className="font-medium text-foreground text-xs leading-tight">{address}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">Property Owner</p>
+                <p className="font-medium text-foreground text-sm">{propertyOwner}</p>
+              </div>
+            </div>
+          </div>
+
           {/* Divider */}
           <div className="border-t border-border/50"></div>
 
-          {/* State, Property Type, Ownership Type */}
+          {/* State, Property Type, Ownership Type - THIRD */}
           <div className="grid grid-cols-3 gap-2">
             {/* State */}
             <div className="flex items-start gap-2">
