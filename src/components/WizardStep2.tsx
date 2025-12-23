@@ -212,7 +212,7 @@ export function WizardStep2({
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <Button variant="blue" size="icon" onClick={handleCalculator} className="flex-shrink-0">
-            <Calculator className="h-4 w-4" />
+            <Calculator className="h-4 w-4 text-white" />
           </Button>
         </div>
         
