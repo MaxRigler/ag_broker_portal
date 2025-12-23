@@ -59,39 +59,39 @@ export function SettlementEstimator({
             <div className="md:hidden space-y-3">
               {/* Top row: Ending Home Value × Equity Share % = */}
               <div className="flex items-stretch gap-2">
-                <div className="flex-1 p-3 bg-background rounded-lg border border-border min-h-[100px] flex flex-col">
-                  <p className="text-xs text-muted-foreground mb-1">Ending Value</p>
+                <div className="flex-1 p-3 bg-background rounded-lg border border-border h-[100px] flex flex-col justify-center text-left">
+                  <p className="text-xs text-muted-foreground mb-0.5">Ending Value</p>
                   <p className="text-base font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
-                  <p className="text-[9px] text-muted-foreground mt-auto leading-tight">
-                    Projected Home Value at Settlement
+                  <p className="text-[9px] text-muted-foreground leading-tight">
+                    Projected Home Value<br />at Settlement
                   </p>
                 </div>
                 
                 <span className="flex items-center text-sm font-medium text-muted-foreground">×</span>
                 
-                <div className="flex-1 p-3 bg-background rounded-lg border border-border min-h-[100px] flex flex-col">
-                  <p className="text-xs text-muted-foreground mb-1">Equity Share</p>
+                <div className="flex-1 p-3 bg-background rounded-lg border border-border h-[100px] flex flex-col justify-center text-left">
+                  <p className="text-xs text-muted-foreground mb-0.5">Equity Share</p>
                   <p className="text-base font-bold text-foreground">{equitySharePercent}%</p>
-                  <p className="text-[9px] text-muted-foreground mt-auto leading-tight">
-                    2X Funding ÷ Starting Home Value
+                  <p className="text-[9px] text-muted-foreground leading-tight">
+                    2X Funding ÷ Starting<br />Home Value
                   </p>
                 </div>
                 
                 <span className="flex items-center text-sm font-medium text-muted-foreground">=</span>
               </div>
               
-              {/* Bottom row: Total Cost of Capital @ Annualized Cost */}
+              {/* Bottom row: Cost of Capital @ Annualized Cost */}
               <div className="flex items-stretch gap-2">
                 <div className={cn(
-                  "flex-1 p-3 bg-background rounded-lg border text-center transition-all duration-300 min-h-[100px] flex flex-col",
+                  "flex-1 p-3 bg-background rounded-lg border transition-all duration-300 h-[100px] flex flex-col justify-center text-left",
                   calculation.isCapActive 
                     ? "border-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/30" 
                     : "border-border"
                 )}>
-                  <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
+                  <p className="text-xs text-muted-foreground mb-0.5">Cost of Capital</p>
                   <p className="text-base font-bold text-foreground">{formatCurrency(calculation.totalCostOfCapital)}</p>
-                  {calculation.isCapActive && (
-                    <div className="mt-auto space-y-0.5 animate-savings-slide">
+                  {calculation.isCapActive ? (
+                    <div className="space-y-0 animate-savings-slide">
                       <p className="text-[9px] text-muted-foreground line-through decoration-destructive decoration-1">
                         Without cap: {formatCurrency(calculation.rawTotalCostOfCapital)}
                       </p>
@@ -99,10 +99,9 @@ export function SettlementEstimator({
                         You save: {formatCurrency(calculation.savingsFromCap)}
                       </p>
                     </div>
-                  )}
-                  {!calculation.isCapActive && (
-                    <p className="text-[9px] text-muted-foreground mt-auto leading-tight">
-                      Settlement Amount - Initial Funding
+                  ) : (
+                    <p className="text-[9px] text-muted-foreground leading-tight">
+                      Settlement Amount -<br />Initial Funding
                     </p>
                   )}
                 </div>
@@ -110,7 +109,7 @@ export function SettlementEstimator({
                 <span className="flex items-center text-sm font-medium text-muted-foreground">@</span>
                 
                 <div className={cn(
-                  "flex-1 p-3 bg-background rounded-lg border text-center relative transition-all duration-300 min-h-[100px] flex flex-col",
+                  "flex-1 p-3 bg-background rounded-lg border relative transition-all duration-300 h-[100px] flex flex-col justify-center text-left",
                   calculation.isCapActive 
                     ? "border-[hsl(var(--success))] ring-2 ring-[hsl(var(--success))]/30 animate-pulse-glow" 
                     : "border-border"
@@ -124,7 +123,7 @@ export function SettlementEstimator({
                       </div>
                     </div>
                   )}
-                  <p className="text-xs text-muted-foreground mb-1">Annualized Cost</p>
+                  <p className="text-xs text-muted-foreground mb-0.5">Annualized Cost</p>
                   <p className={cn(
                     "text-base font-bold transition-all duration-300",
                     calculation.isCapActive 
@@ -133,7 +132,7 @@ export function SettlementEstimator({
                   )}>
                     {formatPercentage(calculation.annualizedCost, 1)}
                   </p>
-                  <p className="text-[9px] text-muted-foreground mt-auto leading-tight">
+                  <p className="text-[9px] text-muted-foreground leading-tight">
                     {calculation.isCapActive ? "Protected by 19.9% cap" : "Capped at 19.9% limit"}
                   </p>
                 </div>
