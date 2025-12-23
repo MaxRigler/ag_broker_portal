@@ -4,7 +4,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus, AlertCircle, TrendingUp, X, DollarSign, Calendar, Calculator, Shield, RefreshCw, Home } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
+import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus, AlertCircle, TrendingUp, X, DollarSign, Calendar, Calculator, Shield, RefreshCw, Home, Percent } from 'lucide-react';
 import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency, formatPercentage, calculateMaxInvestment, calculateHEACost } from '@/lib/heaCalculator';
 import { lookupProperty, detectOwnershipType } from '@/lib/api/rentcast';
 import { toast } from 'sonner';
@@ -71,6 +72,7 @@ export function WizardStep1({
   
   // Progressive disclosure state
   const [propertyDetailsConfirmed, setPropertyDetailsConfirmed] = useState(false);
+  const [mortgageDetailsConfirmed, setMortgageDetailsConfirmed] = useState(false);
   
   // Payoff calculator state
   const [showPayoffCalculator, setShowPayoffCalculator] = useState(false);
@@ -187,6 +189,13 @@ export function WizardStep1({
   const handleMortgageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0;
     setMortgageBalance(Math.min(val, homeValue * 0.95));
+  };
+
+  // Handle CLTV slider change - updates mortgage balance based on CLTV percentage
+  const handleCLTVSliderChange = (value: number[]) => {
+    const newCLTV = value[0];
+    const newMortgage = Math.round(homeValue * (newCLTV / 100));
+    setMortgageBalance(newMortgage);
   };
 
   const handleValidate = () => {
@@ -490,71 +499,194 @@ export function WizardStep1({
         <div className="space-y-4 animate-fade-in">
           {/* Section Header for Mortgage */}
           <h2 className="text-lg md:text-xl font-bold text-foreground pt-2">
-            2. Confirm Mortgage Details
+            {mortgageDetailsConfirmed ? 'Mortgage Details' : '2. Confirm Mortgage Details'}
           </h2>
 
-          {/* Outstanding Mortgage Balance */}
-          <div className="p-4 bg-secondary rounded-xl border border-border">
-            <p className="text-sm font-semibold text-foreground text-center mb-3">Outstanding Mortgage Balance</p>
-            <div className="flex items-center justify-center gap-2">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={() => adjustMortgage(-20000)}
-                disabled={mortgageBalance <= 0}
-                className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <div className="animate-breathe">
-                <Input 
-                  type="text" 
-                  value={formatCurrency(mortgageBalance)} 
-                  onChange={handleMortgageInputChange} 
-                  className="text-2xl font-bold bg-background h-12 w-40 text-center" 
-                />
+          {mortgageDetailsConfirmed ? (
+            /* Read-only Mortgage Summary after confirmation */
+            <div className="p-4 bg-secondary rounded-xl border border-border">
+              <div className="grid grid-cols-3 gap-4">
+                {/* Outstanding Mortgage Balance */}
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-1">
+                    <DollarSign className="w-4 h-4 text-accent" />
+                    <p className="text-xs md:text-sm text-muted-foreground font-medium">Outstanding Mortgage</p>
+                  </div>
+                  <p className="text-lg md:text-xl font-bold text-foreground">{formatCurrency(mortgageBalance)}</p>
+                </div>
+                
+                {/* Loan-to-Value */}
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Percent className="w-4 h-4 text-accent" />
+                    <p className="text-xs md:text-sm text-muted-foreground font-medium">Loan-to-Value</p>
+                  </div>
+                  <p className={`text-lg md:text-xl font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
+                    {currentCLTV.toFixed(1)}%
+                  </p>
+                </div>
+                
+                {/* Maximum Funding */}
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-1">
+                    <TrendingUp className="w-4 h-4 text-accent" />
+                    <p className="text-xs md:text-sm text-muted-foreground font-medium">Max Funding</p>
+                  </div>
+                  <p className="text-lg md:text-xl font-bold text-[hsl(var(--success))]">{formatCurrency(maxInvestment)}</p>
+                </div>
               </div>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={() => adjustMortgage(20000)}
-                disabled={mortgageBalance >= homeValue * 0.95}
-                className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
             </div>
-          </div>
-
-          {/* CLTV Section */}
-          <div className="p-4 bg-secondary rounded-xl border border-border space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 space-y-2">
-                <p className="text-xs text-muted-foreground">Combined Loan-to-Value (CLTV)</p>
-                <div className="h-3 bg-background rounded-full overflow-hidden relative">
-                  <div 
-                    className={`h-full transition-all duration-300 ${currentCLTV > 80 ? 'bg-destructive' : 'bg-[hsl(var(--success))]'}`} 
-                    style={{ width: `${Math.min(currentCLTV, 100)}%` }} 
-                  />
-                  <div className="absolute top-1/2 left-[80%] -translate-x-1/2 -translate-y-1/2">
-                    <X className="w-4 h-4 text-destructive" strokeWidth={3} />
+          ) : (
+            /* Editable Mortgage Section - Side by Side Layout */
+            <>
+              {/* Desktop: Side-by-side layout */}
+              <div className="hidden md:block p-4 bg-secondary rounded-xl border border-border">
+                <div className="grid grid-cols-2 gap-6">
+                  {/* Outstanding Mortgage Balance - Left */}
+                  <div className="flex flex-col items-center">
+                    <p className="text-sm font-semibold text-foreground text-center mb-3">Outstanding Mortgage Balance</p>
+                    <div className="flex items-center justify-center gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        onClick={() => adjustMortgage(-20000)}
+                        disabled={mortgageBalance <= 0}
+                        className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <div className="animate-breathe">
+                        <Input 
+                          type="text" 
+                          value={formatCurrency(mortgageBalance)} 
+                          onChange={handleMortgageInputChange} 
+                          className="text-xl font-bold bg-background h-12 w-36 text-center" 
+                        />
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        onClick={() => adjustMortgage(20000)}
+                        disabled={mortgageBalance >= homeValue * 0.95}
+                        className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Combined Loan-to-Value (CLTV) Slider - Right */}
+                  <div className="flex flex-col">
+                    <p className="text-sm font-semibold text-foreground text-center mb-3">Combined Loan-to-Value (CLTV)</p>
+                    <div className="flex-1 flex flex-col justify-center">
+                      {/* Slider with percentage on thumb */}
+                      <div className="relative px-2">
+                        <Slider
+                          value={[currentCLTV]}
+                          onValueChange={handleCLTVSliderChange}
+                          max={100}
+                          min={0}
+                          step={0.5}
+                          className="w-full"
+                        />
+                        {/* Percentage badge that follows the slider thumb */}
+                        <div 
+                          className="absolute -top-8 transform -translate-x-1/2 pointer-events-none"
+                          style={{ left: `${Math.min(Math.max(currentCLTV, 5), 95)}%` }}
+                        >
+                          <Badge 
+                            variant="outline" 
+                            className={`text-sm font-bold px-2 py-0.5 ${currentCLTV > 80 ? 'bg-destructive text-destructive-foreground border-destructive' : 'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] border-[hsl(var(--success))]'}`}
+                          >
+                            {currentCLTV.toFixed(1)}%
+                          </Badge>
+                        </div>
+                      </div>
+                      {/* Scale labels */}
+                      <div className="flex justify-between text-[10px] text-muted-foreground mt-2 px-2">
+                        <span>0%</span>
+                        <span className="text-destructive font-medium">80% Max</span>
+                        <span>100%</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex justify-between text-[10px] text-muted-foreground">
-                  <span>0%</span>
-                  <span>80% Max CLTV</span>
-                  <span>100%</span>
+              </div>
+
+              {/* Mobile: Stacked layout */}
+              <div className="md:hidden space-y-4">
+                {/* Outstanding Mortgage Balance */}
+                <div className="p-4 bg-secondary rounded-xl border border-border">
+                  <p className="text-sm font-semibold text-foreground text-center mb-3">Outstanding Mortgage Balance</p>
+                  <div className="flex items-center justify-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={() => adjustMortgage(-20000)}
+                      disabled={mortgageBalance <= 0}
+                      className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <div className="animate-breathe">
+                      <Input 
+                        type="text" 
+                        value={formatCurrency(mortgageBalance)} 
+                        onChange={handleMortgageInputChange} 
+                        className="text-xl font-bold bg-background h-12 w-36 text-center" 
+                      />
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={() => adjustMortgage(20000)}
+                      disabled={mortgageBalance >= homeValue * 0.95}
+                      className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* CLTV Slider */}
+                <div className="p-4 bg-secondary rounded-xl border border-border">
+                  <p className="text-sm font-semibold text-foreground text-center mb-4">Combined Loan-to-Value (CLTV)</p>
+                  {/* Slider with percentage on thumb */}
+                  <div className="relative px-2 pt-8">
+                    <Slider
+                      value={[currentCLTV]}
+                      onValueChange={handleCLTVSliderChange}
+                      max={100}
+                      min={0}
+                      step={0.5}
+                      className="w-full"
+                    />
+                    {/* Percentage badge that follows the slider thumb */}
+                    <div 
+                      className="absolute top-0 transform -translate-x-1/2 pointer-events-none"
+                      style={{ left: `${Math.min(Math.max(currentCLTV, 8), 92)}%` }}
+                    >
+                      <Badge 
+                        variant="outline" 
+                        className={`text-sm font-bold px-2 py-0.5 ${currentCLTV > 80 ? 'bg-destructive text-destructive-foreground border-destructive' : 'bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] border-[hsl(var(--success))]'}`}
+                      >
+                        {currentCLTV.toFixed(1)}%
+                      </Badge>
+                    </div>
+                  </div>
+                  {/* Scale labels */}
+                  <div className="flex justify-between text-[10px] text-muted-foreground mt-2 px-2">
+                    <span>0%</span>
+                    <span className="text-destructive font-medium">80% Max</span>
+                    <span>100%</span>
+                  </div>
                 </div>
               </div>
-              <div className="ml-6 text-right">
-                <span className={`text-3xl font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
-                  {currentCLTV.toFixed(1)}%
-                </span>
-              </div>
-            </div>
-          </div>
+            </>
+          )}
 
-          {/* Combined Results - Property Qualified + Maximum Funding */}
+          {/* Combined Results - Property Qualified + Maximum Funding - Only show after mortgage confirmed */}
+          {mortgageDetailsConfirmed && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Property Validation Status */}
             {validation ? (
@@ -648,6 +780,7 @@ export function WizardStep1({
               </div>
             )}
           </div>
+          )}
         </div>
       )}
 
@@ -865,9 +998,18 @@ export function WizardStep1({
               Confirm Property Details
             </Button>
           </>
-        ) : (
+        ) : !mortgageDetailsConfirmed ? (
           <>
             <Button variant="outline" onClick={() => setPropertyDetailsConfirmed(false)} className="flex-1">
+              Back
+            </Button>
+            <Button variant="success" onClick={() => setMortgageDetailsConfirmed(true)} className="flex-1">
+              Confirm Mortgage Details
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button variant="outline" onClick={() => setMortgageDetailsConfirmed(false)} className="flex-1">
               Back
             </Button>
             {!validation ? (
