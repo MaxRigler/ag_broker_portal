@@ -559,22 +559,26 @@ export function WizardStep1({
         {/* Mobile Layout */}
         <div className="md:hidden space-y-4">
           {/* Estimated Property Value - FIRST */}
-          <div className="flex items-start gap-2">
-            <Home className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-            <div>
+          <div className="flex flex-col">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Home className="w-4 h-4 text-accent flex-shrink-0" />
               <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
-              {propertyDetailsConfirmed ? <p className="text-lg font-bold text-foreground">{formatCurrency(homeValue)}</p> : <div className="flex items-center gap-2 mt-1">
-                  <Button variant="outline" size="icon" onClick={decrementValue} disabled={homeValue <= 175000} className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <div className="animate-breathe">
-                    <Input type="text" value={formatCurrency(homeValue)} onChange={handleHomeValueInputChange} className="text-lg font-bold bg-background h-10 w-32 text-center" />
-                  </div>
-                  <Button variant="outline" size="icon" onClick={incrementValue} disabled={homeValue >= 3000000} className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>}
             </div>
+            {propertyDetailsConfirmed ? (
+              <p className="text-lg font-bold text-foreground text-center">{formatCurrency(homeValue)}</p>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <Button variant="outline" size="icon" onClick={decrementValue} disabled={homeValue <= 175000} className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <div className="animate-breathe">
+                  <Input type="text" value={formatCurrency(homeValue)} onChange={handleHomeValueInputChange} className="text-xl font-bold bg-background h-12 w-36 text-center" />
+                </div>
+                <Button variant="outline" size="icon" onClick={incrementValue} disabled={homeValue >= 3000000} className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Address & Owner - SECOND */}
