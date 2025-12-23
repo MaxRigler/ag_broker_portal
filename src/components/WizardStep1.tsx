@@ -302,8 +302,7 @@ export function WizardStep1({
   };
 
   const handleMortgageChange = (value: number) => {
-    const maxMortgage = homeValue * 0.95;
-    const clampedValue = Math.min(Math.max(value, 0), maxMortgage);
+    const clampedValue = Math.min(Math.max(value, 0), 2850000);
     setMortgageBalance(clampedValue);
   };
 
@@ -414,13 +413,13 @@ export function WizardStep1({
                 value={[mortgageBalance]}
                 onValueChange={(value) => handleMortgageChange(value[0])}
                 min={0}
-                max={homeValue * 0.95}
+                max={2850000}
                 step={10000}
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-2">
                 <span>$0</span>
-                <span>{formatCurrency(homeValue * 0.95)}</span>
+                <span>$2.85M</span>
               </div>
             </div>
           </div>
@@ -558,13 +557,13 @@ export function WizardStep1({
               value={[mortgageBalance]}
               onValueChange={(value) => handleMortgageChange(value[0])}
               min={0}
-              max={homeValue * 0.95}
+              max={2850000}
               step={10000}
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted-foreground mt-2">
               <span>$0</span>
-              <span>{formatCurrency(homeValue * 0.95)}</span>
+              <span>$2.85M</span>
             </div>
           </div>
         </div>
