@@ -100,7 +100,7 @@ export function WizardStep2({
           {/* Property Qualified Headline */}
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle2 className="w-6 h-6 text-[hsl(var(--success))]" />
-            <span className="text-lg font-bold text-[hsl(var(--success))]">Property Pre-Qualified!</span>
+            <span className="text-lg font-bold text-[hsl(var(--success))]">Property Pre-Qualified</span>
           </div>
 
           {/* Top Row: Two columns for funding and payment */}
