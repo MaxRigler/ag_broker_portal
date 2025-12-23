@@ -131,6 +131,16 @@ export default {
             transform: "translateY(0)",
           },
         },
+        "help-bounce": {
+          "0%, 100%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 0 0 hsl(var(--accent) / 0.7)",
+          },
+          "50%": {
+            transform: "scale(1.05)",
+            boxShadow: "0 0 0 8px hsl(var(--accent) / 0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -140,6 +150,7 @@ export default {
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "shield-pop": "shield-pop 0.5s ease-out forwards",
         "savings-slide": "savings-slide 0.3s ease-out forwards",
+        "help-bounce": "help-bounce 2s ease-in-out infinite",
       },
     },
   },
