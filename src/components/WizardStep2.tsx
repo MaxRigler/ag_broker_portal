@@ -139,8 +139,8 @@ export function WizardStep2({
           </p>
         </div>
 
-        {/* Right Column: Property Qualified Card - Desktop Only */}
-        {!isMobile && <div className="p-6 bg-[hsl(var(--success))]/10 rounded-xl border border-[hsl(var(--success))]/30">
+        {/* Right Column: Property Qualified Card - Shows on Desktop and Mobile */}
+        <div className="p-6 bg-[hsl(var(--success))]/10 rounded-xl border border-[hsl(var(--success))]/30">
             
             {/* Qualification Criteria */}
             <div className="space-y-3">
@@ -165,7 +165,7 @@ export function WizardStep2({
                 <span className="text-sm text-foreground">CLTV: {currentCLTV.toFixed(1)}% (under 80% max)</span>
               </div>
             </div>
-          </div>}
+          </div>
       </div>
 
       {/* Info Boxes Row */}
