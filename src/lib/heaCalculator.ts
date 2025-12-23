@@ -72,6 +72,52 @@ export function calculateHEACost(
   };
 }
 
+/**
+ * Calculates the Annualized Cost and Settlement details for an HEA
+ * based on the Unlock Product Guide logic.
+ */
+export const calculateHEASettlement = (
+  startingHomeValue: number,
+  initialFunding: number, // The gross "Investment Payment"
+  annualAppreciation: number, // e.g., 0.03 for 3%
+  settlementYear: number,
+  exchangeRate: number = 2.0, // Standard multiplier
+  annualizedCostLimit: number = 0.199 // The 19.9% cap
+) => {
+  // 1. Calculate the Investment Percentage and Unlock Percentage
+  const investmentPercentage = initialFunding / startingHomeValue;
+  const unlockPercentage = investmentPercentage * exchangeRate;
+
+  // 2. Project the Ending Home Value (Projected Value at Settlement)
+  const endingHomeValue = startingHomeValue * Math.pow(1 + annualAppreciation, settlementYear);
+
+  // 3. Calculate the Raw Unlock Share (Before the Cap)
+  const rawUnlockShare = endingHomeValue * unlockPercentage;
+
+  // 4. Calculate the "Safety Net" Cap (Maximum Unlock Share)
+  // Formula: Investment Payment * (1 + Annualized Cost Limit) ^ Term Years
+  const maximumUnlockShare = initialFunding * Math.pow(1 + annualizedCostLimit, settlementYear);
+
+  // 5. Determine the Actual Unlock Share (The lower of the two)
+  const actualUnlockShare = Math.min(rawUnlockShare, maximumUnlockShare);
+
+  // 6. Calculate the Final Annualized Cost for display
+  // Formula: (Unlock Share / Investment Payment) ^ (1 / Years) - 1
+  const annualizedCost = Math.pow(actualUnlockShare / initialFunding, 1 / settlementYear) - 1;
+
+  // 7. Calculate Total Cost of Capital
+  const totalCostOfCapital = actualUnlockShare - initialFunding;
+
+  return {
+    endingHomeValue,
+    unlockPercentage: unlockPercentage * 100, // as percentage
+    actualUnlockShare,
+    totalCostOfCapital,
+    annualizedCost: annualizedCost * 100, // as percentage (e.g., 10.5)
+    isCapActive: rawUnlockShare > maximumUnlockShare,
+  };
+};
+
 // Maximum Unlock Percentage (the future share Unlock can take)
 export const MAX_UNLOCK_PERCENTAGE = 0.499; // 49.9%
 
