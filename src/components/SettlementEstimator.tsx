@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { Calendar, TrendingUp, DollarSign, Calculator } from 'lucide-react';
+import { Calendar, TrendingUp, DollarSign, Calculator, ShieldCheck } from 'lucide-react';
 import { calculateHEASettlement, formatCurrency, formatPercentage } from '@/lib/heaCalculator';
+import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -81,21 +82,59 @@ export function SettlementEstimator({
               
               {/* Bottom row: Total Cost of Capital @ Annualized Cost */}
               <div className="flex items-stretch gap-2">
-                <div className="flex-1 p-3 bg-background rounded-lg border border-border text-center">
+                <div className={cn(
+                  "flex-1 p-3 bg-background rounded-lg border text-center transition-all duration-300",
+                  calculation.isCapActive 
+                    ? "border-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/30" 
+                    : "border-border"
+                )}>
                   <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
                   <p className="text-base font-bold text-foreground">{formatCurrency(calculation.totalCostOfCapital)}</p>
-                  <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
-                    Settlement Amount - Initial Funding
-                  </p>
+                  {calculation.isCapActive && (
+                    <div className="mt-1.5 space-y-0.5 animate-savings-slide">
+                      <p className="text-[9px] text-muted-foreground line-through decoration-destructive decoration-1">
+                        Without cap: {formatCurrency(calculation.rawTotalCostOfCapital)}
+                      </p>
+                      <p className="text-[9px] font-medium text-[hsl(var(--success))]">
+                        You save: {formatCurrency(calculation.savingsFromCap)}
+                      </p>
+                    </div>
+                  )}
+                  {!calculation.isCapActive && (
+                    <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                      Settlement Amount - Initial Funding
+                    </p>
+                  )}
                 </div>
                 
                 <span className="flex items-center text-sm font-medium text-muted-foreground">@</span>
                 
-                <div className="flex-1 p-3 bg-background rounded-lg border border-border text-center">
+                <div className={cn(
+                  "flex-1 p-3 bg-background rounded-lg border text-center relative transition-all duration-300",
+                  calculation.isCapActive 
+                    ? "border-[hsl(var(--success))] ring-2 ring-[hsl(var(--success))]/30 animate-pulse-glow" 
+                    : "border-border"
+                )}>
+                  {/* CAP ACTIVE Badge */}
+                  {calculation.isCapActive && (
+                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 animate-shield-pop z-10">
+                      <div className="flex items-center gap-0.5 px-2 py-0.5 bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] text-[8px] font-bold rounded-full whitespace-nowrap shadow-lg">
+                        <ShieldCheck className="w-2.5 h-2.5" />
+                        CAP ACTIVE
+                      </div>
+                    </div>
+                  )}
                   <p className="text-xs text-muted-foreground mb-1">Annualized Cost</p>
-                  <p className="text-base font-bold text-[hsl(var(--success))]">{formatPercentage(calculation.annualizedCost, 1)}</p>
+                  <p className={cn(
+                    "text-base font-bold transition-all duration-300",
+                    calculation.isCapActive 
+                      ? "text-[hsl(var(--success))] scale-105" 
+                      : "text-[hsl(var(--success))]"
+                  )}>
+                    {formatPercentage(calculation.annualizedCost, 1)}
+                  </p>
                   <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
-                    Capped at 19.9% annualized cost limit
+                    {calculation.isCapActive ? "Protected by 19.9% cap" : "Capped at 19.9% limit"}
                   </p>
                 </div>
               </div>
@@ -123,21 +162,59 @@ export function SettlementEstimator({
               
               <span className="text-lg font-medium text-muted-foreground">=</span>
               
-              <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
+              <div className={cn(
+                "flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border transition-all duration-300",
+                calculation.isCapActive 
+                  ? "border-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/30" 
+                  : "border-border"
+              )}>
                 <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
                 <p className="text-lg font-bold text-foreground">{formatCurrency(calculation.totalCostOfCapital)}</p>
-                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  Settlement Amount - Initial Funding
-                </p>
+                {calculation.isCapActive && (
+                  <div className="mt-2 space-y-0.5 animate-savings-slide">
+                    <p className="text-[10px] text-muted-foreground line-through decoration-destructive decoration-2">
+                      Without cap: {formatCurrency(calculation.rawTotalCostOfCapital)}
+                    </p>
+                    <p className="text-[10px] font-medium text-[hsl(var(--success))]">
+                      You save: {formatCurrency(calculation.savingsFromCap)}
+                    </p>
+                  </div>
+                )}
+                {!calculation.isCapActive && (
+                  <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                    Settlement Amount - Initial Funding
+                  </p>
+                )}
               </div>
               
               <span className="text-lg font-medium text-muted-foreground">@</span>
               
-              <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
+              <div className={cn(
+                "flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border relative transition-all duration-300",
+                calculation.isCapActive 
+                  ? "border-[hsl(var(--success))] ring-2 ring-[hsl(var(--success))]/30 animate-pulse-glow" 
+                  : "border-border"
+              )}>
+                {/* CAP ACTIVE Badge */}
+                {calculation.isCapActive && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 animate-shield-pop z-10">
+                    <div className="flex items-center gap-1 px-2.5 py-1 bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] text-[10px] font-bold rounded-full whitespace-nowrap shadow-lg">
+                      <ShieldCheck className="w-3 h-3" />
+                      CAP ACTIVE
+                    </div>
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground mb-1">Annualized Cost</p>
-                <p className="text-lg font-bold text-[hsl(var(--success))]">{formatPercentage(calculation.annualizedCost, 1)}</p>
+                <p className={cn(
+                  "text-lg font-bold transition-all duration-300",
+                  calculation.isCapActive 
+                    ? "text-[hsl(var(--success))] scale-110" 
+                    : "text-[hsl(var(--success))]"
+                )}>
+                  {formatPercentage(calculation.annualizedCost, 1)}
+                </p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  Capped at 19.9% annualized cost limit
+                  {calculation.isCapActive ? "Protected by 19.9% cap" : "Capped at 19.9% annualized cost limit"}
                 </p>
               </div>
             </div>
