@@ -372,6 +372,26 @@ export function WizardStep1({
 
       {/* Desktop Layout */}
       <div className="hidden md:block">
+        {/* Address & Owner Card - Top */}
+        <div className="p-4 bg-secondary rounded-xl border border-border mb-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-start gap-3">
+              <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">Property Address</p>
+                <p className="font-medium text-foreground text-sm">{address}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">Property Owner</p>
+                <p className="font-medium text-foreground">{propertyOwner}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Two Column Sliders - Property Value & Mortgage Balance */}
         <div className="grid grid-cols-2 gap-6 mb-6">
           {/* Confirm Property Value */}
@@ -429,12 +449,9 @@ export function WizardStep1({
           </div>
         </div>
 
-        {/* Confirm Property Details Section */}
+        {/* Property Details Dropdowns - No Headline */}
         <div className="p-4 bg-secondary rounded-xl border border-border mb-4">
-          <h3 className="text-sm font-bold text-foreground uppercase tracking-wide mb-4">Confirm Property Details</h3>
-          
-          {/* Top Row: State, Property Type, Ownership Type */}
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-3 gap-4">
             {/* State */}
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
@@ -495,29 +512,31 @@ export function WizardStep1({
               </div>
             </div>
           </div>
-
-          {/* Bottom Row: Property Address and Owner */}
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
-            <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Property Address</p>
-                <p className="font-medium text-foreground text-sm">{address}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Property Owner</p>
-                <p className="font-medium text-foreground">{propertyOwner}</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Mobile Layout */}
       <div className="md:hidden space-y-4">
+        {/* Address & Owner Card - Top */}
+        <div className="p-4 bg-secondary rounded-xl border border-border">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-start gap-2">
+              <MapPin className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">Address</p>
+                <p className="font-medium text-foreground text-xs leading-tight">{address}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">Owner</p>
+                <p className="font-medium text-foreground text-sm">{propertyOwner}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Confirm Property Value Slider */}
         <div className="p-4 bg-secondary rounded-xl border border-border">
           <p className="text-sm font-semibold text-foreground text-center mb-3">Confirm Property Value</p>
@@ -572,32 +591,8 @@ export function WizardStep1({
           </div>
         </div>
 
-        {/* Confirm Property Details Section - Mobile */}
+        {/* Property Details Dropdowns - No Headline */}
         <div className="p-4 bg-secondary rounded-xl border border-border">
-          <h3 className="text-sm font-bold text-foreground uppercase tracking-wide mb-3 text-center">Confirm Property Details</h3>
-          
-          {/* Address & Owner Row */}
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div className="flex items-start gap-2">
-              <MapPin className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Address</p>
-                <p className="font-medium text-foreground text-xs leading-tight">{address}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2">
-              <User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Owner</p>
-                <p className="font-medium text-foreground text-sm">{propertyOwner}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="border-t border-border/50 my-3"></div>
-
-          {/* State, Property Type, Ownership Type */}
           <div className="flex gap-2">
             {/* State */}
             <div className="flex items-start gap-1 w-[70px]">
