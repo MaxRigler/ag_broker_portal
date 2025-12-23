@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft, TrendingUp } from 'lucide-react';
 import { formatCurrency } from '@/lib/heaCalculator';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -63,6 +63,12 @@ export function WizardStep2({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column: Pre-Qualified Funding Card */}
         <div className="p-6 bg-secondary rounded-xl border border-border">
+          {/* Headline with icon */}
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-5 h-5 text-[hsl(var(--success))]" />
+            <span className="text-lg font-bold text-foreground">Maximum Potential Funding</span>
+          </div>
+          
           {/* Top Row: Two columns for funding and payment */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
