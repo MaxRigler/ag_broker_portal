@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { Calendar, TrendingUp, DollarSign, Calculator, ShieldCheck } from 'lucide-react';
+import { Calendar, TrendingUp, DollarSign, Calculator, ShieldCheck, HelpCircle, ArrowLeft } from 'lucide-react';
 import { calculateHEASettlement, formatCurrency, formatPercentage } from '@/lib/heaCalculator';
 import { cn } from '@/lib/utils';
 import {
@@ -9,6 +9,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 interface SettlementEstimatorProps {
   homeValue: number;
@@ -35,6 +41,8 @@ export function SettlementEstimator({
   open,
   onOpenChange
 }: SettlementEstimatorProps) {
+  const [showHelp, setShowHelp] = useState(false);
+  
   const calculation = useMemo(() => {
     return calculateHEASettlement(homeValue, fundingAmount, hpaRate, settlementYear);
   }, [fundingAmount, homeValue, settlementYear, hpaRate]);
@@ -45,10 +53,21 @@ export function SettlementEstimator({
       <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] overflow-auto p-0">
         {/* Header Bar with Title */}
         <DialogHeader className="p-4 bg-secondary border-b border-border">
-          <DialogTitle className="flex items-center gap-2">
-            <Calculator className="w-5 h-5 text-accent" />
-            <span className="text-lg font-semibold text-foreground">Settlement Estimator</span>
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <Calculator className="w-5 h-5 text-accent" />
+              <span className="text-lg font-semibold text-foreground">Settlement Estimator</span>
+            </DialogTitle>
+            
+            {/* Animated Help Button */}
+            <button
+              onClick={() => setShowHelp(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-accent-foreground rounded-full text-sm font-medium animate-help-bounce hover:scale-105 transition-transform"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>How It Works</span>
+            </button>
+          </div>
         </DialogHeader>
         
         {/* Calculator Content */}
@@ -289,6 +308,122 @@ export function SettlementEstimator({
             <p className="text-xs text-muted-foreground">The Settlement Amount is calculated as the fixed equity share percentage of the property's Ending Home Value. To protect against market volatility, this payment is capped at a 19.9% Annualized Cost Limit, ensuring your total cost never exceeds this effective rate.</p>
           </div>
         </div>
+        
+        {/* Help Panel - Slides in from right */}
+        <Sheet open={showHelp} onOpenChange={setShowHelp}>
+          <SheetContent side="right" className="w-full sm:max-w-lg overflow-auto">
+            <SheetHeader className="mb-6">
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setShowHelp(false)}
+                  className="p-1 hover:bg-secondary rounded-full transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <SheetTitle>How Settlement Works</SheetTitle>
+              </div>
+            </SheetHeader>
+            
+            {/* Help Content */}
+            <div className="space-y-6 text-sm">
+              {/* Core Variables Section */}
+              <section>
+                <h3 className="text-lg font-bold text-foreground mb-4 border-b pb-2">
+                  Core Variables Defined
+                </h3>
+                <dl className="space-y-4">
+                  <div>
+                    <dt className="font-semibold text-foreground">Starting Property Value</dt>
+                    <dd className="text-muted-foreground">The initial value of your client's property at the beginning of the agreement.</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-foreground">Investment Payment</dt>
+                    <dd className="text-muted-foreground">The lump-sum funding amount provided upfront.</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-foreground">Investment Percentage</dt>
+                    <dd className="text-muted-foreground">Your Funding Amount expressed as a percentage of your client's Starting Property Value.</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-foreground">Exchange Rate</dt>
+                    <dd className="text-muted-foreground">The "price" or multiplier of the agreement, typically 2.0 for primary residences.</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-foreground">Equity Share Percentage</dt>
+                    <dd className="text-muted-foreground">The fixed share of your home's future value that Equity Advance receives at settlement. Calculated as: Investment Percentage × Exchange Rate.</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-foreground">Ending Property Value</dt>
+                    <dd className="text-muted-foreground">The value of your home when the agreement ends, determined by a sale price or a new appraisal.</dd>
+                  </div>
+                </dl>
+              </section>
+
+              {/* How Variables Work Together Section */}
+              <section>
+                <h3 className="text-lg font-bold text-foreground mb-4 border-b pb-2">
+                  How the Variables Work Together
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  The settlement (or "payoff") amount is calculated through a specific logical sequence to ensure the partnership remains fair to both you and the investor.
+                </p>
+                
+                {/* Step 1 */}
+                <div className="mb-4 p-4 bg-secondary rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-2">1. The Equity Calculation</h4>
+                  <p className="text-muted-foreground mb-2">
+                    The foundation of the payoff is the Equity Share Percentage. For every 1% of your property's value you receive today, you typically agree to share 2% of the property's value in the future (assuming a 2.0 Exchange Rate).
+                  </p>
+                  <div className="p-3 bg-background rounded border border-border text-center font-mono text-sm">
+                    Ending Property Value × Equity Share Percentage = Settlement Amount
+                  </div>
+                </div>
+                
+                {/* Step 2 */}
+                <div className="mb-4 p-4 bg-secondary rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-2">2. The Annualized Cost Limit (Your "Safety Net")</h4>
+                  <p className="text-muted-foreground">
+                    To protect you from high costs if your property value skyrockets or if you settle the agreement very early, Equity Advance applies an Annualized Cost Limit of 19.9%.
+                  </p>
+                  <p className="text-muted-foreground mt-2">
+                    Equity Advance calculates what the total cost would be if it were a loan capped at 19.9% interest per year. If the equity calculation in Step 1 is higher than this cap, Equity Advance automatically reduces its share to match the lower 19.9% limit.
+                  </p>
+                </div>
+                
+                {/* Step 3 */}
+                <div className="mb-4 p-4 bg-secondary rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-2">3. Adjusting for Your Hard Work</h4>
+                  <p className="text-muted-foreground mb-2">
+                    Before the final payoff is set, the Ending Home Value can be modified by two types of adjustments:
+                  </p>
+                  <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                    <li><strong>Improvement Adjustment:</strong> If you renovated your property, the value added by those improvements is subtracted from the home value so Equity Advance does not share in your profit.</li>
+                    <li><strong>Maintenance Adjustment:</strong> If the property fell into disrepair, the cost of deferred maintenance is added back to the home value so the investor's share is not unfairly reduced by a lack of upkeep.</li>
+                  </ul>
+                </div>
+                
+                {/* Step 4 */}
+                <div className="p-4 bg-secondary rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-2">4. The Final Settlement Payment</h4>
+                  <p className="text-muted-foreground">
+                    The final amount you pay to end the agreement is the Settlement Payment. This is the Equity Share Percentage (capped by the safety net) plus any Unpaid Owner Obligations, such as unreimbursed appraisal fees or property taxes paid by Equity Advance on your client's behalf.
+                  </p>
+                </div>
+              </section>
+            </div>
+            
+            {/* Back to Calculator Button */}
+            <div className="mt-8 pt-4 border-t">
+              <button
+                onClick={() => setShowHelp(false)}
+                className="w-full py-3 bg-accent text-accent-foreground rounded-lg font-medium hover:bg-accent/90 transition-colors flex items-center justify-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Calculator
+              </button>
+            </div>
+          </SheetContent>
+        </Sheet>
       </DialogContent>
     </Dialog>
   );
