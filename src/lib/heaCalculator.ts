@@ -108,6 +108,14 @@ export const calculateHEASettlement = (
   // 7. Calculate Total Cost of Capital
   const totalCostOfCapital = actualUnlockShare - initialFunding;
 
+  // 8. Calculate raw (uncapped) cost of capital for comparison
+  const rawTotalCostOfCapital = rawUnlockShare - initialFunding;
+  
+  // 9. Calculate savings from cap
+  const savingsFromCap = rawUnlockShare > maximumUnlockShare 
+    ? rawUnlockShare - maximumUnlockShare 
+    : 0;
+
   return {
     endingHomeValue,
     unlockPercentage: unlockPercentage * 100, // as percentage
@@ -115,6 +123,8 @@ export const calculateHEASettlement = (
     totalCostOfCapital,
     annualizedCost: annualizedCost * 100, // as percentage (e.g., 10.5)
     isCapActive: rawUnlockShare > maximumUnlockShare,
+    rawTotalCostOfCapital, // What cost would be without cap
+    savingsFromCap, // Dollar amount saved by the cap
   };
 };
 

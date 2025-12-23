@@ -100,12 +100,46 @@ export default {
             transform: "translateY(-10px)",
           },
         },
+        "pulse-glow": {
+          "0%, 100%": {
+            boxShadow: "0 0 5px 0 hsl(var(--success) / 0.4)",
+          },
+          "50%": {
+            boxShadow: "0 0 20px 5px hsl(var(--success) / 0.6)",
+          },
+        },
+        "shield-pop": {
+          "0%": {
+            transform: "scale(0) rotate(-180deg)",
+            opacity: "0",
+          },
+          "70%": {
+            transform: "scale(1.2) rotate(10deg)",
+          },
+          "100%": {
+            transform: "scale(1) rotate(0deg)",
+            opacity: "1",
+          },
+        },
+        "savings-slide": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(-5px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-      "slide-in-up": "slide-in-up 0.4s ease-out",
-      "fade-out-up": "fade-out-up 0.3s ease-out forwards",
+        "slide-in-up": "slide-in-up 0.4s ease-out",
+        "fade-out-up": "fade-out-up 0.3s ease-out forwards",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "shield-pop": "shield-pop 0.5s ease-out forwards",
+        "savings-slide": "savings-slide 0.3s ease-out forwards",
       },
     },
   },
