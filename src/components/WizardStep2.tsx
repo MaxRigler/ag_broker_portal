@@ -63,6 +63,12 @@ export function WizardStep2({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column: Pre-Qualified Funding Card */}
         <div className="p-6 bg-secondary rounded-xl border border-border">
+          {/* Property Qualified Headline */}
+          <div className="flex items-center gap-2 mb-4">
+            <CheckCircle2 className="w-6 h-6 text-[hsl(var(--success))]" />
+            <span className="text-lg font-bold text-[hsl(var(--success))]">Property Qualified!</span>
+          </div>
+
           {/* Top Row: Two columns for funding and payment */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -80,15 +86,9 @@ export function WizardStep2({
           </div>
           
           {/* Description */}
-          <p className="text-xs text-muted-foreground mb-4">
+          <p className="text-xs text-muted-foreground">
             Your client's {getStateName(state)} property may be approved for an Equity Advance of up to {formatCurrency(maxInvestment)} with no monthly payments for up to 10 years.
           </p>
-
-          {/* Property Qualified Headline */}
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-6 h-6 text-[hsl(var(--success))]" />
-            <span className="text-lg font-bold text-[hsl(var(--success))]">Property Qualified!</span>
-          </div>
         </div>
 
         {/* Right Column: Property Qualified Card - Desktop Only */}
