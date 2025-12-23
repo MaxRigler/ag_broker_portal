@@ -743,9 +743,9 @@ export function WizardStep1({
           {!mortgageDetailsConfirmed && (
             /* Editable Mortgage Section - Side by Side Layout */
             <>
-              {/* Desktop: Centered single column layout */}
-              <div className="hidden md:flex justify-center">
-                <div className="p-4 bg-secondary rounded-xl border border-border w-full max-w-md">
+              {/* Desktop: Full width layout */}
+              <div className="hidden md:block">
+                <div className="p-4 bg-secondary rounded-xl border border-border">
                   {/* Outstanding Mortgage Balance */}
                   <div className="flex flex-col items-center mb-4">
                     <p className="text-sm font-semibold text-foreground text-center mb-3">Outstanding Mortgage Balance</p>
