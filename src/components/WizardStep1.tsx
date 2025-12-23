@@ -346,7 +346,7 @@ export function WizardStep1({
               <div>
                 <p className="text-sm text-muted-foreground font-medium">State</p>
                 {propertyDetailsConfirmed ? (
-                  <p className={`text-sm font-medium ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  <p className="text-sm font-medium text-foreground">
                     {getStateName(state)}
                   </p>
                 ) : (
@@ -376,7 +376,7 @@ export function WizardStep1({
               <div>
                 <p className="text-sm text-muted-foreground font-medium">Property Type</p>
                 {propertyDetailsConfirmed ? (
-                  <p className={`text-sm font-medium ${isPropertyTypeEligible(propertyType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  <p className="text-sm font-medium text-foreground">
                     {propertyType}
                   </p>
                 ) : (
@@ -406,7 +406,7 @@ export function WizardStep1({
               <div>
                 <p className="text-sm text-muted-foreground font-medium">Ownership Type</p>
                 {propertyDetailsConfirmed ? (
-                  <p className={`text-sm font-medium ${isOwnershipTypeEligible(ownershipType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  <p className="text-sm font-medium text-foreground">
                     {ownershipType}
                   </p>
                 ) : (
@@ -503,7 +503,7 @@ export function WizardStep1({
               <div>
                 <p className="text-xs text-muted-foreground font-medium">State</p>
                 {propertyDetailsConfirmed ? (
-                  <p className={`text-xs font-medium ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  <p className="text-xs font-medium text-foreground">
                     {getStateName(state)}
                   </p>
                 ) : (
@@ -533,7 +533,7 @@ export function WizardStep1({
               <div>
                 <p className="text-xs text-muted-foreground font-medium">Property</p>
                 {propertyDetailsConfirmed ? (
-                  <p className={`text-xs font-medium ${isPropertyTypeEligible(propertyType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  <p className="text-xs font-medium text-foreground">
                     {propertyType}
                   </p>
                 ) : (
@@ -563,7 +563,7 @@ export function WizardStep1({
               <div>
                 <p className="text-xs text-muted-foreground font-medium">Ownership</p>
                 {propertyDetailsConfirmed ? (
-                  <p className={`text-xs font-medium ${isOwnershipTypeEligible(ownershipType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                  <p className="text-xs font-medium text-foreground">
                     {ownershipType}
                   </p>
                 ) : (
