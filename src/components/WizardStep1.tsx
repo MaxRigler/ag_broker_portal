@@ -934,195 +934,256 @@ export function WizardStep1({
         </div>
       )}
 
-      {/* Settlement Estimator Section (shown when Calculate Cost of Funds is clicked) */}
+      {/* Offer Details Section (shown when Calculate Cost of Funds is clicked) */}
       {showPayoffCalculator && (
-        <div className="space-y-6 pt-4 border-t border-border">
-          {/* Settlement Estimator Header */}
-          <div className="text-center">
-            <h3 className="text-lg font-bold text-foreground uppercase tracking-wide">Settlement Estimator</h3>
-            <p className="text-sm text-muted-foreground">
-              Adjust the funding amount, settlement year & annual appreciation percentage to estimate the cost of capital for your client
-            </p>
-          </div>
+        <div className="space-y-6 animate-fade-in">
+          {/* Offer Details Header */}
+          <h3 className="text-lg font-bold text-foreground uppercase tracking-wide">Offer Details</h3>
 
-          {/* Three Variable Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Funding Amount */}
-            <div className="p-4 bg-secondary rounded-xl border border-border overflow-hidden">
-              <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
-                <DollarSign className="w-4 h-4 text-accent" />
-                Funding Amount
-              </p>
-              <div className="flex items-center justify-center gap-2 w-full">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={() => adjustFunding(-5000)}
-                  disabled={fundingAmount <= 15000}
-                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Minus className="h-3 w-3 md:h-4 md:w-4" />
-                </Button>
-                <Input 
-                  type="text" 
-                  value={formatCurrency(fundingAmount)} 
-                  onChange={handleFundingInputChange} 
-                  className="text-base font-bold bg-background h-12 flex-1 min-w-[80px] max-w-[140px] text-center" 
-                />
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={() => adjustFunding(5000)}
-                  disabled={fundingAmount >= maxInvestment}
-                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Plus className="h-3 w-3 md:h-4 md:w-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground text-center mt-2">$15K - {formatCurrency(maxInvestment)}</p>
-            </div>
-
-            {/* Settlement Year */}
-            <div className="p-4 bg-secondary rounded-xl border border-border overflow-hidden">
-              <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
-                <Calendar className="w-4 h-4 text-accent" />
-                Settlement Year
-              </p>
-              <div className="flex items-center justify-center gap-2 w-full">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={() => adjustSettlementYear(-1)}
-                  disabled={settlementYear <= 1}
-                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Minus className="h-3 w-3 md:h-4 md:w-4" />
-                </Button>
-                <div className="text-base font-bold bg-background h-12 flex-1 min-w-[80px] max-w-[140px] flex items-center justify-center border rounded-md whitespace-nowrap">
-                  {settlementYear} {settlementYear === 1 ? 'Year' : 'Years'}
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column: Slider Controls */}
+            <div className="space-y-6">
+              {/* Funding Amount Slider */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary rounded-full text-sm font-medium border border-border">
+                    <DollarSign className="w-4 h-4 text-accent" />
+                    Funding Amount
+                  </span>
+                  <span className="px-3 py-1.5 bg-background rounded-lg border border-border text-sm font-bold">
+                    {formatCurrency(fundingAmount)}
+                  </span>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={() => adjustSettlementYear(1)}
-                  disabled={settlementYear >= 10}
-                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Plus className="h-3 w-3 md:h-4 md:w-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground text-center mt-2">1 - 10 Years</p>
-            </div>
-
-            {/* Annual Appreciation */}
-            <div className="p-4 bg-secondary rounded-xl border border-border overflow-hidden">
-              <p className="text-sm font-semibold text-foreground text-center mb-3 flex items-center justify-center gap-2">
-                <Home className="w-4 h-4 text-accent" />
-                Annual Appreciation
-              </p>
-              <div className="flex items-center justify-center gap-2 w-full">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={() => adjustHpaRate(-0.5)}
-                  disabled={hpaRate <= -2}
-                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Minus className="h-3 w-3 md:h-4 md:w-4" />
-                </Button>
-                <Input 
-                  type="text" 
-                  value={`${hpaRate >= 0 ? '+' : ''}${hpaRate.toFixed(1)}%`} 
-                  onChange={handleHpaInputChange} 
-                  className={`text-base font-bold bg-background h-12 flex-1 min-w-[80px] max-w-[140px] text-center ${hpaRate >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}
+                <Slider
+                  value={[fundingAmount]}
+                  onValueChange={(value) => setFundingAmount(value[0])}
+                  min={15000}
+                  max={maxInvestment}
+                  step={5000}
+                  className="w-full"
                 />
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={() => adjustHpaRate(0.5)}
-                  disabled={hpaRate >= 6}
-                  className="h-8 w-8 md:h-10 md:w-10 shrink-0 !rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Plus className="h-3 w-3 md:h-4 md:w-4" />
-                </Button>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>$15K</span>
+                  <span>{formatCurrency(maxInvestment)}</span>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground text-center mt-2">-2% to +6%</p>
-            </div>
-          </div>
 
-          {/* Clarifying Agreement Structure Section */}
-          <div className="space-y-4">
-            <div className="text-center">
-              <h3 className="text-lg font-bold text-foreground uppercase tracking-wide">Clarifying Agreement Structure</h3>
-            </div>
-            
-            {/* Dynamic Intro Text */}
-            <p className="text-sm text-muted-foreground text-center px-4">
-              In exchange for {formatCurrency(fundingAmount)} in funding with no monthly payments, a lien will be recorded on the subject property securing a certain Equity Share Percentage in its future value at the time of settlement as demonstrated below.
-            </p>
+              {/* Settlement Year Slider */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary rounded-full text-sm font-medium border border-border">
+                    <Calendar className="w-4 h-4 text-accent" />
+                    Settlement Year
+                  </span>
+                  <span className="px-3 py-1.5 bg-background rounded-lg border border-border text-sm font-bold">
+                    {settlementYear} {settlementYear === 1 ? 'Year' : 'Years'}
+                  </span>
+                </div>
+                <Slider
+                  value={[settlementYear]}
+                  onValueChange={(value) => setSettlementYear(value[0])}
+                  min={1}
+                  max={10}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>1 Year</span>
+                  <span>10 Years</span>
+                </div>
+              </div>
 
-            {/* Visual Equation Display */}
-            <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 py-4">
-              {/* Ending Home Value Box */}
-              <div className="p-4 bg-secondary rounded-xl border border-border text-center min-w-[160px]">
-                <p className="text-xs text-muted-foreground mb-1">Ending Home Value</p>
-                <p className="text-xl font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
-              </div>
-              
-              {/* Multiplication Symbol */}
-              <span className="text-2xl font-bold text-muted-foreground">×</span>
-              
-              {/* Equity Share % Box */}
-              <div className="p-4 bg-secondary rounded-xl border border-border text-center min-w-[160px]">
-                <p className="text-xs text-muted-foreground mb-1">Equity Share %</p>
-                <p className="text-xl font-bold text-foreground">
-                  {homeValue > 0 ? `${((fundingAmount / homeValue) * 2 * 100).toFixed(0)}%` : '0%'}
-                </p>
-              </div>
-              
-              {/* Equals Symbol */}
-              <span className="text-2xl font-bold text-muted-foreground">=</span>
-              
-              {/* Total Cost of Capital Box */}
-              <div className="p-4 bg-secondary rounded-xl border border-accent/30 text-center min-w-[160px]">
-                <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
-                <p className="text-xl font-bold text-accent">{formatCurrency(calculation.totalCost)}</p>
+              {/* Annual Appreciation Slider */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary rounded-full text-sm font-medium border border-border">
+                    <Home className="w-4 h-4 text-accent" />
+                    Annual Appreciation
+                  </span>
+                  <span className={`px-3 py-1.5 bg-background rounded-lg border border-border text-sm font-bold ${hpaRate >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                    {hpaRate >= 0 ? '+' : ''}{hpaRate.toFixed(1)}%
+                  </span>
+                </div>
+                <Slider
+                  value={[hpaRate]}
+                  onValueChange={(value) => setHpaRate(Math.round(value[0] * 10) / 10)}
+                  min={-2}
+                  max={6}
+                  step={0.5}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>-2%</span>
+                  <span>+6%</span>
+                </div>
               </div>
             </div>
 
-            {/* Explanatory Text Block */}
-            <div className="p-4 bg-secondary/50 rounded-xl border border-border">
-              <p className="text-sm text-muted-foreground leading-relaxed">
+            {/* Right Column: Calculation Display */}
+            <div className="space-y-4">
+              {/* Top: Ending Home Value × Equity Share % = */}
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                <div className="p-3 bg-secondary rounded-xl border border-border text-center min-w-[120px]">
+                  <p className="text-xs text-muted-foreground">Ending Home Value</p>
+                  <p className="text-lg font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
+                </div>
+                <span className="text-xl font-bold text-muted-foreground">×</span>
+                <div className="p-3 bg-secondary rounded-xl border border-border text-center min-w-[100px]">
+                  <p className="text-xs text-muted-foreground">Equity Share %</p>
+                  <p className="text-lg font-bold text-foreground">
+                    {homeValue > 0 ? `${((fundingAmount / homeValue) * 2 * 100).toFixed(0)}%` : '0%'}
+                  </p>
+                </div>
+                <span className="text-xl font-bold text-muted-foreground">=</span>
+              </div>
+
+              {/* Total Cost of Capital and APR side by side */}
+              <div className="p-4 bg-secondary rounded-xl border border-accent/30">
+                <div className="flex items-center justify-center gap-8">
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">Total Cost of Capital</p>
+                    <p className="text-3xl font-bold text-accent">{formatCurrency(calculation.totalCost)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">APR</p>
+                    <p className={`text-3xl font-bold ${calculation.isCapped ? 'text-[hsl(var(--success))]' : 'text-foreground'}`}>
+                      {formatPercentage(calculation.apr)}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Cap Note (if applicable) */}
+                {calculation.isCapped && (
+                  <p className="text-xs text-muted-foreground mt-3 text-center">
+                    * APR capped at 19.9% to protect your client
+                  </p>
+                )}
+              </div>
+
+              {/* Disclosure Statement in italics */}
+              <p className="text-xs text-muted-foreground italic leading-relaxed">
                 Settlement amount is calculated by multiplying the Equity Share Percentage with the Ending Home Value of the home. The equity share % will always be fixed for the duration of the agreement, however the ending home value may fluctuate due to market volatility, therefore the ending Settlement Amount is capped to ensure your client will never be charged an effective annualized rate that exceeds 19.9% resulting in the simulated outcome demonstrated below.
               </p>
             </div>
+          </div>
 
-            {/* Two Result Boxes */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Client's Share of Home After Settlement */}
-              <div className="p-5 bg-[hsl(var(--success))]/10 rounded-xl border border-[hsl(var(--success))]/30">
-                <p className="text-sm text-muted-foreground mb-2">Client's Share of Home After Settlement</p>
-                <p className="text-3xl font-bold text-[hsl(var(--success))]">
-                  {formatCurrency(calculation.endingHomeValue - calculation.payoff)}
-                </p>
+          {/* Property Details Section - Moved to Bottom */}
+          <div className="p-3 md:p-4 bg-secondary rounded-xl border border-border">
+            <h4 className="text-sm font-bold text-foreground uppercase tracking-wide mb-3">Property Details</h4>
+            {/* Desktop Layout */}
+            <div className="hidden md:block">
+              {/* Top Row: Value, Address, Owner */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="flex items-start gap-3">
+                  <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Property Value</p>
+                    <p className="text-sm font-bold text-foreground">{formatCurrency(homeValue)}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Address</p>
+                    <p className="font-medium text-foreground text-xs">{address}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Owner</p>
+                    <p className="font-medium text-foreground text-sm">{propertyOwner}</p>
+                  </div>
+                </div>
               </div>
-              
-              {/* Effective APR % */}
-              <div className="p-5 bg-secondary rounded-xl border border-border">
-                <p className="text-sm text-muted-foreground mb-2">Effective APR %</p>
-                <p className="text-3xl font-bold text-foreground">{formatPercentage(calculation.apr)}</p>
+
+              <div className="border-t border-border/50 my-3"></div>
+
+              {/* Bottom Row: State, Property Type, Ownership, Mortgage, LTV, Max Fund */}
+              <div className="grid grid-cols-6 gap-4">
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">State</p>
+                    <p className="text-sm font-medium text-foreground">{getStateName(state)}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Building className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Type</p>
+                    <p className="text-sm font-medium text-foreground">{propertyType}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Ownership</p>
+                    <p className="text-sm font-medium text-foreground">{ownershipType}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <DollarSign className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Mortgage</p>
+                    <p className="text-sm font-bold text-foreground">{formatCurrency(mortgageBalance)}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Percent className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">LTV</p>
+                    <p className={`text-sm font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
+                      {currentCLTV.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <TrendingUp className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Max Fund</p>
+                    <p className="text-sm font-bold text-[hsl(var(--success))]">{formatCurrency(maxInvestment)}</p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Cost Cap Note (if applicable) */}
-            {calculation.isCapped && (
-              <div className="p-4 bg-accent/5 border border-accent/20 rounded-lg">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">Note:</span> The 19.9% annualized cost cap is protecting your client. 
-                  Without the cap, the payoff would be {formatCurrency(calculation.rawUnlockShare)}.
-                </p>
+            {/* Mobile Layout */}
+            <div className="md:hidden space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-start gap-2">
+                  <Home className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Value</p>
+                    <p className="text-sm font-bold text-foreground">{formatCurrency(homeValue)}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <DollarSign className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Mortgage</p>
+                    <p className="text-sm font-bold text-foreground">{formatCurrency(mortgageBalance)}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Percent className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">LTV</p>
+                    <p className={`text-sm font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
+                      {currentCLTV.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <TrendingUp className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Max Fund</p>
+                    <p className="text-sm font-bold text-[hsl(var(--success))]">{formatCurrency(maxInvestment)}</p>
+                  </div>
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
       )}
