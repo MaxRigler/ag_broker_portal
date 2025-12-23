@@ -76,6 +76,7 @@ export function WizardStep1({
   
   // Payoff calculator state
   const [showPayoffCalculator, setShowPayoffCalculator] = useState(false);
+  const [isHidingQualification, setIsHidingQualification] = useState(false);
   const [fundingAmount, setFundingAmount] = useState(15000);
   const [settlementYear, setSettlementYear] = useState(10);
   const [hpaRate, setHpaRate] = useState(3.0); // 3% default as percentage
@@ -204,7 +205,10 @@ export function WizardStep1({
   };
 
   const handleShowCalculator = () => {
-    setShowPayoffCalculator(true);
+    setIsHidingQualification(true);
+    setTimeout(() => {
+      setShowPayoffCalculator(true);
+    }, 300); // Match animation duration
   };
 
   const handleHideCalculator = () => {
@@ -830,9 +834,9 @@ export function WizardStep1({
             </>
           )}
 
-          {/* Combined Results - Property Qualified + Maximum Funding - Only show after mortgage confirmed */}
-          {mortgageDetailsConfirmed && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Combined Results - Property Qualified + Maximum Funding - Only show after mortgage confirmed, hide when calculator shown */}
+          {mortgageDetailsConfirmed && !showPayoffCalculator && (
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isHidingQualification ? 'animate-fade-out-up' : 'animate-slide-in-up'}`}>
             {/* Property Validation Status */}
             {validation ? (
               <div className={`p-4 rounded-xl border ${validation.isValid ? 'bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30' : 'bg-destructive/10 border-destructive/30'}`}>
