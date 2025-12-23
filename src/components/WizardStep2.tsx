@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft, Share2, Calculator } from 'lucide-react';
 import { formatCurrency } from '@/lib/heaCalculator';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -206,14 +206,24 @@ export function WizardStep2({
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <Button variant="outline" size="icon" onClick={onBack} className="flex-shrink-0">
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <Button variant="outline" onClick={handleCalculator} className="flex-1">
-          {isMobile ? 'Calculator' : 'Settlement Estimator'}
-        </Button>
-        <Button variant="success" onClick={handleGenerateOffers} className="flex-1">
-          Generate Offer Links
+        {/* Left Group: Back + Calculator (1/3 width on desktop) */}
+        <div className={`flex gap-3 ${isMobile ? '' : 'flex-1'}`}>
+          <Button variant="outline" size="icon" onClick={onBack} className="flex-shrink-0">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <Button variant="blue" size="icon" onClick={handleCalculator} className="flex-shrink-0">
+            <Calculator className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        {/* Right: Generate Offer Link (2/3 width on desktop) */}
+        <Button 
+          variant="success" 
+          onClick={handleGenerateOffers} 
+          className={isMobile ? 'flex-1' : 'flex-[2]'}
+        >
+          Generate Offer Link
+          <Share2 className="h-4 w-4 ml-2" />
         </Button>
       </div>
 
