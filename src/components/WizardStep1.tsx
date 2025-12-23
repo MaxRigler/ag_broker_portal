@@ -603,16 +603,16 @@ export function WizardStep1({
           <div className="border-t border-border/50"></div>
 
           {/* State, Property Type, Ownership Type - THIRD */}
-          <div className="grid grid-cols-3 gap-2">
-            {/* State */}
-            <div className="flex items-start gap-2">
+          <div className="flex gap-2">
+            {/* State - fixed narrow width */}
+            <div className="flex items-start gap-1 w-[70px]">
               <MapPin className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
+              <div className="flex-1">
                 <p className="text-xs text-muted-foreground font-medium">State</p>
                 {propertyDetailsConfirmed ? <p className="text-xs font-medium text-foreground">
                     {getStateName(state)}
                   </p> : <Select value={state} onValueChange={setState}>
-                    <SelectTrigger className={`bg-background text-xs h-9 ${state ? isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
+                    <SelectTrigger className={`bg-background text-xs h-9 w-full ${state ? isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
                       <SelectValue placeholder="Select">{state ? state : 'Select'}</SelectValue>
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
@@ -624,15 +624,15 @@ export function WizardStep1({
               </div>
             </div>
 
-            {/* Property Type */}
-            <div className="flex items-start gap-2">
+            {/* Property Type - flex to share remaining space */}
+            <div className="flex items-start gap-1 flex-1">
               <Building className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
+              <div className="flex-1">
                 <p className="text-xs text-muted-foreground font-medium">Property</p>
                 {propertyDetailsConfirmed ? <p className="text-xs font-medium text-foreground">
                     {propertyType}
                   </p> : <Select value={propertyType} onValueChange={setPropertyType}>
-                    <SelectTrigger className={`bg-background text-xs h-9 ${propertyType ? isPropertyTypeEligible(propertyType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
+                    <SelectTrigger className={`bg-background text-xs h-9 w-full ${propertyType ? isPropertyTypeEligible(propertyType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
@@ -644,15 +644,15 @@ export function WizardStep1({
               </div>
             </div>
 
-            {/* Ownership Type */}
-            <div className="flex items-start gap-2">
+            {/* Ownership Type - flex to share remaining space */}
+            <div className="flex items-start gap-1 flex-1">
               <User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <div>
+              <div className="flex-1">
                 <p className="text-xs text-muted-foreground font-medium">Ownership</p>
                 {propertyDetailsConfirmed ? <p className="text-xs font-medium text-foreground">
                     {ownershipType}
                   </p> : <Select value={ownershipType} onValueChange={setOwnershipType}>
-                    <SelectTrigger className={`bg-background text-xs h-9 ${ownershipType ? isOwnershipTypeEligible(ownershipType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
+                    <SelectTrigger className={`bg-background text-xs h-9 w-full ${ownershipType ? isOwnershipTypeEligible(ownershipType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive' : ''}`}>
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
