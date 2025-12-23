@@ -216,6 +216,7 @@ export function WizardStep1({
     errors: string[];
   } | null>(null);
   const [homeValue, setHomeValue] = useState(0);
+  const [originalEstimatedValue, setOriginalEstimatedValue] = useState(0);
   const [propertyOwner, setPropertyOwner] = useState('');
   const [mortgageBalance, setMortgageBalance] = useState(0);
 
@@ -256,6 +257,7 @@ export function WizardStep1({
         setPropertyType(data.propertyType);
         const fetchedHomeValue = data.estimatedValue || 500000;
         setHomeValue(fetchedHomeValue);
+        setOriginalEstimatedValue(fetchedHomeValue);
         setMortgageBalance(Math.round(fetchedHomeValue * 0.5));
         setPropertyOwner(data.ownerNames);
         const detectedOwnership = detectOwnershipType(data.ownerNames);
@@ -271,6 +273,7 @@ export function WizardStep1({
         setPropertyType('Single Family');
         setOwnershipType('Personal');
         setHomeValue(500000);
+        setOriginalEstimatedValue(500000);
         setMortgageBalance(250000);
         setPropertyOwner('Unknown');
       } finally {
@@ -302,7 +305,8 @@ export function WizardStep1({
   };
 
   const handleMortgageChange = (value: number) => {
-    const clampedValue = Math.min(Math.max(value, 0), 2850000);
+    const maxMortgage = originalEstimatedValue > 0 ? originalEstimatedValue : 2850000;
+    const clampedValue = Math.min(Math.max(value, 0), maxMortgage);
     setMortgageBalance(clampedValue);
   };
 
@@ -413,13 +417,13 @@ export function WizardStep1({
                 value={[mortgageBalance]}
                 onValueChange={(value) => handleMortgageChange(value[0])}
                 min={0}
-                max={2850000}
+                max={originalEstimatedValue > 0 ? originalEstimatedValue : 2850000}
                 step={10000}
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-2">
                 <span>$0</span>
-                <span>$2.85M</span>
+                <span>{originalEstimatedValue > 0 ? formatCurrency(originalEstimatedValue) : '$2.85M'}</span>
               </div>
             </div>
           </div>
@@ -557,13 +561,13 @@ export function WizardStep1({
               value={[mortgageBalance]}
               onValueChange={(value) => handleMortgageChange(value[0])}
               min={0}
-              max={2850000}
+              max={originalEstimatedValue > 0 ? originalEstimatedValue : 2850000}
               step={10000}
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted-foreground mt-2">
               <span>$0</span>
-              <span>$2.85M</span>
+              <span>{originalEstimatedValue > 0 ? formatCurrency(originalEstimatedValue) : '$2.85M'}</span>
             </div>
           </div>
         </div>
