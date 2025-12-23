@@ -101,7 +101,7 @@ export function WizardStep2({
   }, []);
 
   const handleCalculator = () => {
-    setShowCalculator(!showCalculator);
+    setShowCalculator(true);
   };
   const handleGenerateOffers = () => {
     toast.info('Generate Offer Links coming soon');
@@ -217,19 +217,18 @@ export function WizardStep2({
         </Button>
       </div>
 
-      {/* Animated Settlement Estimator */}
-      {showCalculator && (
-        <SettlementEstimator
-          homeValue={homeValue}
-          maxInvestment={maxInvestment}
-          fundingAmount={fundingAmount}
-          setFundingAmount={setFundingAmount}
-          settlementYear={settlementYear}
-          setSettlementYear={setSettlementYear}
-          hpaRate={hpaRate}
-          setHpaRate={setHpaRate}
-          onClose={() => setShowCalculator(false)}
-        />
-      )}
+      {/* Settlement Estimator Modal */}
+      <SettlementEstimator
+        homeValue={homeValue}
+        maxInvestment={maxInvestment}
+        fundingAmount={fundingAmount}
+        setFundingAmount={setFundingAmount}
+        settlementYear={settlementYear}
+        setSettlementYear={setSettlementYear}
+        hpaRate={hpaRate}
+        setHpaRate={setHpaRate}
+        open={showCalculator}
+        onOpenChange={setShowCalculator}
+      />
     </div>;
 }

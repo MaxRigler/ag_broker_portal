@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, ArrowLeft } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { WizardStep1 } from './WizardStep1';
 import { WizardStep2 } from './WizardStep2';
 import logo from '@/assets/logo.png';
@@ -69,27 +69,17 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-4xl mx-auto px-2 md:px-12">
-        {/* Header Row: Logo + Back Arrow | Step Indicator (right-aligned) */}
+        {/* Header Row: Logo | Title (right-aligned) */}
         <div className="flex items-center justify-between mb-6 md:mb-10">
-          {/* Left: Back Arrow + Logo */}
-          <div className="flex items-center gap-2 md:gap-3">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={currentStep === 1 ? onBack : () => setCurrentStep(1)}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground"
-            >
-              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-            </Button>
-            <img 
-              src={logo} 
-              alt="Equity Advance" 
-              className="hidden md:block md:h-16"
-            />
-          </div>
+          {/* Left: Logo - aligned with content below */}
+          <img 
+            src={logo} 
+            alt="Equity Advance" 
+            className="h-10 md:h-16"
+          />
 
           {/* Right: Property Pre-Qualifier Title */}
-          <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-primary-foreground uppercase tracking-wider">
+          <h1 className="text-base md:text-xl lg:text-2xl font-bold text-primary-foreground tracking-wider">
             Property Pre-Qualifier
           </h1>
         </div>
