@@ -270,68 +270,166 @@ export function WizardStep1({
         </div>
       )}
 
-      {/* Desktop: 3-column grid (Value | Address | Owner) */}
-      {/* Mobile: Stacked (Address/Owner, then Value centered) */}
+      {/* Combined Property Details Section */}
       <div className="p-3 md:p-4 bg-secondary rounded-xl border border-border">
         {/* Desktop Layout */}
-        <div className="hidden md:grid md:grid-cols-3 gap-4">
-          {/* Estimated Property Value - Left */}
-          <div className="flex flex-col items-center">
-            <div className="flex items-center gap-2 mb-2">
-              {propertyDetailsConfirmed && (
-                <Home className="w-5 h-5 text-accent" />
-              )}
-              <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
-            </div>
-            {propertyDetailsConfirmed ? (
-              <p className="text-xl font-bold text-foreground">{formatCurrency(homeValue)}</p>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={decrementValue}
-                  disabled={homeValue <= 175000}
-                  className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Minus className="h-3 w-3" />
-                </Button>
-                <div className="animate-breathe">
-                  <Input 
-                    type="text" 
-                    value={formatCurrency(homeValue)} 
-                    onChange={handleHomeValueInputChange} 
-                    className="text-lg font-bold bg-background h-10 w-32 text-center" 
-                  />
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={incrementValue}
-                  disabled={homeValue >= 3000000}
-                  className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
+        <div className="hidden md:block">
+          {/* Top Row: Value, Address, Owner */}
+          <div className="grid grid-cols-3 gap-4">
+            {/* Estimated Property Value - Left */}
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-2 mb-2">
+                {propertyDetailsConfirmed && (
+                  <Home className="w-5 h-5 text-accent" />
+                )}
+                <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
               </div>
-            )}
-          </div>
-          
-          {/* Property Address - Middle */}
-          <div className="flex items-start gap-3">
-            <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm text-muted-foreground font-medium">Property Address</p>
-              <p className="font-medium text-foreground text-sm">{address}</p>
+              {propertyDetailsConfirmed ? (
+                <p className="text-xl font-bold text-foreground">{formatCurrency(homeValue)}</p>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={decrementValue}
+                    disabled={homeValue <= 175000}
+                    className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <div className="animate-breathe">
+                    <Input 
+                      type="text" 
+                      value={formatCurrency(homeValue)} 
+                      onChange={handleHomeValueInputChange} 
+                      className="text-lg font-bold bg-background h-10 w-32 text-center" 
+                    />
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={incrementValue}
+                    disabled={homeValue >= 3000000}
+                    className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+            </div>
+            
+            {/* Property Address - Middle */}
+            <div className="flex items-start gap-3">
+              <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">Property Address</p>
+                <p className="font-medium text-foreground text-sm">{address}</p>
+              </div>
+            </div>
+            
+            {/* Property Owner - Right */}
+            <div className="flex items-start gap-3">
+              <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">Property Owner</p>
+                <p className="font-medium text-foreground">{propertyOwner}</p>
+              </div>
             </div>
           </div>
-          
-          {/* Property Owner - Right */}
-          <div className="flex items-start gap-3">
-            <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm text-muted-foreground font-medium">Property Owner</p>
-              <p className="font-medium text-foreground">{propertyOwner}</p>
+
+          {/* Divider */}
+          <div className="border-t border-border/50 my-4"></div>
+
+          {/* Bottom Row: State, Property Type, Ownership Type */}
+          <div className="grid grid-cols-3 gap-4">
+            {/* State */}
+            <div className="flex items-start gap-3">
+              <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">State</p>
+                {propertyDetailsConfirmed ? (
+                  <p className={`text-sm font-medium ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                    {getStateName(state)}
+                  </p>
+                ) : (
+                  <Select value={state} onValueChange={setState}>
+                    <SelectTrigger className={`bg-background text-sm h-10 w-40 ${state ? (isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
+                      <SelectValue placeholder="Select">{state ? state : 'Select'}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {ALL_STATES.map(s => (
+                        <SelectItem 
+                          key={s.abbr} 
+                          value={s.abbr}
+                          className={isStateEligible(s.abbr) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                        >
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            </div>
+
+            {/* Property Type */}
+            <div className="flex items-start gap-3">
+              <Building className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">Property Type</p>
+                {propertyDetailsConfirmed ? (
+                  <p className={`text-sm font-medium ${isPropertyTypeEligible(propertyType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                    {propertyType}
+                  </p>
+                ) : (
+                  <Select value={propertyType} onValueChange={setPropertyType}>
+                    <SelectTrigger className={`bg-background text-sm h-10 w-40 ${propertyType ? (isPropertyTypeEligible(propertyType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PROPERTY_TYPES.map(type => (
+                        <SelectItem 
+                          key={type} 
+                          value={type}
+                          className={isPropertyTypeEligible(type) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                        >
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            </div>
+
+            {/* Ownership Type */}
+            <div className="flex items-start gap-3">
+              <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">Ownership Type</p>
+                {propertyDetailsConfirmed ? (
+                  <p className={`text-sm font-medium ${isOwnershipTypeEligible(ownershipType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                    {ownershipType}
+                  </p>
+                ) : (
+                  <Select value={ownershipType} onValueChange={setOwnershipType}>
+                    <SelectTrigger className={`bg-background text-sm h-10 w-40 ${ownershipType ? (isOwnershipTypeEligible(ownershipType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {OWNERSHIP_TYPES.map(type => (
+                        <SelectItem 
+                          key={type} 
+                          value={type}
+                          className={isOwnershipTypeEligible(type) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                        >
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -357,7 +455,7 @@ export function WizardStep1({
           </div>
           
           {/* Estimated Property Value centered */}
-          <div className="flex flex-col items-center pt-2 border-t border-border">
+          <div className="flex flex-col items-center pt-2 border-t border-border/50">
             <div className="flex items-center gap-2 mb-2">
               {propertyDetailsConfirmed && (
                 <Home className="w-4 h-4 text-accent" />
@@ -397,102 +495,105 @@ export function WizardStep1({
               </div>
             )}
           </div>
+
+          {/* Divider */}
+          <div className="border-t border-border/50"></div>
+
+          {/* State, Property Type, Ownership Type */}
+          <div className="grid grid-cols-3 gap-2">
+            {/* State */}
+            <div className="flex items-start gap-2">
+              <MapPin className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">State</p>
+                {propertyDetailsConfirmed ? (
+                  <p className={`text-xs font-medium ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                    {getStateName(state)}
+                  </p>
+                ) : (
+                  <Select value={state} onValueChange={setState}>
+                    <SelectTrigger className={`bg-background text-xs h-9 ${state ? (isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
+                      <SelectValue placeholder="Select">{state ? state : 'Select'}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {ALL_STATES.map(s => (
+                        <SelectItem 
+                          key={s.abbr} 
+                          value={s.abbr}
+                          className={isStateEligible(s.abbr) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                        >
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            </div>
+
+            {/* Property Type */}
+            <div className="flex items-start gap-2">
+              <Building className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">Property</p>
+                {propertyDetailsConfirmed ? (
+                  <p className={`text-xs font-medium ${isPropertyTypeEligible(propertyType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                    {propertyType}
+                  </p>
+                ) : (
+                  <Select value={propertyType} onValueChange={setPropertyType}>
+                    <SelectTrigger className={`bg-background text-xs h-9 ${propertyType ? (isPropertyTypeEligible(propertyType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PROPERTY_TYPES.map(type => (
+                        <SelectItem 
+                          key={type} 
+                          value={type}
+                          className={isPropertyTypeEligible(type) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                        >
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            </div>
+
+            {/* Ownership Type */}
+            <div className="flex items-start gap-2">
+              <User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">Ownership</p>
+                {propertyDetailsConfirmed ? (
+                  <p className={`text-xs font-medium ${isOwnershipTypeEligible(ownershipType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
+                    {ownershipType}
+                  </p>
+                ) : (
+                  <Select value={ownershipType} onValueChange={setOwnershipType}>
+                    <SelectTrigger className={`bg-background text-xs h-9 ${ownershipType ? (isOwnershipTypeEligible(ownershipType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {OWNERSHIP_TYPES.map(type => (
+                        <SelectItem 
+                          key={type} 
+                          value={type}
+                          className={isOwnershipTypeEligible(type) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
+                        >
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Dropdowns Row - Single row on mobile with abbreviated labels */}
-      <div className="p-3 md:p-4 bg-secondary rounded-xl border border-border">
-        <div className="grid grid-cols-3 gap-2 md:gap-4">
-          <div className="space-y-1 md:space-y-2">
-            <Label className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
-              <MapPin className="w-3 h-3 md:w-4 md:h-4 text-accent" />
-              State
-            </Label>
-            {propertyDetailsConfirmed ? (
-              <p className={`text-xs md:text-sm font-medium py-2 ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                {getStateName(state)}
-              </p>
-            ) : (
-              <Select value={state} onValueChange={setState}>
-                <SelectTrigger className={`bg-background text-xs md:text-sm h-9 md:h-10 ${state ? (isStateEligible(state) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
-                  <SelectValue placeholder="Select">{state ? state : 'Select'}</SelectValue>
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
-                  {ALL_STATES.map(s => (
-                    <SelectItem 
-                      key={s.abbr} 
-                      value={s.abbr}
-                      className={isStateEligible(s.abbr) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
-                    >
-                      {s.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-
-          <div className="space-y-1 md:space-y-2">
-            <Label className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
-              <Building className="w-3 h-3 md:w-4 md:h-4 text-accent" />
-              <span className="md:hidden">Property</span>
-              <span className="hidden md:inline">Property Type</span>
-            </Label>
-            {propertyDetailsConfirmed ? (
-              <p className={`text-xs md:text-sm font-medium py-2 ${isPropertyTypeEligible(propertyType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                {propertyType}
-              </p>
-            ) : (
-              <Select value={propertyType} onValueChange={setPropertyType}>
-                <SelectTrigger className={`bg-background text-xs md:text-sm h-9 md:h-10 ${propertyType ? (isPropertyTypeEligible(propertyType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PROPERTY_TYPES.map(type => (
-                    <SelectItem 
-                      key={type} 
-                      value={type}
-                      className={isPropertyTypeEligible(type) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
-                    >
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-
-          <div className="space-y-1 md:space-y-2">
-            <Label className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
-              <User className="w-3 h-3 md:w-4 md:h-4 text-accent" />
-              <span className="md:hidden">Ownership</span>
-              <span className="hidden md:inline">Ownership Type</span>
-            </Label>
-            {propertyDetailsConfirmed ? (
-              <p className={`text-xs md:text-sm font-medium py-2 ${isOwnershipTypeEligible(ownershipType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                {ownershipType}
-              </p>
-            ) : (
-              <Select value={ownershipType} onValueChange={setOwnershipType}>
-                <SelectTrigger className={`bg-background text-xs md:text-sm h-9 md:h-10 ${ownershipType ? (isOwnershipTypeEligible(ownershipType) ? 'border-[hsl(var(--success))] border-2 text-[hsl(var(--success))]' : 'border-destructive border-2 text-destructive') : ''}`}>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {OWNERSHIP_TYPES.map(type => (
-                    <SelectItem 
-                      key={type} 
-                      value={type}
-                      className={isOwnershipTypeEligible(type) ? 'text-[hsl(var(--success))]' : 'text-destructive'}
-                    >
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-        </div>
-      </div>
 
       {/* Sections shown after confirming property details */}
       {propertyDetailsConfirmed && (
