@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/heaCalculator';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SettlementEstimator } from './SettlementEstimator';
+import { triggerConfetti } from '@/components/ui/confetti';
 
 interface WizardStep2Props {
   address: string;
@@ -93,6 +94,11 @@ export function WizardStep2({
   const [fundingAmount, setFundingAmount] = useState(maxInvestment);
   const [settlementYear, setSettlementYear] = useState(10);
   const [hpaRate, setHpaRate] = useState(0.03);
+
+  // Trigger confetti animation on mount (property pre-qualified)
+  useEffect(() => {
+    triggerConfetti();
+  }, []);
 
   const handleCalculator = () => {
     setShowCalculator(!showCalculator);
