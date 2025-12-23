@@ -658,47 +658,6 @@ export function WizardStep1({
         </div>
       </div>
 
-      {/* Property Qualification Status */}
-      {validation && (
-        <div className={`p-4 rounded-xl border animate-fade-in ${isFullyEligible ? 'bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30' : 'bg-destructive/10 border-destructive/30'}`}>
-          <div className="flex items-center gap-2 mb-3">
-            {isFullyEligible ? (
-              <>
-                <CheckCircle2 className="w-5 h-5 text-[hsl(var(--success))]" />
-                <span className="font-semibold text-[hsl(var(--success))]">Property Pre-Qualified!</span>
-              </>
-            ) : (
-              <>
-                <XCircle className="w-5 h-5 text-destructive" />
-                <span className="font-semibold text-destructive">Property Does Not Qualify</span>
-              </>
-            )}
-          </div>
-          <ul className="space-y-1.5 ml-7">
-            <li className={`flex items-center gap-2 text-sm ${isStateEligible(state) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-              {isStateEligible(state) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-              <span>Eligible State: <span className="font-semibold">{getStateName(state)}</span></span>
-            </li>
-            <li className={`flex items-center gap-2 text-sm ${isPropertyTypeEligible(propertyType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-              {isPropertyTypeEligible(propertyType) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-              <span>Eligible Property Type: <span className="font-semibold">{propertyType}</span></span>
-            </li>
-            <li className={`flex items-center gap-2 text-sm ${isOwnershipTypeEligible(ownershipType) ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-              {isOwnershipTypeEligible(ownershipType) ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-              <span>Ownership Type: <span className="font-semibold">{ownershipType}</span></span>
-            </li>
-            <li className={`flex items-center gap-2 text-sm ${homeValue >= 175000 && homeValue <= 3000000 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-              {homeValue >= 175000 && homeValue <= 3000000 ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-              <span>Home Value: <span className="font-semibold">{formatCurrency(homeValue)}</span></span>
-            </li>
-            <li className={`flex items-center gap-2 text-sm ${currentCLTV <= 80 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-              {currentCLTV <= 80 ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
-              <span>CLTV: <span className="font-semibold">{currentCLTV.toFixed(1)}%</span> (under 80% max)</span>
-            </li>
-          </ul>
-        </div>
-      )}
-
       {/* Action Buttons */}
       <div className="flex gap-3">
         <Button variant="outline" onClick={onBack} className="flex-1">
