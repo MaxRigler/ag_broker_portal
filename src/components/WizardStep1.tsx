@@ -277,45 +277,43 @@ export function WizardStep1({
           {/* Top Row: Value, Address, Owner */}
           <div className="grid grid-cols-3 gap-4">
             {/* Estimated Property Value - Left */}
-            <div className="flex flex-col items-center">
-              <div className="flex items-center gap-2 mb-2">
-                {propertyDetailsConfirmed && (
-                  <Home className="w-5 h-5 text-accent" />
-                )}
+            <div className="flex items-start gap-3">
+              <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+              <div>
                 <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
-              </div>
-              {propertyDetailsConfirmed ? (
-                <p className="text-xl font-bold text-foreground">{formatCurrency(homeValue)}</p>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    onClick={decrementValue}
-                    disabled={homeValue <= 175000}
-                    className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <div className="animate-breathe">
-                    <Input 
-                      type="text" 
-                      value={formatCurrency(homeValue)} 
-                      onChange={handleHomeValueInputChange} 
-                      className="text-lg font-bold bg-background h-10 w-32 text-center" 
-                    />
+                {propertyDetailsConfirmed ? (
+                  <p className="text-xl font-bold text-foreground">{formatCurrency(homeValue)}</p>
+                ) : (
+                  <div className="flex items-center gap-2 mt-1">
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={decrementValue}
+                      disabled={homeValue <= 175000}
+                      className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                    <div className="animate-breathe">
+                      <Input 
+                        type="text" 
+                        value={formatCurrency(homeValue)} 
+                        onChange={handleHomeValueInputChange} 
+                        className="text-lg font-bold bg-background h-10 w-32 text-center" 
+                      />
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={incrementValue}
+                      disabled={homeValue >= 3000000}
+                      className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    onClick={incrementValue}
-                    disabled={homeValue >= 3000000}
-                    className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
             
             {/* Property Address - Middle */}
@@ -454,46 +452,44 @@ export function WizardStep1({
             </div>
           </div>
           
-          {/* Estimated Property Value centered */}
-          <div className="flex flex-col items-center pt-2 border-t border-border/50">
-            <div className="flex items-center gap-2 mb-2">
-              {propertyDetailsConfirmed && (
-                <Home className="w-4 h-4 text-accent" />
-              )}
+          {/* Estimated Property Value - left aligned */}
+          <div className="flex items-start gap-2 pt-2 border-t border-border/50">
+            <Home className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+            <div>
               <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
-            </div>
-            {propertyDetailsConfirmed ? (
-              <p className="text-lg font-bold text-foreground">{formatCurrency(homeValue)}</p>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={decrementValue}
-                  disabled={homeValue <= 175000}
-                  className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Minus className="h-3 w-3" />
-                </Button>
-                <div className="animate-breathe">
-                  <Input 
-                    type="text" 
-                    value={formatCurrency(homeValue)} 
-                    onChange={handleHomeValueInputChange} 
-                    className="text-lg font-bold bg-background h-10 w-32 text-center" 
-                  />
+              {propertyDetailsConfirmed ? (
+                <p className="text-lg font-bold text-foreground">{formatCurrency(homeValue)}</p>
+              ) : (
+                <div className="flex items-center gap-2 mt-1">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={decrementValue}
+                    disabled={homeValue <= 175000}
+                    className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <div className="animate-breathe">
+                    <Input 
+                      type="text" 
+                      value={formatCurrency(homeValue)} 
+                      onChange={handleHomeValueInputChange} 
+                      className="text-lg font-bold bg-background h-10 w-32 text-center" 
+                    />
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={incrementValue}
+                    disabled={homeValue >= 3000000}
+                    className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={incrementValue}
-                  disabled={homeValue >= 3000000}
-                  className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Divider */}
@@ -608,32 +604,32 @@ export function WizardStep1({
             <div className="p-4 bg-secondary rounded-xl border border-border">
               <div className="grid grid-cols-3 gap-4">
                 {/* Outstanding Mortgage Balance */}
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <DollarSign className="w-4 h-4 text-accent" />
+                <div className="flex items-start gap-3">
+                  <DollarSign className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
                     <p className="text-xs md:text-sm text-muted-foreground font-medium">Outstanding Mortgage</p>
+                    <p className="text-lg md:text-xl font-bold text-foreground">{formatCurrency(mortgageBalance)}</p>
                   </div>
-                  <p className="text-lg md:text-xl font-bold text-foreground">{formatCurrency(mortgageBalance)}</p>
                 </div>
                 
                 {/* Loan-to-Value */}
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Percent className="w-4 h-4 text-accent" />
+                <div className="flex items-start gap-3">
+                  <Percent className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
                     <p className="text-xs md:text-sm text-muted-foreground font-medium">Loan-to-Value</p>
+                    <p className={`text-lg md:text-xl font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
+                      {currentCLTV.toFixed(1)}%
+                    </p>
                   </div>
-                  <p className={`text-lg md:text-xl font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
-                    {currentCLTV.toFixed(1)}%
-                  </p>
                 </div>
                 
                 {/* Maximum Funding */}
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <TrendingUp className="w-4 h-4 text-accent" />
+                <div className="flex items-start gap-3">
+                  <TrendingUp className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
                     <p className="text-xs md:text-sm text-muted-foreground font-medium">Max Funding</p>
+                    <p className="text-lg md:text-xl font-bold text-[hsl(var(--success))]">{formatCurrency(maxInvestment)}</p>
                   </div>
-                  <p className="text-lg md:text-xl font-bold text-[hsl(var(--success))]">{formatCurrency(maxInvestment)}</p>
                 </div>
               </div>
             </div>
