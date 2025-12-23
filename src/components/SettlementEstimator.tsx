@@ -57,7 +57,7 @@ export function SettlementEstimator({
           <div className="space-y-3 md:space-y-0">
             {/* Mobile Layout */}
             <div className="md:hidden">
-              <div className="grid grid-cols-[1fr_24px_1fr] gap-y-2 gap-x-0 items-center">
+              <div className="grid grid-cols-[1fr_24px_1fr] gap-y-0 gap-x-0 items-center">
                 {/* Row 1, Col 1: Ending Value */}
                 <div className="h-[100px] p-3 bg-background rounded-lg border border-border relative">
                   <p className="text-xs text-muted-foreground absolute top-3 left-3">Ending Value</p>
@@ -83,7 +83,7 @@ export function SettlementEstimator({
                 
                 {/* Row 2: Centered = sign */}
                 <div></div>
-                <div className="flex justify-center py-1">
+                <div className="flex justify-center items-center h-4">
                   <span className="text-sm font-medium text-muted-foreground">=</span>
                 </div>
                 <div></div>
