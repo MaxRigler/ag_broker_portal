@@ -580,7 +580,7 @@ export function WizardStep1({
                     <p className="text-sm font-semibold text-foreground text-center mb-3">Combined Loan-to-Value (CLTV)</p>
                     <div className="flex-1 flex flex-col justify-center">
                       {/* Slider with percentage on thumb */}
-                      <div className="relative px-2">
+                      <div className="relative px-2 pt-8">
                         <Slider
                           value={[currentCLTV]}
                           onValueChange={handleCLTVSliderChange}
@@ -591,8 +591,8 @@ export function WizardStep1({
                         />
                         {/* Percentage badge that follows the slider thumb */}
                         <div 
-                          className="absolute -top-8 transform -translate-x-1/2 pointer-events-none"
-                          style={{ left: `${Math.min(Math.max(currentCLTV, 5), 95)}%` }}
+                          className="absolute top-0 transform -translate-x-1/2 pointer-events-none"
+                          style={{ left: `${Math.min(Math.max(currentCLTV, 8), 92)}%` }}
                         >
                           <Badge 
                             variant="outline" 
