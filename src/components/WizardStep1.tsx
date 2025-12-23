@@ -256,7 +256,7 @@ export function WizardStep1({
         setPropertyType(data.propertyType);
         const fetchedHomeValue = data.estimatedValue || 500000;
         setHomeValue(fetchedHomeValue);
-        setMortgageBalance(0);
+        setMortgageBalance(Math.round(fetchedHomeValue * 0.5));
         setPropertyOwner(data.ownerNames);
         const detectedOwnership = detectOwnershipType(data.ownerNames);
         setOwnershipType(detectedOwnership);
@@ -271,7 +271,7 @@ export function WizardStep1({
         setPropertyType('Single Family');
         setOwnershipType('Personal');
         setHomeValue(500000);
-        setMortgageBalance(0);
+        setMortgageBalance(250000);
         setPropertyOwner('Unknown');
       } finally {
         setIsLoading(false);
