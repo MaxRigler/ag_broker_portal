@@ -62,7 +62,7 @@ export function SettlementEstimator({
                   <p className="text-xs text-muted-foreground mb-1">Ending Value</p>
                   <p className="text-base font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
                   <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
-                    Your home's projected value at settlement.
+                    Projected Home Value at Settlement
                   </p>
                 </div>
                 
@@ -72,7 +72,7 @@ export function SettlementEstimator({
                   <p className="text-xs text-muted-foreground mb-1">Equity Share</p>
                   <p className="text-base font-bold text-foreground">{equitySharePercent}%</p>
                   <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
-                    2× your funding ÷ home value.
+                    2X Funding ÷ Starting Home Value
                   </p>
                 </div>
                 
@@ -95,7 +95,7 @@ export function SettlementEstimator({
                 <p className="text-xs text-muted-foreground mb-1">Ending Home Value</p>
                 <p className="text-lg font-bold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  Your home's projected value at settlement.
+                  Projected Home Value at Settlement
                 </p>
               </div>
               
@@ -105,7 +105,7 @@ export function SettlementEstimator({
                 <p className="text-xs text-muted-foreground mb-1">Equity Share %</p>
                 <p className="text-lg font-bold text-foreground">{equitySharePercent}%</p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  2× your funding ÷ home value.
+                  2X Funding ÷ Starting Home Value
                 </p>
               </div>
               
