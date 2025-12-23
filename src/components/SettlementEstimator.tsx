@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Calendar, TrendingUp, DollarSign, Calculator } from 'lucide-react';
-import { calculateHEACost, formatCurrency, formatPercentage } from '@/lib/heaCalculator';
+import { calculateHEASettlement, formatCurrency, formatPercentage } from '@/lib/heaCalculator';
 import {
   Dialog,
   DialogContent,
@@ -35,9 +35,9 @@ export function SettlementEstimator({
   onOpenChange
 }: SettlementEstimatorProps) {
   const calculation = useMemo(() => {
-    return calculateHEACost(fundingAmount, homeValue, settlementYear, hpaRate);
+    return calculateHEASettlement(homeValue, fundingAmount, hpaRate, settlementYear);
   }, [fundingAmount, homeValue, settlementYear, hpaRate]);
-  const equitySharePercent = (fundingAmount / homeValue * 2 * 100).toFixed(0);
+  const equitySharePercent = calculation.unlockPercentage.toFixed(0);
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,13 +79,25 @@ export function SettlementEstimator({
                 <span className="flex items-center text-sm font-medium text-muted-foreground">=</span>
               </div>
               
-              {/* Bottom row: Total Cost of Capital */}
-              <div className="p-4 bg-background rounded-lg border border-border text-center">
-                <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
-                <p className="text-xl font-bold text-[hsl(var(--success))]">{formatCurrency(calculation.totalCost)}</p>
-                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  Settlement Amount - Initial Funding
-                </p>
+              {/* Bottom row: Total Cost of Capital @ Annualized Cost */}
+              <div className="flex items-stretch gap-2">
+                <div className="flex-1 p-3 bg-background rounded-lg border border-border text-center">
+                  <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
+                  <p className="text-base font-bold text-foreground">{formatCurrency(calculation.totalCostOfCapital)}</p>
+                  <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                    Settlement Amount - Initial Funding
+                  </p>
+                </div>
+                
+                <span className="flex items-center text-sm font-medium text-muted-foreground">@</span>
+                
+                <div className="flex-1 p-3 bg-background rounded-lg border border-border text-center">
+                  <p className="text-xs text-muted-foreground mb-1">Annualized Cost</p>
+                  <p className="text-base font-bold text-[hsl(var(--success))]">{formatPercentage(calculation.annualizedCost, 1)}</p>
+                  <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                    Capped at 19.9% annualized cost limit
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -113,9 +125,19 @@ export function SettlementEstimator({
               
               <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
                 <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
-                <p className="text-lg font-bold text-[hsl(var(--success))]">{formatCurrency(calculation.totalCost)}</p>
+                <p className="text-lg font-bold text-foreground">{formatCurrency(calculation.totalCostOfCapital)}</p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
                   Settlement Amount - Initial Funding
+                </p>
+              </div>
+              
+              <span className="text-lg font-medium text-muted-foreground">@</span>
+              
+              <div className="flex-1 min-w-[160px] max-w-[200px] p-4 bg-background rounded-lg border border-border">
+                <p className="text-xs text-muted-foreground mb-1">Annualized Cost</p>
+                <p className="text-lg font-bold text-[hsl(var(--success))]">{formatPercentage(calculation.annualizedCost, 1)}</p>
+                <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
+                  Capped at 19.9% annualized cost limit
                 </p>
               </div>
             </div>
@@ -175,13 +197,9 @@ export function SettlementEstimator({
             </div>
           </div>
 
-          {/* Disclaimer and APR */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-border">
-            <p className="text-xs text-muted-foreground max-w-md">The Settlement Amount is calculated as the fixed equity share percentage of the property's Ending Home Value. To protect against market volatility, this payment is capped at a 19.9% Annualized Cost Limit, ensuring your total cost never exceeds this effective rate</p>
-            <div className="px-4 py-2 bg-background rounded-lg border border-border text-center flex-shrink-0">
-              <p className="text-xs text-muted-foreground">APR</p>
-              <p className="text-lg font-bold text-foreground">{formatPercentage(calculation.apr * 100, 1)}</p>
-            </div>
+          {/* Disclaimer */}
+          <div className="pt-4 border-t border-border">
+            <p className="text-xs text-muted-foreground">The Settlement Amount is calculated as the fixed equity share percentage of the property's Ending Home Value. To protect against market volatility, this payment is capped at a 19.9% Annualized Cost Limit, ensuring your total cost never exceeds this effective rate.</p>
           </div>
         </div>
       </DialogContent>
