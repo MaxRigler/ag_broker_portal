@@ -126,7 +126,7 @@ export function WizardStep2({
               </p>
             </div>
             <div className="flex-1">
-              <p className="text-[10px] text-muted-foreground font-medium mb-1">Monthly Payment</p>
+              <p className="text-[10px] text-muted-foreground font-medium mb-1 whitespace-nowrap">Monthly Payment</p>
               <p className="text-xl md:text-2xl font-bold text-muted-foreground">
                 $0.00
               </p>
