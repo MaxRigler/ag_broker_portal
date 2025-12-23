@@ -430,6 +430,46 @@ export function WizardStep1({
               </div>
             </div>
           </div>
+
+          {/* Third Row: Mortgage Details (shown when mortgage confirmed) */}
+          {mortgageDetailsConfirmed && (
+            <>
+              {/* Divider */}
+              <div className="border-t border-border/50 my-4"></div>
+              
+              {/* Mortgage Row: Outstanding Mortgage, LTV, Max Funding */}
+              <div className="grid grid-cols-3 gap-4 animate-slide-in-up">
+                {/* Outstanding Mortgage Balance */}
+                <div className="flex items-start gap-3">
+                  <DollarSign className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-muted-foreground font-medium">Outstanding Mortgage</p>
+                    <p className="text-xl font-bold text-foreground">{formatCurrency(mortgageBalance)}</p>
+                  </div>
+                </div>
+                
+                {/* Loan-to-Value */}
+                <div className="flex items-start gap-3">
+                  <Percent className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-muted-foreground font-medium">Loan-to-Value</p>
+                    <p className={`text-xl font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
+                      {currentCLTV.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Maximum Funding */}
+                <div className="flex items-start gap-3">
+                  <TrendingUp className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-muted-foreground font-medium">Max Funding</p>
+                    <p className="text-xl font-bold text-[hsl(var(--success))]">{formatCurrency(maxInvestment)}</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Mobile Layout */}
@@ -587,6 +627,46 @@ export function WizardStep1({
               </div>
             </div>
           </div>
+
+          {/* Third Row: Mortgage Details (shown when mortgage confirmed) - Mobile */}
+          {mortgageDetailsConfirmed && (
+            <>
+              {/* Divider */}
+              <div className="border-t border-border/50"></div>
+              
+              {/* Mortgage Row: Outstanding Mortgage, LTV, Max Funding */}
+              <div className="grid grid-cols-3 gap-2 animate-slide-in-up">
+                {/* Outstanding Mortgage Balance */}
+                <div className="flex items-start gap-2">
+                  <DollarSign className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Mortgage</p>
+                    <p className="text-sm font-bold text-foreground">{formatCurrency(mortgageBalance)}</p>
+                  </div>
+                </div>
+                
+                {/* Loan-to-Value */}
+                <div className="flex items-start gap-2">
+                  <Percent className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">LTV</p>
+                    <p className={`text-sm font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
+                      {currentCLTV.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Maximum Funding */}
+                <div className="flex items-start gap-2">
+                  <TrendingUp className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Max Fund</p>
+                    <p className="text-sm font-bold text-[hsl(var(--success))]">{formatCurrency(maxInvestment)}</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -594,46 +674,14 @@ export function WizardStep1({
       {/* Sections shown after confirming property details */}
       {propertyDetailsConfirmed && (
         <div className="space-y-4 animate-fade-in">
-          {/* Section Header for Mortgage */}
-          <h2 className="text-lg md:text-xl font-bold text-foreground pt-2">
-            {mortgageDetailsConfirmed ? 'Mortgage Details' : 'Confirm Mortgage Details'}
-          </h2>
+          {/* Section Header for Mortgage - only show when not confirmed */}
+          {!mortgageDetailsConfirmed && (
+            <h2 className="text-lg md:text-xl font-bold text-foreground pt-2">
+              Confirm Mortgage Details
+            </h2>
+          )}
 
-          {mortgageDetailsConfirmed ? (
-            /* Read-only Mortgage Summary after confirmation */
-            <div className="p-4 bg-secondary rounded-xl border border-border">
-              <div className="grid grid-cols-3 gap-4">
-                {/* Outstanding Mortgage Balance */}
-                <div className="flex items-start gap-3">
-                  <DollarSign className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs md:text-sm text-muted-foreground font-medium">Outstanding Mortgage</p>
-                    <p className="text-lg md:text-xl font-bold text-foreground">{formatCurrency(mortgageBalance)}</p>
-                  </div>
-                </div>
-                
-                {/* Loan-to-Value */}
-                <div className="flex items-start gap-3">
-                  <Percent className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs md:text-sm text-muted-foreground font-medium">Loan-to-Value</p>
-                    <p className={`text-lg md:text-xl font-bold ${currentCLTV > 80 ? 'text-destructive' : 'text-[hsl(var(--success))]'}`}>
-                      {currentCLTV.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Maximum Funding */}
-                <div className="flex items-start gap-3">
-                  <TrendingUp className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs md:text-sm text-muted-foreground font-medium">Max Funding</p>
-                    <p className="text-lg md:text-xl font-bold text-[hsl(var(--success))]">{formatCurrency(maxInvestment)}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
+          {!mortgageDetailsConfirmed && (
             /* Editable Mortgage Section - Side by Side Layout */
             <>
               {/* Desktop: Side-by-side layout */}
