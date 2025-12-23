@@ -98,7 +98,7 @@ export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: Wizar
               <Calendar className="w-4 h-4 text-accent" />
               Settlement Year
             </Label>
-            <span className="text-xl font-bold text-foreground">{settlementYear} {settlementYear === 1 ? 'Year' : 'Years'}</span>
+            <span className="text-xl font-bold text-muted-foreground">{settlementYear} {settlementYear === 1 ? 'Year' : 'Years'}</span>
           </div>
           <Slider
             value={[settlementYear]}
@@ -144,7 +144,7 @@ export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: Wizar
       <div className="p-6 bg-card border border-border rounded-xl shadow-lg space-y-6">
         <div className="flex items-center gap-2">
           <Calculator className="w-5 h-5 text-accent" />
-          <h3 className="font-semibold text-lg text-foreground">Payoff Estimate</h3>
+          <h3 className="font-semibold text-lg text-muted-foreground">Payoff Estimate</h3>
           {calculation.isCapped && (
             <Badge variant="outline" className="ml-auto bg-accent/10 text-accent border-accent/30">
               <Shield className="w-3 h-3 mr-1" />
@@ -156,7 +156,7 @@ export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: Wizar
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 bg-secondary rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">Estimated Payoff at Year {settlementYear}</p>
-            <p className="text-2xl font-bold text-foreground">{formatCurrency(calculation.payoff)}</p>
+            <p className="text-2xl font-bold text-muted-foreground">{formatCurrency(calculation.payoff)}</p>
           </div>
           <div className="p-4 bg-secondary rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">Effective Annualized Cost</p>
@@ -167,18 +167,18 @@ export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: Wizar
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 bg-secondary rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">Total Cost of Capital</p>
-            <p className="text-xl font-semibold text-foreground">{formatCurrency(calculation.totalCost)}</p>
+            <p className="text-xl font-semibold text-muted-foreground">{formatCurrency(calculation.totalCost)}</p>
           </div>
           <div className="p-4 bg-secondary rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">Projected Home Value (Year {settlementYear})</p>
-            <p className="text-xl font-semibold text-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
+            <p className="text-xl font-semibold text-muted-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
           </div>
         </div>
 
         {calculation.isCapped && (
           <div className="p-4 bg-accent/5 border border-accent/20 rounded-lg">
             <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Note:</span> The 19.9% annualized cost cap is protecting your client. 
+              <span className="font-medium text-muted-foreground">Note:</span> The 19.9% annualized cost cap is protecting your client. 
               Without the cap, the payoff would be {formatCurrency(calculation.rawUnlockShare)}.
             </p>
           </div>

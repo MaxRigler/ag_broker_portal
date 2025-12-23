@@ -378,15 +378,15 @@ export function WizardStep1({
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-xs text-muted-foreground font-medium">Property Address</p>
-                <p className="font-medium text-foreground text-sm">{address}</p>
+              <p className="text-xs text-muted-foreground font-medium">Property Address</p>
+                <p className="font-medium text-muted-foreground text-sm">{address}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-xs text-muted-foreground font-medium">Property Owner</p>
-                <p className="font-medium text-foreground">{propertyOwner}</p>
+              <p className="text-xs text-muted-foreground font-medium">Property Owner</p>
+                <p className="font-medium text-muted-foreground">{propertyOwner}</p>
               </div>
             </div>
           </div>
@@ -396,7 +396,7 @@ export function WizardStep1({
         <div className="grid grid-cols-2 gap-6 mb-6">
           {/* Confirm Property Value */}
           <div className="p-4 bg-secondary rounded-xl border border-border">
-            <p className="text-sm font-semibold text-foreground text-center mb-4">Confirm Property Value</p>
+            <p className="text-sm font-semibold text-muted-foreground text-center mb-4">Confirm Property Value</p>
             <div className="flex justify-center mb-4">
               <Input
                 type="text"
@@ -423,7 +423,7 @@ export function WizardStep1({
 
           {/* Confirm Mortgage Balance */}
           <div className="p-4 bg-secondary rounded-xl border border-border">
-            <p className="text-sm font-semibold text-foreground text-center mb-4">Confirm Mortgage Balance</p>
+            <p className="text-sm font-semibold text-muted-foreground text-center mb-4">Confirm Mortgage Balance</p>
             <div className="flex justify-center mb-4">
               <Input
                 type="text"
@@ -524,14 +524,14 @@ export function WizardStep1({
               <MapPin className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground font-medium">Address</p>
-                <p className="font-medium text-foreground text-xs leading-tight">{address}</p>
+                <p className="font-medium text-muted-foreground text-xs leading-tight">{address}</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
               <User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground font-medium">Owner</p>
-                <p className="font-medium text-foreground text-sm">{propertyOwner}</p>
+                <p className="font-medium text-muted-foreground text-sm">{propertyOwner}</p>
               </div>
             </div>
           </div>
@@ -539,7 +539,7 @@ export function WizardStep1({
 
         {/* Confirm Property Value Slider */}
         <div className="p-4 bg-secondary rounded-xl border border-border">
-          <p className="text-sm font-semibold text-foreground text-center mb-3">Confirm Property Value</p>
+          <p className="text-sm font-semibold text-muted-foreground text-center mb-3">Confirm Property Value</p>
           <div className="flex justify-center mb-4">
             <Input
               type="text"
@@ -566,7 +566,7 @@ export function WizardStep1({
 
         {/* Confirm Mortgage Balance Slider */}
         <div className="p-4 bg-secondary rounded-xl border border-border">
-          <p className="text-sm font-semibold text-foreground text-center mb-3">Confirm Mortgage Balance</p>
+          <p className="text-sm font-semibold text-muted-foreground text-center mb-3">Confirm Mortgage Balance</p>
           <div className="flex justify-center mb-4">
             <Input
               type="text"

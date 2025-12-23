@@ -146,23 +146,23 @@ export function WizardStep2({
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-foreground">Eligible State: {getStateName(state)}</span>
+                <span className="text-sm text-muted-foreground">Eligible State: {getStateName(state)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-foreground">Eligible Property Type: {propertyType}</span>
+                <span className="text-sm text-muted-foreground">Eligible Property Type: {propertyType}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-foreground">Ownership Type: {ownershipType}</span>
+                <span className="text-sm text-muted-foreground">Ownership Type: {ownershipType}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-foreground">Home Value: {formatCurrency(homeValue)}</span>
+                <span className="text-sm text-muted-foreground">Home Value: {formatCurrency(homeValue)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-foreground">CLTV: {currentCLTV.toFixed(1)}% (under 80% max)</span>
+                <span className="text-sm text-muted-foreground">CLTV: {currentCLTV.toFixed(1)}% (under 80% max)</span>
               </div>
             </div>
           </div>
@@ -176,7 +176,7 @@ export function WizardStep2({
               <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-sm text-muted-foreground font-medium">Property Address</p>
-                <p className="text-sm font-bold text-foreground mt-1">{address}</p>
+                <p className="text-sm font-bold text-muted-foreground mt-1">{address}</p>
               </div>
             </div>
           </div>}
@@ -187,7 +187,7 @@ export function WizardStep2({
             <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
-              <p className="text-lg font-bold text-foreground mt-1">{formatCurrency(homeValue)}</p>
+              <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(homeValue)}</p>
             </div>
           </div>
         </div>
@@ -198,7 +198,7 @@ export function WizardStep2({
             <DollarSign className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm text-muted-foreground font-medium">Mortgage</p>
-              <p className="text-lg font-bold text-foreground mt-1">{formatCurrency(mortgageBalance)}</p>
+              <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(mortgageBalance)}</p>
             </div>
           </div>
         </div>
