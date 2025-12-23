@@ -275,7 +275,8 @@ export function WizardStep1({
         </div>
       )}
 
-      {/* Combined Property Details Section */}
+      {/* Combined Property Details Section - Hidden when calculator is shown */}
+      {!showPayoffCalculator && (
       <div className="p-3 md:p-4 bg-secondary rounded-xl border border-border">
         {/* Desktop Layout */}
         <div className="hidden md:block">
@@ -674,6 +675,7 @@ export function WizardStep1({
           )}
         </div>
       </div>
+      )}
 
 
       {/* Sections shown after confirming property details */}
