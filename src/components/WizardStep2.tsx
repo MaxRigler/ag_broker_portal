@@ -66,13 +66,13 @@ export function WizardStep2({
           {/* Top Row: Two columns for funding and payment */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <p className="text-sm text-muted-foreground font-medium mb-1">Pre-Qualified Funding</p>
+              <p className="text-xs text-muted-foreground font-medium mb-1">Pre-Qualified Funding</p>
               <p className="text-3xl md:text-4xl font-bold text-[hsl(var(--success))]">
                 {formatCurrency(maxInvestment)}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground font-medium mb-1">Monthly Payment</p>
+              <p className="text-xs text-muted-foreground font-medium mb-1">Monthly Payment</p>
               <p className="text-3xl md:text-4xl font-bold text-[hsl(var(--success))]">
                 $0.00
               </p>
