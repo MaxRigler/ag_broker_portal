@@ -79,7 +79,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
           />
 
           {/* Right: Property Pre-Qualifier Title */}
-          <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-primary-foreground tracking-wider">
+          <h1 className="text-base md:text-xl lg:text-2xl font-bold text-primary-foreground tracking-wider">
             Property Pre-Qualifier
           </h1>
         </div>
