@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
+import { CLTVSlider } from '@/components/ui/cltv-slider';
 import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, Plus, Minus, AlertCircle, TrendingUp, X, DollarSign, Calendar, Calculator, Shield, RefreshCw, Home, Percent } from 'lucide-react';
 import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency, formatPercentage, calculateMaxInvestment, calculateHEACost } from '@/lib/heaCalculator';
 import { lookupProperty, detectOwnershipType } from '@/lib/api/rentcast';
@@ -742,11 +743,11 @@ export function WizardStep1({
           {!mortgageDetailsConfirmed && (
             /* Editable Mortgage Section - Side by Side Layout */
             <>
-              {/* Desktop: Side-by-side layout */}
-              <div className="hidden md:block p-4 bg-secondary rounded-xl border border-border">
-                <div className="grid grid-cols-2 gap-6">
-                  {/* Outstanding Mortgage Balance - Left */}
-                  <div className="flex flex-col items-center">
+              {/* Desktop: Centered single column layout */}
+              <div className="hidden md:flex justify-center">
+                <div className="p-4 bg-secondary rounded-xl border border-border w-full max-w-md">
+                  {/* Outstanding Mortgage Balance */}
+                  <div className="flex flex-col items-center mb-4">
                     <p className="text-sm font-semibold text-foreground text-center mb-3">Outstanding Mortgage Balance</p>
                     <div className="flex items-center justify-center gap-2">
                       <Button 
@@ -778,111 +779,66 @@ export function WizardStep1({
                     </div>
                   </div>
                   
-                  {/* Combined Loan-to-Value (CLTV) Slider - Right */}
-                  <div className="flex flex-col">
-                    <p className="text-sm font-semibold text-foreground text-center mb-3">Combined Loan-to-Value (CLTV)</p>
-                    <div className="flex-1 flex flex-col justify-center">
-                      {/* Slider with percentage on thumb */}
-                      <div className="relative px-2 pt-8">
-                        <Slider
-                          value={[currentCLTV]}
-                          onValueChange={handleCLTVSliderChange}
-                          max={100}
-                          min={0}
-                          step={0.5}
-                          className="w-full"
-                        />
-                        {/* Percentage badge that follows the slider thumb */}
-                        <div 
-                          className="absolute top-0 transform -translate-x-1/2 pointer-events-none"
-                          style={{ left: `${Math.min(Math.max(currentCLTV, 8), 92)}%` }}
-                        >
-                          <Badge 
-                            variant="outline" 
-                            className={`text-sm font-bold px-2 py-0.5 ${getCLTVColorClass(currentCLTV, 'badge')}`}
-                          >
-                            {currentCLTV.toFixed(1)}%
-                          </Badge>
-                        </div>
-                      </div>
-                      {/* Scale labels */}
-                      <div className="flex justify-between text-[10px] text-muted-foreground mt-2 px-2">
-                        <span>0%</span>
-                        <span className="text-destructive font-medium">80% Max</span>
-                        <span>100%</span>
-                      </div>
+                  {/* CLTV Slider - directly below */}
+                  <div className="pt-4">
+                    <CLTVSlider value={currentCLTV} onChange={handleCLTVSliderChange} />
+                    <div className="flex justify-between text-[10px] text-muted-foreground mt-2">
+                      <span>0%</span>
+                      <span>100%</span>
                     </div>
+                    <p className="text-xs text-muted-foreground text-center mt-2 pt-2 border-t border-border">
+                      Combined Loan-to-Value (CLTV)
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Mobile: Stacked layout */}
-              <div className="md:hidden space-y-4">
+              {/* Mobile: Combined layout */}
+              <div className="md:hidden p-4 bg-secondary rounded-xl border border-border">
                 {/* Outstanding Mortgage Balance */}
-                <div className="p-4 bg-secondary rounded-xl border border-border">
-                  <p className="text-sm font-semibold text-foreground text-center mb-3">Outstanding Mortgage Balance</p>
-                  <div className="flex items-center justify-center gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
-                      onClick={() => adjustMortgage(-20000)}
-                      disabled={mortgageBalance <= 0}
-                      className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <div className="animate-breathe">
-                      <Input 
-                        type="text" 
-                        value={formatCurrency(mortgageBalance)} 
-                        onChange={handleMortgageInputChange} 
-                        className="text-xl font-bold bg-background h-12 w-36 text-center" 
-                      />
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
-                      onClick={() => adjustMortgage(20000)}
-                      disabled={mortgageBalance >= homeValue * 0.95}
-                      className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
+                <p className="text-sm font-semibold text-foreground text-center mb-3">Outstanding Mortgage Balance</p>
+                <div className="flex items-center justify-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => adjustMortgage(-20000)}
+                    disabled={mortgageBalance <= 0}
+                    className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <div className="animate-breathe">
+                    <Input 
+                      type="text" 
+                      value={formatCurrency(mortgageBalance)} 
+                      onChange={handleMortgageInputChange} 
+                      className="text-xl font-bold bg-background h-12 w-36 text-center" 
+                    />
                   </div>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => adjustMortgage(20000)}
+                    disabled={mortgageBalance >= homeValue * 0.95}
+                    className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 border-primary text-primary-foreground"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
                 </div>
 
+                {/* Divider */}
+                <div className="border-t border-border my-4" />
+
                 {/* CLTV Slider */}
-                <div className="p-4 bg-secondary rounded-xl border border-border">
-                  <p className="text-sm font-semibold text-foreground text-center mb-4">Combined Loan-to-Value (CLTV)</p>
-                  {/* Slider with percentage on thumb */}
-                  <div className="relative px-2 pt-8">
-                    <Slider
-                      value={[currentCLTV]}
-                      onValueChange={handleCLTVSliderChange}
-                      max={100}
-                      min={0}
-                      step={0.5}
-                      className="w-full"
-                    />
-                    {/* Percentage badge that follows the slider thumb */}
-                    <div 
-                      className="absolute top-0 transform -translate-x-1/2 pointer-events-none"
-                      style={{ left: `${Math.min(Math.max(currentCLTV, 8), 92)}%` }}
-                    >
-                      <Badge 
-                        variant="outline" 
-                        className={`text-sm font-bold px-2 py-0.5 ${getCLTVColorClass(currentCLTV, 'badge')}`}
-                      >
-                        {currentCLTV.toFixed(1)}%
-                      </Badge>
-                    </div>
-                  </div>
-                  {/* Scale labels */}
-                  <div className="flex justify-between text-[10px] text-muted-foreground mt-2 px-2">
+                <div>
+                  <CLTVSlider value={currentCLTV} onChange={handleCLTVSliderChange} />
+                  <div className="flex justify-between text-[10px] text-muted-foreground mt-2">
                     <span>0%</span>
-                    <span className="text-destructive font-medium">80% Max</span>
                     <span>100%</span>
                   </div>
+                  <p className="text-xs text-muted-foreground text-center mt-2">
+                    Combined Loan-to-Value (CLTV)
+                  </p>
                 </div>
               </div>
             </>
