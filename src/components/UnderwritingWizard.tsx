@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ArrowLeft } from 'lucide-react';
 import { WizardStep1 } from './WizardStep1';
-import { WizardStep3 } from './WizardStep3';
+import { WizardStep2 } from './WizardStep2';
 import logo from '@/assets/logo.png';
 
 interface UnderwritingWizardProps {
@@ -18,6 +18,9 @@ interface WizardData {
   state: string;
   mortgageBalance: number;
   maxInvestment: number;
+  propertyType: string;
+  ownershipType: string;
+  currentCLTV: number;
 }
 
 const steps = [
@@ -29,7 +32,15 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
 
-  const handleStep1Complete = (data: { homeValue: number; state: string; mortgageBalance: number; maxInvestment: number }) => {
+  const handleStep1Complete = (data: { 
+    homeValue: number; 
+    state: string; 
+    mortgageBalance: number; 
+    maxInvestment: number;
+    propertyType: string;
+    ownershipType: string;
+    currentCLTV: number;
+  }) => {
     setWizardData({ ...wizardData, ...data });
     setCurrentStep(2);
   };
@@ -94,9 +105,15 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
               />
             )}
             {currentStep === 2 && wizardData.homeValue && wizardData.maxInvestment && (
-              <WizardStep3
+              <WizardStep2
+                address={address}
                 homeValue={wizardData.homeValue}
+                mortgageBalance={wizardData.mortgageBalance || 0}
                 maxInvestment={wizardData.maxInvestment}
+                state={wizardData.state || ''}
+                propertyType={wizardData.propertyType || ''}
+                ownershipType={wizardData.ownershipType || ''}
+                currentCLTV={wizardData.currentCLTV || 0}
                 onBack={() => setCurrentStep(1)}
                 onReset={handleReset}
               />
