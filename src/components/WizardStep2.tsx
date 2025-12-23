@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft, TrendingUp } from 'lucide-react';
+import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/heaCalculator';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -63,12 +63,6 @@ export function WizardStep2({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column: Pre-Qualified Funding Card */}
         <div className="p-6 bg-secondary rounded-xl border border-border">
-          {/* Headline with icon */}
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-[hsl(var(--success))]" />
-            <span className="text-lg font-bold text-foreground">Maximum Potential Funding</span>
-          </div>
-          
           {/* Top Row: Two columns for funding and payment */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -86,19 +80,20 @@ export function WizardStep2({
           </div>
           
           {/* Description */}
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground mb-4">
             Your client's {getStateName(state)} property may be approved for an Equity Advance of up to {formatCurrency(maxInvestment)} with no monthly payments for up to 10 years.
           </p>
+
+          {/* Property Qualified Headline */}
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-6 h-6 text-[hsl(var(--success))]" />
+            <span className="text-lg font-bold text-[hsl(var(--success))]">Property Qualified!</span>
+          </div>
         </div>
 
         {/* Right Column: Property Qualified Card - Desktop Only */}
         {!isMobile && (
           <div className="p-6 bg-[hsl(var(--success))]/10 rounded-xl border border-[hsl(var(--success))]/30">
-            {/* Header */}
-            <div className="flex items-center gap-2 mb-4">
-              <CheckCircle2 className="w-6 h-6 text-[hsl(var(--success))]" />
-              <span className="text-lg font-bold text-[hsl(var(--success))]">Property Qualified!</span>
-            </div>
             
             {/* Qualification Criteria */}
             <div className="space-y-3">
