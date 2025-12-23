@@ -52,20 +52,48 @@ export function SettlementEstimator({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] overflow-auto p-0">
         {/* Header Bar with Title */}
-        <DialogHeader className="p-4 bg-secondary border-b border-border">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-2">
-              <Calculator className="w-5 h-5 text-accent" />
-              <span className="text-lg font-semibold text-foreground">Settlement Estimator</span>
-            </DialogTitle>
+        <DialogHeader className="p-4 border-b border-border">
+          <div className="flex items-center justify-between gap-3">
+            {/* Left side: Back button + Title */}
+            <div className="flex items-center gap-3">
+              {/* Back Button */}
+              <button
+                onClick={() => onOpenChange(false)}
+                className="w-8 h-8 flex items-center justify-center bg-background border border-border rounded-lg shadow-sm hover:bg-secondary transition-colors"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="w-4 h-4 text-foreground" />
+              </button>
+              
+              <DialogTitle className="flex items-center gap-2">
+                {/* Desktop title */}
+                <span className="hidden md:inline text-lg font-semibold text-foreground">
+                  Equity Advance Client Settlement Estimator
+                </span>
+                {/* Mobile title */}
+                <span className="md:hidden text-base font-semibold text-foreground">
+                  Client Settlement Estimator
+                </span>
+              </DialogTitle>
+            </div>
             
-            {/* Animated Help Button */}
+            {/* Right side: Help Button */}
+            {/* Desktop Help Button - Rectangular */}
             <button
               onClick={() => setShowHelp(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-accent-foreground rounded-full text-sm font-medium animate-help-bounce hover:scale-105 transition-transform"
+              className="hidden md:flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium animate-help-bounce hover:bg-accent/90 transition-colors"
             >
-              <HelpCircle className="w-4 h-4" />
+              <span>(?) </span>
               <span>How It Works</span>
+            </button>
+            
+            {/* Mobile Help Button - Circular Icon */}
+            <button
+              onClick={() => setShowHelp(true)}
+              className="md:hidden w-8 h-8 flex items-center justify-center bg-accent text-white rounded-full text-sm font-bold animate-help-bounce hover:bg-accent/90 transition-colors"
+              aria-label="How It Works"
+            >
+              ?
             </button>
           </div>
         </DialogHeader>
