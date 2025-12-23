@@ -84,7 +84,7 @@ export function SettlementEstimator({
                 <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
                 <p className="text-xl font-bold text-[hsl(var(--success))]">{formatCurrency(calculation.totalCost)}</p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  The total amount you'll pay to settle.
+                  Settlement Amount - Initial Funding
                 </p>
               </div>
             </div>
@@ -115,7 +115,7 @@ export function SettlementEstimator({
                 <p className="text-xs text-muted-foreground mb-1">Total Cost of Capital</p>
                 <p className="text-lg font-bold text-[hsl(var(--success))]">{formatCurrency(calculation.totalCost)}</p>
                 <p className="text-[10px] text-muted-foreground mt-2 leading-tight">
-                  The total amount you'll pay to settle.
+                  Settlement Amount - Initial Funding
                 </p>
               </div>
             </div>
