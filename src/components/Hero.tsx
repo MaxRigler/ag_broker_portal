@@ -97,15 +97,16 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
           {/* Mobile-only ISO Login Button - centered below form */}
           <div className="flex justify-center mt-5 md:hidden">
-            <Button 
-              variant="navyOutline"
-              size="lg"
-              onClick={() => setIsIsoModalOpen(true)}
-              className="bg-background shadow-lg hover:shadow-xl"
-            >
-              <Briefcase className="w-4 h-4" />
-              ISO Login
-            </Button>
+            <div className="p-2 bg-card/10 backdrop-blur-sm rounded-xl border border-primary-foreground/10">
+              <Button 
+                variant="navy"
+                size="lg"
+                onClick={() => setIsIsoModalOpen(true)}
+              >
+                <Briefcase className="w-4 h-4" />
+                ISO Login
+              </Button>
+            </div>
           </div>
 
           {/* Mobile ISO Login Modal */}
