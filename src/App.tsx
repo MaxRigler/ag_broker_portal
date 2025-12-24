@@ -10,12 +10,14 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import { IsoLoginWidget } from "./components/IsoLoginWidget";
 import { AdminRoute } from "./components/AdminRoute";
+import { WizardProvider, useWizard } from "./contexts/WizardContext";
 
 const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
-  const hideIsoWidget = location.pathname === '/iso-pending' || location.pathname === '/admin' || location.pathname === '/reset-password';
+  const { isWizardActive } = useWizard();
+  const hideIsoWidget = location.pathname === '/iso-pending' || location.pathname === '/admin' || location.pathname === '/reset-password' || isWizardActive;
 
   return (
     <>
@@ -38,7 +40,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppContent />
+        <WizardProvider>
+          <AppContent />
+        </WizardProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
