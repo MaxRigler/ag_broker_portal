@@ -1,0 +1,173 @@
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
+import { Briefcase, Mail, Lock, User, Building2 } from 'lucide-react';
+
+export function IsoAuthModal() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Coming Soon",
+        description: "Login functionality will be available soon!",
+      });
+    }, 500);
+  };
+
+  const handleSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Coming Soon",
+        description: "Account creation will be available soon!",
+      });
+    }, 500);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-center gap-2 text-primary">
+        <Briefcase className="h-8 w-8" />
+        <span className="text-2xl font-bold">ISO Partner Portal</span>
+      </div>
+
+      <Tabs defaultValue="login" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="login">Login</TabsTrigger>
+          <TabsTrigger value="signup">Create Account</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="login" className="space-y-4 pt-4">
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="login-email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input 
+                  id="login-email" 
+                  type="email" 
+                  placeholder="partner@company.com" 
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="login-password">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input 
+                  id="login-password" 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <Button type="submit" variant="navy" className="w-full" disabled={isLoading}>
+              {isLoading ? "Signing in..." : "Sign In"}
+            </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              <a href="#" className="text-primary hover:underline">Forgot your password?</a>
+            </p>
+          </form>
+        </TabsContent>
+
+        <TabsContent value="signup" className="space-y-4 pt-4">
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="company-name">Company Name</Label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input 
+                    id="company-name" 
+                    type="text" 
+                    placeholder="ABC Funding" 
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="contact-name">Contact Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input 
+                    id="contact-name" 
+                    type="text" 
+                    placeholder="John Smith" 
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="signup-email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input 
+                  id="signup-email" 
+                  type="email" 
+                  placeholder="partner@company.com" 
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="signup-password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input 
+                    id="signup-password" 
+                    type="password" 
+                    placeholder="••••••••" 
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input 
+                    id="confirm-password" 
+                    type="password" 
+                    placeholder="••••••••" 
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Button type="submit" variant="navy" className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating Account..." : "Create Account"}
+            </Button>
+
+            <p className="text-center text-xs text-muted-foreground">
+              By creating an account, you agree to our{" "}
+              <a href="#" className="text-primary hover:underline">Terms of Service</a>
+              {" "}and{" "}
+              <a href="#" className="text-primary hover:underline">Privacy Policy</a>
+            </p>
+          </form>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
