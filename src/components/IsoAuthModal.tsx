@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
-import { Briefcase, Mail, Lock, User, Building2, Phone, ArrowLeft } from 'lucide-react';
+import { Briefcase, Mail, Lock, User, Building2, Phone, ArrowLeft, Clock, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import logoBlue from '@/assets/logo-blue.png';
 
@@ -14,7 +14,7 @@ interface IsoAuthModalProps {
   disclaimerMessage?: string;
 }
 
-type ViewType = 'login' | 'signup' | 'forgot-password';
+type ViewType = 'login' | 'signup' | 'forgot-password' | 'account-pending';
 
 export function IsoAuthModal({ onLoginSuccess, disclaimerMessage }: IsoAuthModalProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -133,7 +133,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage }: IsoAuthModal
       return;
     }
     
-    navigate('/iso-pending');
+    setView('account-pending');
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -175,6 +175,39 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage }: IsoAuthModal
     setView('login');
     setForgotEmail('');
   };
+
+  if (view === 'account-pending') {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex flex-col items-center">
+          <img 
+            src={logoBlue} 
+            alt="Equity Advance" 
+            className="w-[66%] mb-5"
+          />
+          <div className="flex items-center justify-center gap-2 text-amber-600">
+            <Clock className="h-8 w-8" />
+            <span className="text-2xl font-bold">Account Status: Pending</span>
+          </div>
+        </div>
+
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">
+            In order to activate your account, click the button below to book a demo call to go over best practices when offering clients funding via a home equity investment.
+          </p>
+        </div>
+
+        <Button 
+          variant="navy" 
+          className="w-full" 
+          onClick={() => navigate('/iso-pending')}
+        >
+          <Calendar className="mr-2 h-4 w-4" />
+          Book Demo Call
+        </Button>
+      </div>
+    );
+  }
 
   if (view === 'forgot-password') {
     return (
