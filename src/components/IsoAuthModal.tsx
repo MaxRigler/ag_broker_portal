@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Briefcase, Mail, Lock, User, Building2 } from 'lucide-react';
+import logoBlue from '@/assets/logo-blue.png';
 
 export function IsoAuthModal() {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,9 +36,16 @@ export function IsoAuthModal() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-center gap-2 text-primary">
-        <Briefcase className="h-8 w-8" />
-        <span className="text-2xl font-bold">ISO Partner Portal</span>
+      <div className="flex flex-col items-center">
+        <img 
+          src={logoBlue} 
+          alt="Equity Advance" 
+          className="w-[66%] mb-5"
+        />
+        <div className="flex items-center justify-center gap-2 text-primary">
+          <Briefcase className="h-8 w-8" />
+          <span className="text-2xl font-bold">ISO Partner Portal</span>
+        </div>
       </div>
 
       <Tabs defaultValue="login" className="w-full">
