@@ -205,27 +205,45 @@ export function WizardStep2({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-3">
-        {/* Left Group: Back + Calculator (1/3 width on desktop) */}
-        <div className={`flex gap-3 ${isMobile ? '' : 'flex-1'}`}>
-          <Button variant="outline" size="icon" onClick={onBack} className="flex-shrink-0">
-            <ArrowLeft className="h-4 w-4" />
+      {isMobile ? (
+        // Mobile Layout: Generate Offer Link on top, Back + Estimator below
+        <div className="flex flex-col gap-3">
+          <Button 
+            variant="success" 
+            onClick={handleGenerateOffers} 
+            className="w-full"
+          >
+            Generate Offer Link
+            <Share2 className="h-4 w-4 ml-2" />
           </Button>
-          <Button variant="blue" size="icon" onClick={handleCalculator} className="flex-shrink-0">
-            <Calculator className="h-4 w-4 text-white" />
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={onBack} className="flex-1">
+              Back
+            </Button>
+            <Button variant="blue" onClick={handleCalculator} className="flex-1">
+              Estimator
+            </Button>
+          </div>
+        </div>
+      ) : (
+        // Desktop Layout: Back, Estimator, Generate Offer Link in a row
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={onBack}>
+            Back
+          </Button>
+          <Button variant="blue" onClick={handleCalculator}>
+            Estimator
+          </Button>
+          <Button 
+            variant="success" 
+            onClick={handleGenerateOffers} 
+            className="flex-1"
+          >
+            Generate Offer Link
+            <Share2 className="h-4 w-4 ml-2" />
           </Button>
         </div>
-        
-        {/* Right: Generate Offer Link (2/3 width on desktop) */}
-        <Button 
-          variant="success" 
-          onClick={handleGenerateOffers} 
-          className={isMobile ? 'flex-1' : 'flex-[2]'}
-        >
-          Generate Offer Link
-          <Share2 className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
+      )}
 
       {/* Settlement Estimator Modal */}
       <SettlementEstimator
