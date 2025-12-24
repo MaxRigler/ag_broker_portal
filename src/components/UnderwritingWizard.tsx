@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { CheckCircle2 } from 'lucide-react';
 import { WizardStep1 } from './WizardStep1';
 import { WizardStep2 } from './WizardStep2';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo-blue.png';
 
 interface UnderwritingWizardProps {
   address: string;
@@ -52,25 +49,19 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
   };
 
   return (
-    <section className="relative min-h-screen bg-[hsl(var(--navy-deep))] overflow-hidden py-8 px-2 md:px-8 flex items-center justify-center">
-      {/* Background Image */}
+    <section className="min-h-screen bg-background py-8 px-2 md:px-8 flex items-center justify-center relative overflow-hidden">
+      {/* Background image layer */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url('https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1000w,f_auto,q_auto:best/rockcms/2025-06/250611-homes-suburbs-ch-1721-69f6cf.jpg')` }}
       />
+      {/* White background overlay */}
+      <div className="absolute inset-0 bg-white opacity-[0.97]" />
       
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--navy-deep))] via-[hsl(var(--navy-medium))] to-[hsl(var(--navy-deep))] opacity-95" />
-      
-      {/* Animated Background Elements */}
-      <div className="absolute top-20 right-10 w-72 h-72 bg-accent rounded-full blur-3xl animate-float-glow" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-float-glow-reverse" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl animate-glow-pulse" />
-
       {/* Content */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-2 md:px-12">
+      <div className="w-full max-w-4xl mx-auto px-2 md:px-12 relative z-10">
         {/* Header Row: Logo | Title (right-aligned) */}
-        <div className="flex items-center justify-between mb-6 md:mb-10">
+        <div className="flex items-center justify-between mb-3 md:mb-5">
           {/* Left: Logo - aligned with content below */}
           <img 
             src={logo} 
@@ -79,14 +70,13 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
           />
 
           {/* Right: Property Pre-Qualifier Title */}
-          <h1 className="text-base md:text-xl lg:text-2xl font-bold text-primary-foreground tracking-wider">
-            Property Pre-Qualifier
+          <h1 className="text-base md:text-xl lg:text-2xl font-bold text-muted-foreground tracking-wider">
+            Funding Pre-Qualifier
           </h1>
         </div>
 
-        {/* Wizard Card */}
-        <Card className="shadow-lg bg-card/95 backdrop-blur-sm">
-          <CardContent className="p-3 md:p-8">
+        {/* Wizard Content */}
+        <div className="p-3 md:p-8">
             {currentStep === 1 && (
               <WizardStep1
                 address={address}
@@ -108,8 +98,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
                 onReset={handleReset}
               />
             )}
-          </CardContent>
-        </Card>
+        </div>
       </div>
     </section>
   );
