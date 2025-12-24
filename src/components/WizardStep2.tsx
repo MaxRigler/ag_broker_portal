@@ -120,13 +120,13 @@ export function WizardStep2({
           {/* Top Row: Two columns for funding and payment */}
           <div className="flex gap-4 mb-4">
             <div className="flex-[2]">
-              <p className="text-xs text-muted-foreground font-medium mb-1">Maximum Funding</p>
+              <p className="text-xs text-foreground/70 font-medium mb-1">Maximum Funding</p>
               <p className="text-3xl md:text-4xl font-bold text-[hsl(var(--success))]">
                 {formatCurrency(maxInvestment)}
               </p>
             </div>
             <div className="flex-1">
-              <p className="text-[10px] text-muted-foreground font-medium mb-1 whitespace-nowrap">Monthly Payment</p>
+              <p className="text-[10px] text-foreground/70 font-medium mb-1 whitespace-nowrap">Monthly Payment</p>
               <p className="text-xl md:text-2xl font-bold text-muted-foreground">
                 $0.00
               </p>
@@ -175,7 +175,7 @@ export function WizardStep2({
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Property Address</p>
+                <p className="text-sm text-foreground/70 font-medium">Property Address</p>
                 <p className="text-sm font-bold text-muted-foreground mt-1">{address}</p>
               </div>
             </div>
@@ -186,7 +186,7 @@ export function WizardStep2({
           <div className="flex items-start gap-3">
             <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
+              <p className="text-sm text-foreground/70 font-medium">Estimated Property Value</p>
               <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(homeValue)}</p>
             </div>
           </div>
@@ -197,7 +197,7 @@ export function WizardStep2({
           <div className="flex items-start gap-3">
             <DollarSign className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm text-muted-foreground font-medium">Mortgage</p>
+              <p className="text-sm text-foreground/70 font-medium">Mortgage</p>
               <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(mortgageBalance)}</p>
             </div>
           </div>
