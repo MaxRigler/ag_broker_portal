@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { AddressAutocomplete } from '@/components/AddressAutocomplete';
 import logo from '@/assets/logo.png';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { IsoAuthModal } from '@/components/IsoAuthModal';
+import { useAuth } from '@/hooks/useAuth';
 
 interface HeroProps {
   onCheckEligibility: (address: string) => void;
@@ -14,16 +18,33 @@ const subheadlineItems = [
   'No DTI Impact'
 ];
 
-
-import { useState } from 'react';
-
 export function Hero({ onCheckEligibility }: HeroProps) {
   const [address, setAddress] = useState('');
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingAddress, setPendingAddress] = useState<string | null>(null);
+  const { user } = useAuth();
+
+  const handleCheckEligibility = (addressToCheck: string) => {
+    if (user) {
+      onCheckEligibility(addressToCheck);
+    } else {
+      setPendingAddress(addressToCheck);
+      setShowAuthModal(true);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (address.trim()) {
-      onCheckEligibility(address);
+      handleCheckEligibility(address);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    if (pendingAddress) {
+      onCheckEligibility(pendingAddress);
+      setPendingAddress(null);
     }
   };
 
@@ -83,7 +104,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
               <AddressAutocomplete 
                 onSelect={(selectedAddress) => {
                   setAddress(selectedAddress);
-                  onCheckEligibility(selectedAddress);
+                  handleCheckEligibility(selectedAddress);
                 }}
                 placeholder="Enter Client's Property Address"
               />
@@ -110,6 +131,15 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
         </div>
       </div>
+
+      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+        <DialogContent className="sm:max-w-md">
+          <IsoAuthModal 
+            onLoginSuccess={handleAuthSuccess}
+            disclaimerMessage="In order to underwrite a property, either log in or create an account."
+          />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

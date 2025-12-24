@@ -11,9 +11,10 @@ import logoBlue from '@/assets/logo-blue.png';
 
 interface IsoAuthModalProps {
   onLoginSuccess?: () => void;
+  disclaimerMessage?: string;
 }
 
-export function IsoAuthModal({ onLoginSuccess }: IsoAuthModalProps) {
+export function IsoAuthModal({ onLoginSuccess, disclaimerMessage }: IsoAuthModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   
@@ -141,6 +142,11 @@ export function IsoAuthModal({ onLoginSuccess }: IsoAuthModalProps) {
           <Briefcase className="h-8 w-8" />
           <span className="text-2xl font-bold">ISO Partner Portal</span>
         </div>
+        {disclaimerMessage && (
+          <p className="mt-3 text-sm text-muted-foreground text-center">
+            {disclaimerMessage}
+          </p>
+        )}
       </div>
 
       <Tabs defaultValue="login" className="w-full">
