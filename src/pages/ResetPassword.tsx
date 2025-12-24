@@ -5,21 +5,39 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
-import { Lock, Briefcase } from 'lucide-react';
+import { Lock, Briefcase, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import logoBlue from '@/assets/logo-blue.png';
 
 export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
+  const [isValidSession, setIsValidSession] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if we have a valid session from the recovery link
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+    // Listen for auth state changes - this will fire when Supabase processes the URL tokens
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
+        setIsValidSession(true);
+        setIsVerifying(false);
+      }
+    });
+
+    // Also check if there's already a session (in case the event already fired)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setIsValidSession(true);
+        setIsVerifying(false);
+      }
+    });
+
+    // Timeout after 5 seconds if no session is established
+    const timeout = setTimeout(() => {
+      if (!isValidSession) {
+        setIsVerifying(false);
         toast({
           title: "Invalid or expired link",
           description: "Please request a new password reset link.",
@@ -27,10 +45,13 @@ export default function ResetPassword() {
         });
         navigate('/');
       }
+    }, 5000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
     };
-    
-    checkSession();
-  }, [navigate]);
+  }, [navigate, isValidSession]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,6 +107,23 @@ export default function ResetPassword() {
     
     navigate('/');
   };
+
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground">Verifying your reset link...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isValidSession) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
