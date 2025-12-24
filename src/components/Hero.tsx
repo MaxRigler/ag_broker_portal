@@ -22,12 +22,20 @@ export function Hero({ onCheckEligibility }: HeroProps) {
   const [address, setAddress] = useState('');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingAddress, setPendingAddress] = useState<string | null>(null);
-  const { user } = useAuth();
+  const [showPendingModal, setShowPendingModal] = useState(false);
+  const { user, userStatus } = useAuth();
 
   const handleCheckEligibility = (addressToCheck: string) => {
     if (user) {
-      onCheckEligibility(addressToCheck);
+      // User is logged in - check their status
+      if (userStatus === 'active') {
+        onCheckEligibility(addressToCheck);
+      } else {
+        // User is logged in but account is not active - show pending modal
+        setShowPendingModal(true);
+      }
     } else {
+      // User is not logged in - show auth modal
       setPendingAddress(addressToCheck);
       setShowAuthModal(true);
     }
@@ -137,6 +145,14 @@ export function Hero({ onCheckEligibility }: HeroProps) {
           <IsoAuthModal 
             onLoginSuccess={handleAuthSuccess}
             disclaimerMessage="In order to underwrite a property, either log in or create an account."
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPendingModal} onOpenChange={setShowPendingModal}>
+        <DialogContent className="sm:max-w-md">
+          <IsoAuthModal 
+            initialView="account-pending"
           />
         </DialogContent>
       </Dialog>

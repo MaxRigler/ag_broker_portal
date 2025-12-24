@@ -12,13 +12,14 @@ import logoBlue from '@/assets/logo-blue.png';
 interface IsoAuthModalProps {
   onLoginSuccess?: () => void;
   disclaimerMessage?: string;
+  initialView?: ViewType;
 }
 
 type ViewType = 'login' | 'signup' | 'forgot-password' | 'account-pending';
 
-export function IsoAuthModal({ onLoginSuccess, disclaimerMessage }: IsoAuthModalProps) {
+export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 'login' }: IsoAuthModalProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [view, setView] = useState<ViewType>('login');
+  const [view, setView] = useState<ViewType>(initialView);
   const navigate = useNavigate();
   
   // Login form state
