@@ -49,9 +49,17 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
   };
 
   return (
-    <section className="min-h-screen bg-background py-8 px-2 md:px-8 flex items-center justify-center">
+    <section className="min-h-screen bg-background py-8 px-2 md:px-8 flex items-center justify-center relative overflow-hidden">
+      {/* Background image layer */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url('https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1000w,f_auto,q_auto:best/rockcms/2025-06/250611-homes-suburbs-ch-1721-69f6cf.jpg')` }}
+      />
+      {/* White background overlay */}
+      <div className="absolute inset-0 bg-white opacity-[0.97]" />
+      
       {/* Content */}
-      <div className="w-full max-w-4xl mx-auto px-2 md:px-12">
+      <div className="w-full max-w-4xl mx-auto px-2 md:px-12 relative z-10">
         {/* Header Row: Logo | Title (right-aligned) */}
         <div className="flex items-center justify-between mb-3 md:mb-5">
           {/* Left: Logo - aligned with content below */}
