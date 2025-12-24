@@ -1,7 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { WizardStep1 } from './WizardStep1';
 import { WizardStep2 } from './WizardStep2';
 import logo from '@/assets/logo-blue.png';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { User, LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+
+interface UserProfile {
+  full_name: string | null;
+  company_name: string | null;
+}
+
+const getStatusBadge = (status: string | null) => {
+  switch (status) {
+    case 'active':
+      return <Badge className="bg-green-500/20 text-green-600 border-green-500/30 hover:bg-green-500/20">Active</Badge>;
+    case 'pending':
+      return <Badge className="bg-yellow-500/20 text-yellow-600 border-yellow-500/30 hover:bg-yellow-500/20">Pending</Badge>;
+    case 'denied':
+      return <Badge className="bg-red-500/20 text-red-600 border-red-500/30 hover:bg-red-500/20">Denied</Badge>;
+    default:
+      return <Badge variant="secondary">Unknown</Badge>;
+  }
+};
 
 interface UnderwritingWizardProps {
   address: string;
@@ -28,6 +53,27 @@ const steps = [
 export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps) {
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const { user, signOut, userStatus } = useAuth();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('full_name, company_name')
+          .eq('id', user.id)
+          .single();
+        
+        if (data) {
+          setProfile(data);
+        }
+      }
+    };
+
+    fetchProfile();
+  }, [user]);
 
   const handleStep1Complete = (data: { 
     homeValue: number; 
@@ -48,6 +94,12 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
     onBack();
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    setIsPopoverOpen(false);
+    onBack();
+  };
+
   return (
     <section className="min-h-screen bg-background py-8 px-2 md:px-8 flex items-center justify-center relative overflow-hidden">
       {/* Background image layer */}
@@ -60,7 +112,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
       
       {/* Content */}
       <div className="w-full max-w-4xl mx-auto px-2 md:px-12 relative z-10">
-        {/* Header Row: Logo | Title (right-aligned) */}
+        {/* Header Row: Logo | Profile Widget (right-aligned) */}
         <div className="flex items-center justify-between mb-3 md:mb-5">
           {/* Left: Logo - aligned with content below */}
           <img 
@@ -69,10 +121,55 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
             className="h-10 md:h-16"
           />
 
-          {/* Right: Property Pre-Qualifier Title */}
-          <h1 className="text-base md:text-xl lg:text-2xl font-bold text-muted-foreground tracking-wider">
-            Funding Pre-Qualifier
-          </h1>
+          {/* Right: Profile Widget */}
+          {user && profile && (
+            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="flex items-center gap-2 h-auto py-2 px-3 hover:bg-muted/50"
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="hidden md:flex flex-col items-start text-left">
+                    <span className="text-sm font-semibold">{profile.full_name || 'Partner'}</span>
+                    <span className="text-xs text-muted-foreground">{profile.company_name || 'Company'}</span>
+                  </span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-3" align="end">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold">{profile.full_name || 'Partner'}</span>
+                    <span className="text-xs text-muted-foreground">{profile.company_name || 'Company'}</span>
+                  </div>
+                </div>
+                
+                <Separator className="my-2" />
+                
+                <div className="py-2">
+                  <p className="text-xs text-muted-foreground mb-1">Account Status</p>
+                  {getStatusBadge(userStatus)}
+                </div>
+                
+                <Separator className="my-2" />
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
 
         {/* Wizard Content */}
