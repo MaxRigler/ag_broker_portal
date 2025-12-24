@@ -155,22 +155,22 @@ export function WizardStep3({ homeValue, maxInvestment, onBack, onReset }: Wizar
 
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 bg-secondary rounded-lg">
-            <p className="text-sm text-muted-foreground mb-1">Estimated Payoff at Year {settlementYear}</p>
+            <p className="text-sm text-foreground/70 mb-1">Estimated Payoff at Year {settlementYear}</p>
             <p className="text-2xl font-bold text-muted-foreground">{formatCurrency(calculation.payoff)}</p>
           </div>
           <div className="p-4 bg-secondary rounded-lg">
-            <p className="text-sm text-muted-foreground mb-1">Effective Annualized Cost</p>
+            <p className="text-sm text-foreground/70 mb-1">Effective Annualized Cost</p>
             <p className="text-2xl font-bold text-accent">{formatPercentage(calculation.apr)}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 bg-secondary rounded-lg">
-            <p className="text-sm text-muted-foreground mb-1">Total Cost of Capital</p>
+            <p className="text-sm text-foreground/70 mb-1">Total Cost of Capital</p>
             <p className="text-xl font-semibold text-muted-foreground">{formatCurrency(calculation.totalCost)}</p>
           </div>
           <div className="p-4 bg-secondary rounded-lg">
-            <p className="text-sm text-muted-foreground mb-1">Projected Home Value (Year {settlementYear})</p>
+            <p className="text-sm text-foreground/70 mb-1">Projected Home Value (Year {settlementYear})</p>
             <p className="text-xl font-semibold text-muted-foreground">{formatCurrency(calculation.endingHomeValue)}</p>
           </div>
         </div>
