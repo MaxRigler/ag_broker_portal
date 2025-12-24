@@ -122,29 +122,31 @@ export function IsoAuthModal() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="signup-email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input 
-                  id="signup-email" 
-                  type="email" 
-                  placeholder="partner@company.com" 
-                  className="pl-10"
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="signup-email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input 
+                    id="signup-email" 
+                    type="email" 
+                    placeholder="partner@company.com" 
+                    className="pl-10"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone-number">Phone Number</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input 
-                  id="phone-number" 
-                  type="tel" 
-                  placeholder="(555) 123-4567" 
-                  className="pl-10"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="phone-number">Phone Number</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input 
+                    id="phone-number" 
+                    type="tel" 
+                    placeholder="(555) 123-4567" 
+                    className="pl-10"
+                  />
+                </div>
               </div>
             </div>
 
