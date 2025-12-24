@@ -220,7 +220,7 @@ export function WizardStep2({
             <Button variant="outline" onClick={onBack} className="flex-1 text-muted-foreground">
               Back
             </Button>
-            <Button variant="ghost" onClick={handleCalculator} className="flex-1 bg-transparent text-white hover:bg-white/10">
+            <Button variant="blue" onClick={handleCalculator} className="flex-1 text-white">
               Estimator
             </Button>
           </div>
@@ -231,7 +231,7 @@ export function WizardStep2({
           <Button variant="outline" onClick={onBack} className="text-muted-foreground">
             Back
           </Button>
-          <Button variant="ghost" onClick={handleCalculator} className="bg-transparent text-white hover:bg-white/10">
+          <Button variant="blue" onClick={handleCalculator} className="text-white">
             Estimator
           </Button>
           <Button 
