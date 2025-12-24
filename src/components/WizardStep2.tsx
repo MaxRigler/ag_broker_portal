@@ -186,7 +186,7 @@ export function WizardStep2({
           <div className="flex items-start gap-3">
             <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm text-foreground/70 font-medium">Estimated Property Value</p>
+              <p className="text-sm text-foreground/70 font-medium">Est Property Value</p>
               <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(homeValue)}</p>
             </div>
           </div>
@@ -197,7 +197,7 @@ export function WizardStep2({
           <div className="flex items-start gap-3">
             <DollarSign className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm text-foreground/70 font-medium">Mortgage</p>
+              <p className="text-sm text-foreground/70 font-medium">Est Mortgage Balance</p>
               <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(mortgageBalance)}</p>
             </div>
           </div>
