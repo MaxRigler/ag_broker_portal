@@ -6,19 +6,22 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import IsoPending from "./pages/IsoPending";
+import AdminDashboard from "./pages/AdminDashboard";
 import { IsoLoginWidget } from "./components/IsoLoginWidget";
+import { AdminRoute } from "./components/AdminRoute";
 
 const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
-  const hideIsoWidget = location.pathname === '/iso-pending';
+  const hideIsoWidget = location.pathname === '/iso-pending' || location.pathname === '/admin';
 
   return (
     <>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/iso-pending" element={<IsoPending />} />
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
