@@ -9,7 +9,11 @@ import { Briefcase, Mail, Lock, User, Building2, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import logoBlue from '@/assets/logo-blue.png';
 
-export function IsoAuthModal() {
+interface IsoAuthModalProps {
+  onLoginSuccess?: () => void;
+}
+
+export function IsoAuthModal({ onLoginSuccess }: IsoAuthModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   
@@ -59,6 +63,8 @@ export function IsoAuthModal() {
       title: "Welcome back!",
       description: "You have successfully logged in.",
     });
+    
+    onLoginSuccess?.();
   };
 
   const handleSignup = async (e: React.FormEvent) => {
