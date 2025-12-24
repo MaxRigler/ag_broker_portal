@@ -56,7 +56,7 @@ export function IsoLoginWidget() {
   // Show user info when logged in
   if (user && profile) {
     return (
-      <div className="hidden md:block md:fixed md:bottom-6 md:right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-50">
         <div className="p-2 bg-card/10 backdrop-blur-sm rounded-xl border border-primary-foreground/10">
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
@@ -88,7 +88,7 @@ export function IsoLoginWidget() {
   // Show login button when logged out
   return (
     <>
-      <div className="hidden md:block md:fixed md:bottom-6 md:right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-50">
         <div className="p-2 bg-card/10 backdrop-blur-sm rounded-xl border border-primary-foreground/10">
           <Button 
             variant="navy"
