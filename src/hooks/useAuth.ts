@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+type UserStatus = 'pending' | 'active' | 'denied' | null;
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userStatus, setUserStatus] = useState<UserStatus>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,13 +18,15 @@ export function useAuth() {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer admin check to avoid deadlock
+        // Defer checks to avoid deadlock
         if (session?.user) {
           setTimeout(() => {
             checkAdminRole(session.user.id);
+            checkUserStatus(session.user.id);
           }, 0);
         } else {
           setIsAdmin(false);
+          setUserStatus(null);
           setLoading(false);
         }
       }
@@ -34,6 +39,7 @@ export function useAuth() {
       
       if (session?.user) {
         checkAdminRole(session.user.id);
+        checkUserStatus(session.user.id);
       } else {
         setLoading(false);
       }
@@ -65,9 +71,29 @@ export function useAuth() {
     }
   };
 
+  const checkUserStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('status')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking user status:', error);
+        setUserStatus(null);
+      } else if (data) {
+        setUserStatus(data.status as UserStatus);
+      }
+    } catch (err) {
+      console.error('Error checking user status:', err);
+      setUserStatus(null);
+    }
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
-  return { user, session, isAdmin, loading, signOut };
+  return { user, session, isAdmin, userStatus, loading, signOut };
 }
