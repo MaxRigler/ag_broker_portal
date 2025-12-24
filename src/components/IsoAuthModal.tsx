@@ -5,16 +5,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
-import { Briefcase, Mail, Lock, User, Building2, Phone } from 'lucide-react';
+import { Briefcase, Mail, Lock, User, Building2, Phone, ArrowLeft, Clock, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import logoBlue from '@/assets/logo-blue.png';
 
 interface IsoAuthModalProps {
   onLoginSuccess?: () => void;
+  disclaimerMessage?: string;
+  initialView?: ViewType;
 }
 
-export function IsoAuthModal({ onLoginSuccess }: IsoAuthModalProps) {
+type ViewType = 'login' | 'signup' | 'forgot-password' | 'account-pending';
+
+export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 'login' }: IsoAuthModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [view, setView] = useState<ViewType>(initialView);
   const navigate = useNavigate();
   
   // Login form state
@@ -28,6 +33,9 @@ export function IsoAuthModal({ onLoginSuccess }: IsoAuthModalProps) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Forgot password state
+  const [forgotEmail, setForgotEmail] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,8 +134,132 @@ export function IsoAuthModal({ onLoginSuccess }: IsoAuthModalProps) {
       return;
     }
     
-    navigate('/iso-pending');
+    setView('account-pending');
   };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!forgotEmail) {
+      toast({
+        title: "Error",
+        description: "Please enter your email address",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    const redirectUrl = `${window.location.origin}/reset-password`;
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: redirectUrl,
+    });
+    
+    setIsLoading(false);
+    
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    toast({
+      title: "Check your email",
+      description: "We've sent you a password reset link.",
+    });
+    
+    setView('login');
+    setForgotEmail('');
+  };
+
+  if (view === 'account-pending') {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex flex-col items-center">
+          <img 
+            src={logoBlue} 
+            alt="Equity Advance" 
+            className="w-[66%] mb-5"
+          />
+          <div className="flex items-center justify-center gap-2 text-amber-600">
+            <Clock className="h-8 w-8" />
+            <span className="text-2xl font-bold">Account Status: Pending</span>
+          </div>
+        </div>
+
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">
+            In order to activate your account, click the button below to book a demo call to go over best practices when offering clients funding via a home equity investment.
+          </p>
+        </div>
+
+        <Button 
+          variant="navy" 
+          className="w-full" 
+          onClick={() => navigate('/iso-pending')}
+        >
+          <Calendar className="mr-2 h-4 w-4" />
+          Book Demo Call
+        </Button>
+      </div>
+    );
+  }
+
+  if (view === 'forgot-password') {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col items-center">
+          <img 
+            src={logoBlue} 
+            alt="Equity Advance" 
+            className="w-[66%] mb-5"
+          />
+          <div className="flex items-center justify-center gap-2 text-primary">
+            <Briefcase className="h-8 w-8" />
+            <span className="text-2xl font-bold">Reset Password</span>
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground text-center">
+            Enter your email address and we'll send you a link to reset your password.
+          </p>
+        </div>
+
+        <form onSubmit={handleForgotPassword} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="forgot-email">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input 
+                id="forgot-email" 
+                type="email" 
+                placeholder="partner@company.com" 
+                className="pl-10"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <Button type="submit" variant="navy" className="w-full" disabled={isLoading}>
+            {isLoading ? "Sending..." : "Send Reset Link"}
+          </Button>
+
+          <button
+            type="button"
+            onClick={() => setView('login')}
+            className="flex items-center justify-center gap-2 w-full text-sm text-primary hover:underline"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Login
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -141,6 +273,11 @@ export function IsoAuthModal({ onLoginSuccess }: IsoAuthModalProps) {
           <Briefcase className="h-8 w-8" />
           <span className="text-2xl font-bold">ISO Partner Portal</span>
         </div>
+        {disclaimerMessage && (
+          <p className="mt-3 text-sm text-muted-foreground text-center">
+            {disclaimerMessage}
+          </p>
+        )}
       </div>
 
       <Tabs defaultValue="login" className="w-full">
@@ -186,7 +323,13 @@ export function IsoAuthModal({ onLoginSuccess }: IsoAuthModalProps) {
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              <a href="#" className="text-primary hover:underline">Forgot your password?</a>
+              <button
+                type="button"
+                onClick={() => setView('forgot-password')}
+                className="text-primary hover:underline"
+              >
+                Forgot your password?
+              </button>
             </p>
           </form>
         </TabsContent>

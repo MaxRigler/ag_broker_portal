@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import IsoPending from "./pages/IsoPending";
 import AdminDashboard from "./pages/AdminDashboard";
+import ResetPassword from "./pages/ResetPassword";
 import { IsoLoginWidget } from "./components/IsoLoginWidget";
 import { AdminRoute } from "./components/AdminRoute";
 
@@ -14,13 +15,14 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
-  const hideIsoWidget = location.pathname === '/iso-pending' || location.pathname === '/admin';
+  const hideIsoWidget = location.pathname === '/iso-pending' || location.pathname === '/admin' || location.pathname === '/reset-password';
 
   return (
     <>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/iso-pending" element={<IsoPending />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
