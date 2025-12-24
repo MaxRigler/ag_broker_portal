@@ -53,7 +53,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
       {/* Content */}
       <div className="w-full max-w-4xl mx-auto px-2 md:px-12">
         {/* Header Row: Logo | Title (right-aligned) */}
-        <div className="flex items-center justify-between mb-6 md:mb-10">
+        <div className="flex items-center justify-between mb-3 md:mb-5">
           {/* Left: Logo - aligned with content below */}
           <img 
             src={logo} 
