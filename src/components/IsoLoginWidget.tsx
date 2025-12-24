@@ -15,7 +15,7 @@ export function IsoLoginWidget() {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="hidden md:fixed md:bottom-6 md:right-6 z-50">
         <Button 
           variant="navyOutline"
           size="lg"

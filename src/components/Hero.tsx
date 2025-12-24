@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
+import { Check, Briefcase } from 'lucide-react';
 import { AddressAutocomplete } from '@/components/AddressAutocomplete';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { IsoAuthModal } from '@/components/IsoAuthModal';
 import logo from '@/assets/logo.png';
 
 interface HeroProps {
@@ -18,6 +20,7 @@ const subheadlineItems = [
 
 export function Hero({ onCheckEligibility }: HeroProps) {
   const [address, setAddress] = useState('');
+  const [isIsoModalOpen, setIsIsoModalOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +94,32 @@ export function Hero({ onCheckEligibility }: HeroProps) {
               </Button>
             </div>
           </form>
+
+          {/* Mobile-only ISO Login Button - centered below form */}
+          <div className="flex justify-center mt-5 md:hidden">
+            <Button 
+              variant="navyOutline"
+              size="lg"
+              onClick={() => setIsIsoModalOpen(true)}
+              className="bg-background shadow-lg hover:shadow-xl"
+            >
+              <Briefcase className="w-4 h-4" />
+              ISO Login
+            </Button>
+          </div>
+
+          {/* Mobile ISO Login Modal */}
+          <Dialog open={isIsoModalOpen} onOpenChange={setIsIsoModalOpen}>
+            <DialogContent className="max-w-[calc(100%-2rem)] rounded-lg sm:max-w-md">
+              <DialogHeader className="sr-only">
+                <DialogTitle>ISO Partner Login</DialogTitle>
+                <DialogDescription>
+                  Login or create an account to access the ISO partner portal.
+                </DialogDescription>
+              </DialogHeader>
+              <IsoAuthModal />
+            </DialogContent>
+          </Dialog>
 
           {/* Desktop Subheadline - Horizontal row (after form on desktop) */}
           <div className="hidden md:block max-w-3xl mx-auto animate-slide-up relative z-0">
