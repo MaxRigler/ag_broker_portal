@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { WizardStep1 } from './WizardStep1';
 import { WizardStep2 } from './WizardStep2';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo-blue.png';
 
 interface UnderwritingWizardProps {
   address: string;
@@ -62,7 +62,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
           />
 
           {/* Right: Property Pre-Qualifier Title */}
-          <h1 className="text-base md:text-xl lg:text-2xl font-bold text-foreground tracking-wider">
+          <h1 className="text-base md:text-xl lg:text-2xl font-bold text-muted-foreground tracking-wider">
             Property Pre-Qualifier
           </h1>
         </div>
