@@ -6,31 +6,121 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Briefcase, Mail, Lock, User, Building2, Phone } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import logoBlue from '@/assets/logo-blue.png';
 
 export function IsoAuthModal() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  
+  // Signup form state
+  const [companyName, setCompanyName] = useState('');
+  const [contactName, setContactName] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    
+    if (!loginEmail || !loginPassword) {
       toast({
-        title: "Coming Soon",
-        description: "Login functionality will be available soon!",
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive",
       });
-    }, 500);
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    const { error } = await supabase.auth.signInWithPassword({
+      email: loginEmail,
+      password: loginPassword,
+    });
+    
+    setIsLoading(false);
+    
+    if (error) {
+      toast({
+        title: "Login Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    toast({
+      title: "Welcome back!",
+      description: "You have successfully logged in.",
+    });
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation
+    if (!companyName || !contactName || !signupEmail || !phoneNumber || !signupPassword || !confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (signupPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (signupPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate('/iso-pending');
-    }, 500);
+    
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { error } = await supabase.auth.signUp({
+      email: signupEmail,
+      password: signupPassword,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          full_name: contactName,
+          cell_phone: phoneNumber,
+          company_name: companyName,
+        },
+      },
+    });
+    
+    setIsLoading(false);
+    
+    if (error) {
+      toast({
+        title: "Signup Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    navigate('/iso-pending');
   };
 
   return (
@@ -64,6 +154,8 @@ export function IsoAuthModal() {
                   type="email" 
                   placeholder="partner@company.com" 
                   className="pl-10"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -77,6 +169,8 @@ export function IsoAuthModal() {
                   type="password" 
                   placeholder="••••••••" 
                   className="pl-10"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
                 />
               </div>
             </div>
@@ -103,6 +197,8 @@ export function IsoAuthModal() {
                     type="text" 
                     placeholder="ABC Funding" 
                     className="pl-10"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
                   />
                 </div>
               </div>
@@ -116,6 +212,8 @@ export function IsoAuthModal() {
                     type="text" 
                     placeholder="John Smith" 
                     className="pl-10"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
                   />
                 </div>
               </div>
@@ -131,6 +229,8 @@ export function IsoAuthModal() {
                     type="email" 
                     placeholder="partner@company.com" 
                     className="pl-10"
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -144,6 +244,8 @@ export function IsoAuthModal() {
                     type="tel" 
                     placeholder="(555) 123-4567" 
                     className="pl-10"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
                   />
                 </div>
               </div>
@@ -159,6 +261,8 @@ export function IsoAuthModal() {
                     type="password" 
                     placeholder="••••••••" 
                     className="pl-10"
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
                   />
                 </div>
               </div>
@@ -172,6 +276,8 @@ export function IsoAuthModal() {
                     type="password" 
                     placeholder="••••••••" 
                     className="pl-10"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                 </div>
               </div>

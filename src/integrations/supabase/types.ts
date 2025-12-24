@@ -14,7 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          billing_completed: boolean | null
+          cell_phone: string | null
+          company_name: string | null
+          company_url: string | null
+          created_at: string | null
+          email: string
+          everflow_id: string | null
+          full_name: string | null
+          id: string
+          invite_token: string | null
+          paperwork_completed: boolean | null
+          parent_id: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          status: Database["public"]["Enums"]["user_status"]
+          updated_at: string | null
+        }
+        Insert: {
+          billing_completed?: boolean | null
+          cell_phone?: string | null
+          company_name?: string | null
+          company_url?: string | null
+          created_at?: string | null
+          email: string
+          everflow_id?: string | null
+          full_name?: string | null
+          id: string
+          invite_token?: string | null
+          paperwork_completed?: boolean | null
+          parent_id?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: Database["public"]["Enums"]["user_status"]
+          updated_at?: string | null
+        }
+        Update: {
+          billing_completed?: boolean | null
+          cell_phone?: string | null
+          company_name?: string | null
+          company_url?: string | null
+          created_at?: string | null
+          email?: string
+          everflow_id?: string | null
+          full_name?: string | null
+          id?: string
+          invite_token?: string | null
+          paperwork_completed?: boolean | null
+          parent_id?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: Database["public"]["Enums"]["user_status"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +84,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "manager" | "officer"
+      user_status: "pending" | "active" | "denied"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +212,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["manager", "officer"],
+      user_status: ["pending", "active", "denied"],
+    },
   },
 } as const
