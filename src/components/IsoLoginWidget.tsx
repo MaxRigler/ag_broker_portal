@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { LogIn } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 
 export function IsoLoginWidget() {
   const handleClick = () => {
@@ -10,12 +10,12 @@ export function IsoLoginWidget() {
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <Button 
-        variant="navy" 
+        variant="navyOutline"
         size="lg"
         onClick={handleClick}
-        className="shadow-lg hover:shadow-xl"
+        className="bg-background shadow-lg hover:shadow-xl"
       >
-        <LogIn className="w-4 h-4" />
+        <Briefcase className="w-4 h-4" />
         ISO Login
       </Button>
     </div>
