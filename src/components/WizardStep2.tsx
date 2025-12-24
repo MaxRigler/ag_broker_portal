@@ -217,10 +217,10 @@ export function WizardStep2({
             <Share2 className="h-4 w-4 ml-2" />
           </Button>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={onBack} className="flex-1">
+            <Button variant="outline" onClick={onBack} className="flex-1 text-muted-foreground">
               Back
             </Button>
-            <Button variant="blue" onClick={handleCalculator} className="flex-1">
+            <Button variant="ghost" onClick={handleCalculator} className="flex-1 bg-transparent text-white hover:bg-white/10">
               Estimator
             </Button>
           </div>
@@ -228,10 +228,10 @@ export function WizardStep2({
       ) : (
         // Desktop Layout: Back, Estimator, Generate Offer Link in a row
         <div className="flex gap-3">
-          <Button variant="outline" onClick={onBack}>
+          <Button variant="outline" onClick={onBack} className="text-muted-foreground">
             Back
           </Button>
-          <Button variant="blue" onClick={handleCalculator}>
+          <Button variant="ghost" onClick={handleCalculator} className="bg-transparent text-white hover:bg-white/10">
             Estimator
           </Button>
           <Button 
