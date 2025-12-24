@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft, Share2, Calculator } from 'lucide-react';
+import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/heaCalculator';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SettlementEstimator } from './SettlementEstimator';
 import { triggerConfetti } from '@/components/ui/confetti';
-
 interface WizardStep2Props {
   address: string;
   homeValue: number;
@@ -99,7 +98,6 @@ export function WizardStep2({
   useEffect(() => {
     triggerConfetti();
   }, []);
-
   const handleCalculator = () => {
     setShowCalculator(true);
   };
@@ -118,16 +116,16 @@ export function WizardStep2({
           </div>
 
           {/* Top Row: Two columns for funding and payment */}
-          <div className="flex gap-4 mb-4">
-            <div className="flex-[2]">
-              <p className="text-xs text-foreground/70 font-medium mb-1">Maximum Funding</p>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p className="text-xs text-muted-foreground font-medium mb-1">Maximum Funding</p>
               <p className="text-3xl md:text-4xl font-bold text-[hsl(var(--success))]">
                 {formatCurrency(maxInvestment)}
               </p>
             </div>
-            <div className="flex-1">
-              <p className="text-[10px] text-foreground/70 font-medium mb-1 whitespace-nowrap">Monthly Payment</p>
-              <p className="text-xl md:text-2xl font-bold text-muted-foreground">
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground font-medium mb-1">Monthly Payment</p>
+              <p className="text-3xl md:text-4xl font-bold text-[hsl(var(--success))]">
                 $0.00
               </p>
             </div>
@@ -139,33 +137,33 @@ export function WizardStep2({
           </p>
         </div>
 
-        {/* Right Column: Property Qualified Card - Shows on Desktop and Mobile */}
-        <div className="p-6 bg-[hsl(var(--success))]/10 rounded-xl border border-[hsl(var(--success))]/30">
+        {/* Right Column: Property Qualified Card - Desktop Only */}
+        {!isMobile && <div className="p-6 bg-[hsl(var(--success))]/10 rounded-xl border border-[hsl(var(--success))]/30">
             
             {/* Qualification Criteria */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Eligible State: {getStateName(state)}</span>
+                <span className="text-sm text-foreground">Eligible State: {getStateName(state)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Eligible Property Type: {propertyType}</span>
+                <span className="text-sm text-foreground">Eligible Property Type: {propertyType}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Ownership Type: {ownershipType}</span>
+                <span className="text-sm text-foreground">Ownership Type: {ownershipType}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Home Value: {formatCurrency(homeValue)}</span>
+                <span className="text-sm text-foreground">Home Value: {formatCurrency(homeValue)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">CLTV: {currentCLTV.toFixed(1)}% (under 80% max)</span>
+                <span className="text-sm text-foreground">CLTV: {currentCLTV.toFixed(1)}% (under 80% max)</span>
               </div>
             </div>
-          </div>
+          </div>}
       </div>
 
       {/* Info Boxes Row */}
@@ -175,8 +173,8 @@ export function WizardStep2({
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm text-foreground/70 font-medium">Property Address</p>
-                <p className="text-sm font-bold text-muted-foreground mt-1">{address}</p>
+                <p className="text-sm text-muted-foreground font-medium">Property Address</p>
+                <p className="text-sm font-bold text-foreground mt-1">{address}</p>
               </div>
             </div>
           </div>}
@@ -186,8 +184,8 @@ export function WizardStep2({
           <div className="flex items-start gap-3">
             <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm text-foreground/70 font-medium">Estimated Property Value</p>
-              <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(homeValue)}</p>
+              <p className="text-sm text-muted-foreground font-medium">Estimated Property Value</p>
+              <p className="text-lg font-bold text-foreground mt-1">{formatCurrency(homeValue)}</p>
             </div>
           </div>
         </div>
@@ -197,8 +195,8 @@ export function WizardStep2({
           <div className="flex items-start gap-3">
             <DollarSign className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm text-foreground/70 font-medium">Mortgage</p>
-              <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(mortgageBalance)}</p>
+              <p className="text-sm text-muted-foreground font-medium">Estimated Mortgage Bal</p>
+              <p className="text-lg font-bold text-foreground mt-1">{formatCurrency(mortgageBalance)}</p>
             </div>
           </div>
         </div>
@@ -206,39 +204,18 @@ export function WizardStep2({
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        {/* Left Group: Back + Calculator (1/3 width on desktop) */}
-        <div className={`flex gap-3 ${isMobile ? '' : 'flex-1'}`}>
-          <Button variant="outline" size="icon" onClick={onBack} className="flex-shrink-0">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <Button variant="blue" size="icon" onClick={handleCalculator} className="flex-shrink-0">
-            <Calculator className="h-4 w-4 text-white" />
-          </Button>
-        </div>
-        
-        {/* Right: Generate Offer Link (2/3 width on desktop) */}
-        <Button 
-          variant="success" 
-          onClick={handleGenerateOffers} 
-          className={isMobile ? 'flex-1' : 'flex-[2]'}
-        >
-          Generate Offer Link
-          <Share2 className="h-4 w-4 ml-2" />
+        <Button variant="outline" size="icon" onClick={onBack} className="flex-shrink-0">
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Button variant="outline" onClick={handleCalculator} className="flex-1">
+          {isMobile ? 'Calculator' : 'Settlement Estimator'}
+        </Button>
+        <Button variant="success" onClick={handleGenerateOffers} className="flex-1">
+          Generate Offer Links
         </Button>
       </div>
 
       {/* Settlement Estimator Modal */}
-      <SettlementEstimator
-        homeValue={homeValue}
-        maxInvestment={maxInvestment}
-        fundingAmount={fundingAmount}
-        setFundingAmount={setFundingAmount}
-        settlementYear={settlementYear}
-        setSettlementYear={setSettlementYear}
-        hpaRate={hpaRate}
-        setHpaRate={setHpaRate}
-        open={showCalculator}
-        onOpenChange={setShowCalculator}
-      />
+      <SettlementEstimator homeValue={homeValue} maxInvestment={maxInvestment} fundingAmount={fundingAmount} setFundingAmount={setFundingAmount} settlementYear={settlementYear} setSettlementYear={setSettlementYear} hpaRate={hpaRate} setHpaRate={setHpaRate} open={showCalculator} onOpenChange={setShowCalculator} />
     </div>;
 }
