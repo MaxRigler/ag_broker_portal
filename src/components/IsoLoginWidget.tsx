@@ -22,7 +22,7 @@ export function IsoLoginWidget() {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="mx-4 rounded-lg sm:max-w-md">
           <DialogHeader className="sr-only">
             <DialogTitle>ISO Partner Login</DialogTitle>
             <DialogDescription>
