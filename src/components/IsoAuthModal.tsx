@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +10,7 @@ import logoBlue from '@/assets/logo-blue.png';
 
 export function IsoAuthModal() {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,10 +29,7 @@ export function IsoAuthModal() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      toast({
-        title: "Coming Soon",
-        description: "Account creation will be available soon!",
-      });
+      navigate('/iso-pending');
     }, 500);
   };
 
