@@ -81,6 +81,7 @@ Deno.serve(async (req) => {
     const everflowPayload = {
       name: profile.company_name || profile.full_name || "Unknown Company",
       account_status: "active",
+      network_employee_id: 1,
       users: [
         {
           first_name: firstName,
