@@ -24,6 +24,7 @@ export type Database = {
           email: string
           everflow_account_status: string | null
           everflow_api_key: string | null
+          everflow_encoded_value: string | null
           everflow_id: string | null
           everflow_network_id: number | null
           everflow_tracking_domain: string | null
@@ -46,6 +47,7 @@ export type Database = {
           email: string
           everflow_account_status?: string | null
           everflow_api_key?: string | null
+          everflow_encoded_value?: string | null
           everflow_id?: string | null
           everflow_network_id?: number | null
           everflow_tracking_domain?: string | null
@@ -68,6 +70,7 @@ export type Database = {
           email?: string
           everflow_account_status?: string | null
           everflow_api_key?: string | null
+          everflow_encoded_value?: string | null
           everflow_id?: string | null
           everflow_network_id?: number | null
           everflow_tracking_domain?: string | null

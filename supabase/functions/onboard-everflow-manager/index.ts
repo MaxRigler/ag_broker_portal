@@ -154,6 +154,7 @@ Deno.serve(async (req) => {
     const trackingDomain = everflowData.tracking_domain;
     const apiKey = everflowData.api_key;
     const accountStatus = everflowData.account_status;
+    const encodedValue = everflowData.relationship?.encoded_value;
     
     // Extract user ID from the first user in the response
     const userId = everflowData.users?.[0]?.network_affiliate_user_id || null;
@@ -168,6 +169,7 @@ Deno.serve(async (req) => {
         everflow_tracking_domain: trackingDomain,
         everflow_api_key: apiKey,
         everflow_account_status: accountStatus || "active",
+        everflow_encoded_value: encodedValue,
       })
       .eq("id", profile_id);
 
