@@ -90,6 +90,10 @@ Deno.serve(async (req) => {
           account_status: "active",
         },
       ],
+      billing: {
+        billing_frequency: "manual",
+        payment_type: "none",
+      },
     };
 
     console.log("Calling Everflow API with payload:", JSON.stringify(everflowPayload));
