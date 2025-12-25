@@ -41,7 +41,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!loginEmail || !loginPassword) {
       toast({
         title: "Error",
@@ -50,16 +50,16 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
-    const { error } = await supabase.auth.signInWithPassword({
+
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: loginEmail,
       password: loginPassword,
     });
-    
+
     setIsLoading(false);
-    
+
     if (error) {
       toast({
         title: "Login Failed",
@@ -68,12 +68,38 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       });
       return;
     }
-    
+
+    // If they haven't been created in Everflow yet, attempt onboarding now using the password they just entered.
+    const userId = data.user?.id;
+    if (userId) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role, everflow_id')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (profile?.role === 'manager' && !profile?.everflow_id) {
+        const { error: onboardError } = await supabase.functions.invoke('onboard-everflow-manager', {
+          body: { profile_id: userId, initial_password: loginPassword },
+        });
+
+        if (onboardError) {
+          console.error('Everflow onboarding failed:', onboardError);
+          toast({
+            title: 'Partner setup failed',
+            description:
+              'Your account was created, but partner tracking setup did not complete. Please try again or contact support.',
+            variant: 'destructive',
+          });
+        }
+      }
+    }
+
     toast({
       title: "Welcome back!",
       description: "You have successfully logged in.",
     });
-    
+
     onLoginSuccess?.();
   };
 
@@ -122,10 +148,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
     }
     
     setIsLoading(true);
-    
+
     const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
+
+    const { data, error } = await supabase.auth.signUp({
       email: signupEmail,
       password: signupPassword,
       options: {
@@ -137,9 +163,9 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
         },
       },
     });
-    
+
     setIsLoading(false);
-    
+
     if (error) {
       toast({
         title: "Signup Failed",
@@ -148,7 +174,20 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       });
       return;
     }
-    
+
+    // Try to create their Everflow affiliate right away (if we have an authenticated session).
+    const userId = data.user?.id;
+    if (userId) {
+      const { error: onboardError } = await supabase.functions.invoke('onboard-everflow-manager', {
+        body: { profile_id: userId, initial_password: signupPassword },
+      });
+
+      // If signup requires email confirmation, this call may fail (no session yet). We'll retry on first login.
+      if (onboardError) {
+        console.warn('Everflow onboarding not completed during signup:', onboardError);
+      }
+    }
+
     // Show the pending view in the modal instead of navigating away
     onShowPending?.();
     setView('account-pending');
