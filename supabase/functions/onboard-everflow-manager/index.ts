@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
     // Extract values from Everflow response
     const networkAffiliateId = everflowData.network_affiliate_id;
     const networkId = everflowData.network_id;
-    const trackingDomain = everflowData.tracking_domain;
+    const trackingDomain = "www.eqadv.com";
     const apiKey = everflowData.api_key;
     const accountStatus = everflowData.account_status;
     const encodedValue = everflowData.relationship?.encoded_value;
