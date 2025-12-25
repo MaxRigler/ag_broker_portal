@@ -156,8 +156,8 @@ Deno.serve(async (req) => {
     const accountStatus = everflowData.account_status;
     const encodedValue = everflowData.relationship?.encoded_value;
     
-    // Extract user ID from the first user in the response
-    const userId = everflowData.users?.[0]?.network_affiliate_user_id || null;
+    // Extract user ID from the first user in the response (nested under relationship.users.entries)
+    const userId = everflowData.relationship?.users?.entries?.[0]?.network_affiliate_user_id || null;
 
     // Update the profile with Everflow data
     const { error: updateError } = await supabase
