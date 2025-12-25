@@ -110,10 +110,12 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       return;
     }
     
-    if (signupPassword.length < 6) {
+    // Everflow requires: min 12 chars, uppercase, lowercase, number, special char
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{12,}$/;
+    if (!passwordRegex.test(signupPassword)) {
       toast({
         title: "Error",
-        description: "Password must be at least 6 characters",
+        description: "Password must be at least 12 characters with uppercase, lowercase, number, and special character (!@#$%^&* etc.)",
         variant: "destructive",
       });
       return;
@@ -428,7 +430,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
                   <Input 
                     id="signup-password" 
                     type="password" 
-                    placeholder="••••••••" 
+                    placeholder="Min 12 chars, Aa1!" 
                     className="pl-10"
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
