@@ -193,6 +193,16 @@ export function WizardStep2({
       const OFFER_HASH = '2CTPL';
       const offerLink = `https://${everflowData.everflow_tracking_domain}/${everflowData.everflow_encoded_value}/${OFFER_HASH}/?sub5=${newDeal.id}`;
 
+      // Save the offer link to the deal record
+      const { error: updateError } = await supabase
+        .from('deals')
+        .update({ offer_link: offerLink })
+        .eq('id', newDeal.id);
+
+      if (updateError) {
+        console.error('Error saving offer link:', updateError);
+      }
+
       setGeneratedOfferLink(offerLink);
       setShowOfferLinkModal(true);
       toast.success('Offer link generated successfully!');
