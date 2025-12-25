@@ -12,13 +12,22 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { profile_id } = await req.json();
-    
+    const { profile_id, initial_password } = await req.json();
+
     if (!profile_id) {
       console.error("Missing profile_id in request body");
       return new Response(
         JSON.stringify({ error: "Missing profile_id" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Everflow: If supplied, password must be >= 12 characters. (We enforce stronger rules on the frontend.)
+    const everflowPassword = typeof initial_password === "string" ? initial_password : "";
+    if (everflowPassword && everflowPassword.length < 12) {
+      return new Response(
+        JSON.stringify({ error: "initial_password must be at least 12 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -40,7 +49,7 @@ Deno.serve(async (req) => {
       console.error("Error fetching profile:", profileError);
       return new Response(
         JSON.stringify({ error: "Failed to fetch profile", details: profileError }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -48,7 +57,7 @@ Deno.serve(async (req) => {
       console.error("Profile not found:", profile_id);
       return new Response(
         JSON.stringify({ error: "Profile not found" }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -57,7 +66,7 @@ Deno.serve(async (req) => {
       console.log(`Skipping: role=${profile.role}, everflow_id=${profile.everflow_id}`);
       return new Response(
         JSON.stringify({ message: "Conditions not met, skipping onboarding" }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -67,9 +76,11 @@ Deno.serve(async (req) => {
       console.error("Everflow API key not configured");
       return new Response(
         JSON.stringify({ error: "Everflow API key not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
+    const networkEmployeeId = Number(Deno.env.get("EVERFLOW_NETWORK_EMPLOYEE_ID") ?? "1");
 
     // Split full_name into first and last name for Everflow API
     const fullName = profile.full_name || "Unknown User";
@@ -81,7 +92,7 @@ Deno.serve(async (req) => {
     const everflowPayload = {
       name: profile.company_name || profile.full_name || "Unknown Company",
       account_status: "active",
-      network_employee_id: 1,
+      network_employee_id: networkEmployeeId,
       default_currency_id: "USD",
       users: [
         {
@@ -89,11 +100,25 @@ Deno.serve(async (req) => {
           last_name: lastName,
           email: profile.email,
           account_status: "active",
+          initial_password: everflowPassword,
+          language_id: 1,
+          timezone_id: 90,
+          currency_id: "USD",
         },
       ],
+      billing: {
+        billing_frequency: "manual",
+        payment_type: "none",
+        details: {},
+      },
     };
 
-    console.log("Calling Everflow API with payload:", JSON.stringify(everflowPayload));
+    const payloadForLog = {
+      ...everflowPayload,
+      users: everflowPayload.users.map((u) => ({ ...u, initial_password: u.initial_password ? "[REDACTED]" : "" })),
+    };
+
+    console.log("Calling Everflow API with payload:", JSON.stringify(payloadForLog));
 
     // Call Everflow Network API
     const everflowResponse = await fetch("https://api.eflow.team/v1/networks/affiliates", {
@@ -105,13 +130,19 @@ Deno.serve(async (req) => {
       body: JSON.stringify(everflowPayload),
     });
 
-    const everflowData = await everflowResponse.json();
+    const responseText = await everflowResponse.text();
+    let everflowData: any = null;
+    try {
+      everflowData = responseText ? JSON.parse(responseText) : {};
+    } catch (_e) {
+      everflowData = { raw: responseText };
+    }
 
     if (!everflowResponse.ok) {
-      console.error("Everflow API error:", everflowData);
+      console.error(`Everflow API error (status ${everflowResponse.status}):`, everflowData);
       return new Response(
         JSON.stringify({ error: "Everflow API call failed", details: everflowData }),
-        { status: everflowResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: everflowResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
