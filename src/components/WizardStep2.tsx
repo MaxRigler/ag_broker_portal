@@ -190,7 +190,8 @@ export function WizardStep2({
 
       // Construct the offer link
       // Format: https://[tracking_domain]/[encoded_value]/[OFFER_HASH]/?sub5=[DEAL_ID]
-      const offerLink = `https://${everflowData.everflow_tracking_domain}/${everflowData.everflow_encoded_value}/?sub5=${newDeal.id}`;
+      const OFFER_HASH = '2CTPL';
+      const offerLink = `https://${everflowData.everflow_tracking_domain}/${everflowData.everflow_encoded_value}/${OFFER_HASH}/?sub5=${newDeal.id}`;
 
       setGeneratedOfferLink(offerLink);
       setShowOfferLinkModal(true);
