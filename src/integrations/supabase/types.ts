@@ -22,6 +22,7 @@ export type Database = {
           id: string
           max_investment: number
           mortgage_balance: number
+          offer_link: string | null
           owner_names: string[] | null
           property_address: string
           user_id: string
@@ -33,6 +34,7 @@ export type Database = {
           id?: string
           max_investment: number
           mortgage_balance: number
+          offer_link?: string | null
           owner_names?: string[] | null
           property_address: string
           user_id: string
@@ -44,6 +46,7 @@ export type Database = {
           id?: string
           max_investment?: number
           mortgage_balance?: number
+          offer_link?: string | null
           owner_names?: string[] | null
           property_address?: string
           user_id?: string

@@ -7,6 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { SettlementEstimator } from './SettlementEstimator';
 import { triggerConfetti } from '@/components/ui/confetti';
 import { supabase } from '@/integrations/supabase/client';
+import { OfferLinkModal } from './OfferLinkModal';
 
 interface WizardStep2Props {
   address: string;
@@ -97,6 +98,8 @@ export function WizardStep2({
   const [fundingAmount, setFundingAmount] = useState(maxInvestment);
   const [settlementYear, setSettlementYear] = useState(10);
   const [hpaRate, setHpaRate] = useState(0.03);
+  const [showOfferLinkModal, setShowOfferLinkModal] = useState(false);
+  const [generatedOfferLink, setGeneratedOfferLink] = useState('');
   const [isCreatingDeal, setIsCreatingDeal] = useState(false);
 
   // Trigger confetti animation on mount (property pre-qualified)
@@ -118,7 +121,54 @@ export function WizardStep2({
         return;
       }
 
-      const { error } = await supabase
+      // Fetch user's profile to determine role and get Everflow data
+      const { data: userProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role, parent_id, everflow_id, everflow_encoded_value, everflow_tracking_domain')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !userProfile) {
+        console.error('Error fetching profile:', profileError);
+        toast.error('Failed to fetch user profile');
+        return;
+      }
+
+      let everflowData = {
+        everflow_id: userProfile.everflow_id,
+        everflow_encoded_value: userProfile.everflow_encoded_value,
+        everflow_tracking_domain: userProfile.everflow_tracking_domain
+      };
+
+      // If user is an Officer, fetch Everflow data from parent profile
+      if (userProfile.role === 'officer' && userProfile.parent_id) {
+        const { data: parentProfile, error: parentError } = await supabase
+          .from('profiles')
+          .select('everflow_id, everflow_encoded_value, everflow_tracking_domain')
+          .eq('id', userProfile.parent_id)
+          .single();
+
+        if (parentError || !parentProfile) {
+          console.error('Error fetching parent profile:', parentError);
+          toast.error('Failed to fetch manager profile for link generation');
+          return;
+        }
+
+        everflowData = {
+          everflow_id: parentProfile.everflow_id,
+          everflow_encoded_value: parentProfile.everflow_encoded_value,
+          everflow_tracking_domain: parentProfile.everflow_tracking_domain
+        };
+      }
+
+      // Validate Everflow data is available
+      if (!everflowData.everflow_tracking_domain || !everflowData.everflow_encoded_value) {
+        toast.error('Everflow tracking configuration is not complete. Please contact support.');
+        return;
+      }
+
+      // Create the deal and get the ID
+      const { data: newDeal, error: dealError } = await supabase
         .from('deals')
         .insert({
           user_id: user.id,
@@ -128,16 +178,34 @@ export function WizardStep2({
           max_investment: maxInvestment,
           owner_names: ownerNames || [],
           everflow_event_status: 'pending'
-        });
+        })
+        .select('id')
+        .single();
 
-      if (error) {
-        console.error('Error creating deal:', error);
+      if (dealError || !newDeal) {
+        console.error('Error creating deal:', dealError);
         toast.error('Failed to create deal');
         return;
       }
 
-      toast.success('Deal created successfully!');
-      // TODO: Generate and display offer link
+      // Construct the offer link
+      // Format: https://[tracking_domain]/[encoded_value]/[OFFER_HASH]/?sub5=[DEAL_ID]
+      const OFFER_HASH = '2CTPL';
+      const offerLink = `https://${everflowData.everflow_tracking_domain}/${everflowData.everflow_encoded_value}/${OFFER_HASH}/?sub5=${newDeal.id}`;
+
+      // Save the offer link to the deal record
+      const { error: updateError } = await supabase
+        .from('deals')
+        .update({ offer_link: offerLink })
+        .eq('id', newDeal.id);
+
+      if (updateError) {
+        console.error('Error saving offer link:', updateError);
+      }
+
+      setGeneratedOfferLink(offerLink);
+      setShowOfferLinkModal(true);
+      toast.success('Offer link generated successfully!');
     } catch (err) {
       console.error('Error creating deal:', err);
       toast.error('An error occurred while creating the deal');
@@ -316,6 +384,13 @@ export function WizardStep2({
         setHpaRate={setHpaRate}
         open={showCalculator}
         onOpenChange={setShowCalculator}
+      />
+
+      {/* Offer Link Modal */}
+      <OfferLinkModal
+        open={showOfferLinkModal}
+        onOpenChange={setShowOfferLinkModal}
+        offerLink={generatedOfferLink}
       />
     </div>;
 }
