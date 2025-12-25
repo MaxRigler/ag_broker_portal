@@ -32,6 +32,7 @@ export function IsoLoginWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isWideModal, setIsWideModal] = useState(false);
   const location = useLocation();
   const { user, signOut, userStatus } = useAuth();
 
@@ -137,15 +138,21 @@ export function IsoLoginWidget() {
         </div>
       </div>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-[calc(100%-2rem)] rounded-lg sm:max-w-md">
+      <Dialog open={isOpen} onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) setIsWideModal(false);
+      }}>
+        <DialogContent className={`max-w-[calc(100%-2rem)] rounded-lg transition-all duration-300 ease-in-out ${isWideModal ? 'sm:max-w-2xl' : 'sm:max-w-md'}`}>
           <DialogHeader className="sr-only">
             <DialogTitle>ISO Partner Login</DialogTitle>
             <DialogDescription>
               Login or create an account to access the ISO partner portal.
             </DialogDescription>
           </DialogHeader>
-          <IsoAuthModal onLoginSuccess={handleLoginSuccess} />
+          <IsoAuthModal 
+            onLoginSuccess={handleLoginSuccess} 
+            onTabChange={(tab) => setIsWideModal(tab === 'signup')}
+          />
         </DialogContent>
       </Dialog>
     </>

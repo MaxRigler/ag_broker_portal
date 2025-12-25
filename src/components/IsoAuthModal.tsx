@@ -9,15 +9,16 @@ import { Briefcase, Mail, Lock, User, Building2, Phone, ArrowLeft, Clock, Calend
 import { supabase } from '@/integrations/supabase/client';
 import logoBlue from '@/assets/logo-blue.png';
 
+type ViewType = 'login' | 'signup' | 'forgot-password' | 'account-pending';
+
 interface IsoAuthModalProps {
   onLoginSuccess?: () => void;
   disclaimerMessage?: string;
   initialView?: ViewType;
+  onTabChange?: (tab: 'login' | 'signup') => void;
 }
 
-type ViewType = 'login' | 'signup' | 'forgot-password' | 'account-pending';
-
-export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 'login' }: IsoAuthModalProps) {
+export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 'login', onTabChange }: IsoAuthModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [view, setView] = useState<ViewType>(initialView);
   const navigate = useNavigate();
@@ -280,7 +281,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
         )}
       </div>
 
-      <Tabs defaultValue="login" className="w-full">
+      <Tabs defaultValue="login" className="w-full" onValueChange={(value) => onTabChange?.(value as 'login' | 'signup')}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="signup">Create Account</TabsTrigger>
