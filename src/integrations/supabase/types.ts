@@ -22,7 +22,13 @@ export type Database = {
           company_url: string | null
           created_at: string | null
           email: string
+          everflow_account_status: string | null
+          everflow_api_key: string | null
+          everflow_encoded_value: string | null
           everflow_id: string | null
+          everflow_network_id: number | null
+          everflow_tracking_domain: string | null
+          everflow_user_id: number | null
           full_name: string | null
           id: string
           invite_token: string | null
@@ -39,7 +45,13 @@ export type Database = {
           company_url?: string | null
           created_at?: string | null
           email: string
+          everflow_account_status?: string | null
+          everflow_api_key?: string | null
+          everflow_encoded_value?: string | null
           everflow_id?: string | null
+          everflow_network_id?: number | null
+          everflow_tracking_domain?: string | null
+          everflow_user_id?: number | null
           full_name?: string | null
           id: string
           invite_token?: string | null
@@ -56,7 +68,13 @@ export type Database = {
           company_url?: string | null
           created_at?: string | null
           email?: string
+          everflow_account_status?: string | null
+          everflow_api_key?: string | null
+          everflow_encoded_value?: string | null
           everflow_id?: string | null
+          everflow_network_id?: number | null
+          everflow_tracking_domain?: string | null
+          everflow_user_id?: number | null
           full_name?: string | null
           id?: string
           invite_token?: string | null

@@ -74,10 +74,12 @@ export default function ResetPassword() {
       return;
     }
     
-    if (newPassword.length < 6) {
+    // Everflow requires: min 12 chars, uppercase, lowercase, number, special char
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{12,}$/;
+    if (!passwordRegex.test(newPassword)) {
       toast({
         title: "Error",
-        description: "Password must be at least 6 characters",
+        description: "Password must be at least 12 characters with uppercase, lowercase, number, and special character (!@#$%^&* etc.)",
         variant: "destructive",
       });
       return;
@@ -151,7 +153,7 @@ export default function ResetPassword() {
                 <Input 
                   id="new-password" 
                   type="password" 
-                  placeholder="••••••••" 
+                  placeholder="Min 12 chars, Aa1!" 
                   className="pl-10"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
