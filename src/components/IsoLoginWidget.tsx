@@ -33,6 +33,7 @@ export function IsoLoginWidget() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isWideModal, setIsWideModal] = useState(false);
+  const [showPostSignupPending, setShowPostSignupPending] = useState(false);
   const location = useLocation();
   const { user, signOut, userStatus } = useAuth();
 
@@ -69,8 +70,8 @@ export function IsoLoginWidget() {
     await signOut();
   };
 
-  // If user is logged in, show user widget (or nothing while profile loads)
-  if (user) {
+  // If user is logged in and NOT showing post-signup pending modal, show user widget
+  if (user && !showPostSignupPending) {
     if (!profile) return null; // Don't show anything while profile is loading
     
     return (
@@ -138,9 +139,12 @@ export function IsoLoginWidget() {
         </div>
       </div>
 
-      <Dialog open={isOpen} onOpenChange={(open) => {
+      <Dialog open={isOpen || showPostSignupPending} onOpenChange={(open) => {
         setIsOpen(open);
-        if (!open) setIsWideModal(false);
+        if (!open) {
+          setIsWideModal(false);
+          setShowPostSignupPending(false);
+        }
       }}>
         <DialogContent className={`max-w-[calc(100%-2rem)] rounded-lg transition-all duration-300 ease-in-out ${isWideModal ? 'sm:max-w-2xl' : 'sm:max-w-md'}`}>
           <DialogHeader className="sr-only">
@@ -152,6 +156,8 @@ export function IsoLoginWidget() {
           <IsoAuthModal 
             onLoginSuccess={handleLoginSuccess} 
             onTabChange={(tab) => setIsWideModal(tab === 'signup')}
+            onShowPending={() => setShowPostSignupPending(true)}
+            initialView={showPostSignupPending ? 'account-pending' : 'login'}
           />
         </DialogContent>
       </Dialog>
