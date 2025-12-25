@@ -98,6 +98,17 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       return;
     }
     
+    // Check phone number is exactly 10 digits
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    if (phoneDigits.length !== 10) {
+      toast({
+        title: "Error",
+        description: "Phone number must be exactly 10 digits",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (signupPassword.length < 6) {
       toast({
         title: "Error",
@@ -392,10 +403,15 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
                   <Input 
                     id="phone-number" 
                     type="tel" 
-                    placeholder="(555) 123-4567" 
+                    placeholder="5551234567" 
                     className="pl-10"
+                    maxLength={10}
+                    inputMode="numeric"
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    onChange={(e) => {
+                      const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setPhoneNumber(digitsOnly);
+                    }}
                   />
                 </div>
               </div>
