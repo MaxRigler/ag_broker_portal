@@ -43,6 +43,7 @@ interface WizardData {
   propertyType: string;
   ownershipType: string;
   currentCLTV: number;
+  ownerNames: string[];
 }
 
 const steps = [
@@ -83,6 +84,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
     propertyType: string;
     ownershipType: string;
     currentCLTV: number;
+    ownerNames: string[];
   }) => {
     setWizardData({ ...wizardData, ...data });
     setCurrentStep(2);
@@ -191,6 +193,7 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
                 propertyType={wizardData.propertyType || ''}
                 ownershipType={wizardData.ownershipType || ''}
                 currentCLTV={wizardData.currentCLTV || 0}
+                ownerNames={wizardData.ownerNames}
                 onBack={() => setCurrentStep(1)}
                 onReset={handleReset}
               />

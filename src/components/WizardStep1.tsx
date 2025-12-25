@@ -18,6 +18,7 @@ interface WizardStep1Props {
     propertyType: string;
     ownershipType: string;
     currentCLTV: number;
+    ownerNames: string[];
   }) => void;
   onBack: () => void;
 }
@@ -333,6 +334,11 @@ export function WizardStep1({
 
   const handleConfirmProperty = () => {
     if (isFullyEligible) {
+      // Parse owner names - split by comma if multiple
+      const ownerNamesArray = propertyOwner
+        ? propertyOwner.split(',').map(name => name.trim()).filter(Boolean)
+        : [];
+      
       onComplete({
         homeValue,
         state,
@@ -340,7 +346,8 @@ export function WizardStep1({
         maxInvestment,
         propertyType,
         ownershipType,
-        currentCLTV
+        currentCLTV,
+        ownerNames: ownerNamesArray
       });
     }
   };

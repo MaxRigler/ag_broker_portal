@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft, Share2, Calculator } from 'lucide-react';
+import { CheckCircle2, Home, DollarSign, MapPin, ArrowLeft, Share2, Calculator, Loader2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/heaCalculator';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SettlementEstimator } from './SettlementEstimator';
 import { triggerConfetti } from '@/components/ui/confetti';
+import { supabase } from '@/integrations/supabase/client';
 
 interface WizardStep2Props {
   address: string;
@@ -16,6 +17,7 @@ interface WizardStep2Props {
   propertyType: string;
   ownershipType: string;
   currentCLTV: number;
+  ownerNames?: string[];
   onBack: () => void;
   onReset: () => void;
 }
@@ -86,6 +88,7 @@ export function WizardStep2({
   propertyType,
   ownershipType,
   currentCLTV,
+  ownerNames,
   onBack,
   onReset
 }: WizardStep2Props) {
@@ -94,6 +97,7 @@ export function WizardStep2({
   const [fundingAmount, setFundingAmount] = useState(maxInvestment);
   const [settlementYear, setSettlementYear] = useState(10);
   const [hpaRate, setHpaRate] = useState(0.03);
+  const [isCreatingDeal, setIsCreatingDeal] = useState(false);
 
   // Trigger confetti animation on mount (property pre-qualified)
   useEffect(() => {
@@ -103,8 +107,43 @@ export function WizardStep2({
   const handleCalculator = () => {
     setShowCalculator(true);
   };
-  const handleGenerateOffers = () => {
-    toast.info('Generate Offer Links coming soon');
+
+  const handleGenerateOffers = async () => {
+    setIsCreatingDeal(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error('You must be logged in to generate an offer link');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('deals')
+        .insert({
+          user_id: user.id,
+          property_address: address,
+          home_value: homeValue,
+          mortgage_balance: mortgageBalance,
+          max_investment: maxInvestment,
+          owner_names: ownerNames || [],
+          everflow_event_status: 'pending'
+        });
+
+      if (error) {
+        console.error('Error creating deal:', error);
+        toast.error('Failed to create deal');
+        return;
+      }
+
+      toast.success('Deal created successfully!');
+      // TODO: Generate and display offer link
+    } catch (err) {
+      console.error('Error creating deal:', err);
+      toast.error('An error occurred while creating the deal');
+    } finally {
+      setIsCreatingDeal(false);
+    }
   };
   return <div className="space-y-6">
       {/* Main Content - Two Column on Desktop */}
@@ -212,15 +251,25 @@ export function WizardStep2({
             variant="success" 
             onClick={handleGenerateOffers} 
             className="w-full"
+            disabled={isCreatingDeal}
           >
-            Generate Offer Link
-            <Share2 className="h-4 w-4 ml-2" />
+            {isCreatingDeal ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Creating Deal...
+              </>
+            ) : (
+              <>
+                Generate Offer Link
+                <Share2 className="h-4 w-4 ml-2" />
+              </>
+            )}
           </Button>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={onBack} className="flex-1 text-muted-foreground">
+            <Button variant="outline" onClick={onBack} className="flex-1 text-muted-foreground" disabled={isCreatingDeal}>
               Back
             </Button>
-            <Button variant="blue" onClick={handleCalculator} className="flex-1 text-white">
+            <Button variant="blue" onClick={handleCalculator} className="flex-1 text-white" disabled={isCreatingDeal}>
               Estimator
             </Button>
           </div>
@@ -228,19 +277,29 @@ export function WizardStep2({
       ) : (
         // Desktop Layout: Back, Estimator, Generate Offer Link in a row
         <div className="flex gap-3">
-          <Button variant="outline" onClick={onBack} className="text-muted-foreground">
+          <Button variant="outline" onClick={onBack} className="text-muted-foreground" disabled={isCreatingDeal}>
             Back
           </Button>
-          <Button variant="blue" onClick={handleCalculator} className="text-white">
+          <Button variant="blue" onClick={handleCalculator} className="text-white" disabled={isCreatingDeal}>
             Estimator
           </Button>
           <Button 
             variant="success" 
             onClick={handleGenerateOffers} 
             className="flex-1"
+            disabled={isCreatingDeal}
           >
-            Generate Offer Link
-            <Share2 className="h-4 w-4 ml-2" />
+            {isCreatingDeal ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Creating Deal...
+              </>
+            ) : (
+              <>
+                Generate Offer Link
+                <Share2 className="h-4 w-4 ml-2" />
+              </>
+            )}
           </Button>
         </div>
       )}
