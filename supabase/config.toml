@@ -2,3 +2,6 @@ project_id = "gmkqabszsvqsklkpmtmr"
 
 [functions.rentcast-property-lookup]
 verify_jwt = false
+
+[functions.onboard-everflow-manager]
+verify_jwt = false
