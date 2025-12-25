@@ -146,8 +146,8 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       return;
     }
     
-    // Navigate directly to the pending page to ensure user sees the Calendly booking
-    navigate('/iso-pending');
+    // Show the pending view in the modal instead of navigating away
+    setView('account-pending');
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
