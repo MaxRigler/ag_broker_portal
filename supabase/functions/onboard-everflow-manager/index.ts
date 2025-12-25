@@ -82,6 +82,7 @@ Deno.serve(async (req) => {
       name: profile.company_name || profile.full_name || "Unknown Company",
       account_status: "active",
       network_employee_id: 1,
+      default_currency_id: "USD",
       users: [
         {
           first_name: firstName,
@@ -90,10 +91,6 @@ Deno.serve(async (req) => {
           account_status: "active",
         },
       ],
-      billing: {
-        billing_frequency: "manual",
-        payment_type: "none",
-      },
     };
 
     console.log("Calling Everflow API with payload:", JSON.stringify(everflowPayload));
