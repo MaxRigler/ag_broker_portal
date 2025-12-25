@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      deals: {
+        Row: {
+          created_at: string | null
+          everflow_event_status: string | null
+          home_value: number
+          id: string
+          max_investment: number
+          mortgage_balance: number
+          owner_names: string[] | null
+          property_address: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          everflow_event_status?: string | null
+          home_value: number
+          id?: string
+          max_investment: number
+          mortgage_balance: number
+          owner_names?: string[] | null
+          property_address: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          everflow_event_status?: string | null
+          home_value?: number
+          id?: string
+          max_investment?: number
+          mortgage_balance?: number
+          owner_names?: string[] | null
+          property_address?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           billing_completed: boolean | null
