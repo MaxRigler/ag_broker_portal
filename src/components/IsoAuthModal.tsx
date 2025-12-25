@@ -16,9 +16,10 @@ interface IsoAuthModalProps {
   disclaimerMessage?: string;
   initialView?: ViewType;
   onTabChange?: (tab: 'login' | 'signup') => void;
+  onShowPending?: () => void;
 }
 
-export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 'login', onTabChange }: IsoAuthModalProps) {
+export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 'login', onTabChange, onShowPending }: IsoAuthModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [view, setView] = useState<ViewType>(initialView);
   const navigate = useNavigate();
@@ -147,6 +148,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
     }
     
     // Show the pending view in the modal instead of navigating away
+    onShowPending?.();
     setView('account-pending');
   };
 
