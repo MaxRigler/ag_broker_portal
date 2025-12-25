@@ -9,15 +9,16 @@ import { Briefcase, Mail, Lock, User, Building2, Phone, ArrowLeft, Clock, Calend
 import { supabase } from '@/integrations/supabase/client';
 import logoBlue from '@/assets/logo-blue.png';
 
+type ViewType = 'login' | 'signup' | 'forgot-password' | 'account-pending';
+
 interface IsoAuthModalProps {
   onLoginSuccess?: () => void;
   disclaimerMessage?: string;
   initialView?: ViewType;
+  onTabChange?: (tab: 'login' | 'signup') => void;
 }
 
-type ViewType = 'login' | 'signup' | 'forgot-password' | 'account-pending';
-
-export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 'login' }: IsoAuthModalProps) {
+export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 'login', onTabChange }: IsoAuthModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [view, setView] = useState<ViewType>(initialView);
   const navigate = useNavigate();
@@ -92,6 +93,17 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       toast({
         title: "Error",
         description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check phone number is exactly 10 digits
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    if (phoneDigits.length !== 10) {
+      toast({
+        title: "Error",
+        description: "Phone number must be exactly 10 digits",
         variant: "destructive",
       });
       return;
@@ -280,7 +292,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
         )}
       </div>
 
-      <Tabs defaultValue="login" className="w-full">
+      <Tabs defaultValue="login" className="w-full" onValueChange={(value) => onTabChange?.(value as 'login' | 'signup')}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="signup">Create Account</TabsTrigger>
@@ -391,10 +403,15 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
                   <Input 
                     id="phone-number" 
                     type="tel" 
-                    placeholder="(555) 123-4567" 
+                    placeholder="5551234567" 
                     className="pl-10"
+                    maxLength={10}
+                    inputMode="numeric"
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    onChange={(e) => {
+                      const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setPhoneNumber(digitsOnly);
+                    }}
                   />
                 </div>
               </div>

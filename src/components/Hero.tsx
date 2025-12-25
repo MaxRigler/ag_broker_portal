@@ -23,6 +23,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingAddress, setPendingAddress] = useState<string | null>(null);
   const [showPendingModal, setShowPendingModal] = useState(false);
+  const [isWideModal, setIsWideModal] = useState(false);
   const { user, userStatus } = useAuth();
 
   const handleCheckEligibility = (addressToCheck: string) => {
@@ -140,11 +141,15 @@ export function Hero({ onCheckEligibility }: HeroProps) {
         </div>
       </div>
 
-      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
-        <DialogContent className="sm:max-w-md">
+      <Dialog open={showAuthModal} onOpenChange={(open) => {
+        setShowAuthModal(open);
+        if (!open) setIsWideModal(false);
+      }}>
+        <DialogContent className={`max-w-[calc(100%-2rem)] rounded-lg transition-all duration-300 ease-in-out ${isWideModal ? 'sm:max-w-2xl' : 'sm:max-w-md'}`}>
           <IsoAuthModal 
             onLoginSuccess={handleAuthSuccess}
             disclaimerMessage="In order to underwrite a property, either log in or create an account."
+            onTabChange={(tab) => setIsWideModal(tab === 'signup')}
           />
         </DialogContent>
       </Dialog>

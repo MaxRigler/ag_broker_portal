@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { Briefcase, LogOut, User } from 'lucide-react';
 import { IsoAuthModal } from './IsoAuthModal';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,12 +15,26 @@ interface UserProfile {
   company_name: string | null;
 }
 
+const getStatusBadge = (status: string | null) => {
+  switch (status) {
+    case 'active':
+      return <Badge className="bg-green-500/20 text-green-600 border-green-500/30 hover:bg-green-500/20">Active</Badge>;
+    case 'pending':
+      return <Badge className="bg-yellow-500/20 text-yellow-600 border-yellow-500/30 hover:bg-yellow-500/20">Pending</Badge>;
+    case 'denied':
+      return <Badge className="bg-red-500/20 text-red-600 border-red-500/30 hover:bg-red-500/20">Denied</Badge>;
+    default:
+      return <Badge variant="secondary">Unknown</Badge>;
+  }
+};
+
 export function IsoLoginWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isWideModal, setIsWideModal] = useState(false);
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user, signOut, userStatus } = useAuth();
 
   useEffect(() => {
     setIsOpen(false);
@@ -70,11 +86,30 @@ export function IsoLoginWidget() {
                 </span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-40 p-2" align="end">
+            <PopoverContent className="w-56 p-3" align="end">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">{profile.full_name || 'Partner'}</span>
+                  <span className="text-xs text-muted-foreground">{profile.company_name || 'Company'}</span>
+                </div>
+              </div>
+              
+              <Separator className="my-2" />
+              
+              <div className="py-2">
+                <p className="text-xs text-muted-foreground mb-1">Account Status</p>
+                {getStatusBadge(userStatus)}
+              </div>
+              
+              <Separator className="my-2" />
+              
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="w-full justify-start"
+                className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={handleSignOut}
               >
                 <LogOut className="w-4 h-4 mr-2" />
@@ -103,15 +138,21 @@ export function IsoLoginWidget() {
         </div>
       </div>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-[calc(100%-2rem)] rounded-lg sm:max-w-md">
+      <Dialog open={isOpen} onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) setIsWideModal(false);
+      }}>
+        <DialogContent className={`max-w-[calc(100%-2rem)] rounded-lg transition-all duration-300 ease-in-out ${isWideModal ? 'sm:max-w-2xl' : 'sm:max-w-md'}`}>
           <DialogHeader className="sr-only">
             <DialogTitle>ISO Partner Login</DialogTitle>
             <DialogDescription>
               Login or create an account to access the ISO partner portal.
             </DialogDescription>
           </DialogHeader>
-          <IsoAuthModal onLoginSuccess={handleLoginSuccess} />
+          <IsoAuthModal 
+            onLoginSuccess={handleLoginSuccess} 
+            onTabChange={(tab) => setIsWideModal(tab === 'signup')}
+          />
         </DialogContent>
       </Dialog>
     </>
