@@ -71,13 +71,20 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Split full_name into first and last name for Everflow API
+    const fullName = profile.full_name || "Unknown User";
+    const nameParts = fullName.trim().split(/\s+/);
+    const firstName = nameParts[0] || "Unknown";
+    const lastName = nameParts.slice(1).join(" ") || "";
+
     // Prepare the Everflow API request payload
     const everflowPayload = {
       name: profile.company_name || profile.full_name || "Unknown Company",
       account_status: "active",
       users: [
         {
-          name: profile.full_name || "Unknown User",
+          first_name: firstName,
+          last_name: lastName,
           email: profile.email,
           account_status: "active",
         },
