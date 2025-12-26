@@ -391,6 +391,7 @@ export function WizardStep2({
         open={showOfferLinkModal}
         onOpenChange={setShowOfferLinkModal}
         offerLink={generatedOfferLink}
+        maxInvestment={maxInvestment}
       />
     </div>;
 }

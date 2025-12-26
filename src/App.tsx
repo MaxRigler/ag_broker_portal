@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import TeamManagement from "./pages/TeamManagement";
 import OfficerSignup from "./pages/OfficerSignup";
+import Pipeline from "./pages/Pipeline";
 import { IsoLoginWidget } from "./components/IsoLoginWidget";
 import { AdminRoute } from "./components/AdminRoute";
 import { ManagerRoute } from "./components/ManagerRoute";
@@ -25,6 +26,7 @@ function AppContent() {
     location.pathname === '/admin' || 
     location.pathname === '/reset-password' || 
     location.pathname === '/team' ||
+    location.pathname === '/pipeline' ||
     location.pathname.startsWith('/join/') ||
     isWizardActive;
 
@@ -37,6 +39,7 @@ function AppContent() {
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/team" element={<ManagerRoute><TeamManagement /></ManagerRoute>} />
         <Route path="/join/:inviteToken" element={<OfficerSignup />} />
+        <Route path="/pipeline" element={<Pipeline />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
