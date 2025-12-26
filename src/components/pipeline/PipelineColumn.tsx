@@ -11,6 +11,7 @@ interface Deal {
   everflow_event_status: string | null;
   originator_name: string | null;
   originator_role: string;
+  offer_link: string | null;
 }
 
 interface PipelineColumnProps {
@@ -40,7 +41,7 @@ export function PipelineColumn({ stageName, deals }: PipelineColumnProps) {
             </p>
           ) : (
             deals.map((deal) => (
-              <DealCard key={deal.id} deal={deal} />
+              <DealCard key={deal.id} deal={deal} stageName={stageName} />
             ))
           )}
         </div>
