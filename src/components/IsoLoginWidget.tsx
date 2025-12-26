@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Briefcase, LogOut, User } from 'lucide-react';
+import { Briefcase, LogOut, User, Columns3, Users } from 'lucide-react';
 import { IsoAuthModal } from './IsoAuthModal';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -35,7 +35,8 @@ export function IsoLoginWidget() {
   const [isWideModal, setIsWideModal] = useState(false);
   const [showPostSignupPending, setShowPostSignupPending] = useState(false);
   const location = useLocation();
-  const { user, signOut, userStatus } = useAuth();
+  const navigate = useNavigate();
+  const { user, signOut, userStatus, userRole } = useAuth();
 
   useEffect(() => {
     setIsOpen(false);
@@ -103,6 +104,38 @@ export function IsoLoginWidget() {
               <div className="py-2">
                 <p className="text-xs text-muted-foreground mb-1">Account Status</p>
                 {getStatusBadge(userStatus)}
+              </div>
+              
+              <Separator className="my-2" />
+              
+              <div className="flex flex-col gap-1">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setIsPopoverOpen(false);
+                    navigate('/pipeline');
+                  }}
+                >
+                  <Columns3 className="w-4 h-4 mr-2" />
+                  View Pipeline
+                </Button>
+                
+                {userRole === 'manager' && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setIsPopoverOpen(false);
+                      navigate('/team');
+                    }}
+                  >
+                    <Users className="w-4 h-4 mr-2" />
+                    Manage Team
+                  </Button>
+                )}
               </div>
               
               <Separator className="my-2" />
