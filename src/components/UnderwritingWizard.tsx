@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { WizardStep1 } from './WizardStep1';
 import { WizardStep2 } from './WizardStep2';
 import logo from '@/assets/logo-blue.png';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Columns3, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -56,7 +57,8 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
   const [wizardData, setWizardData] = useState<Partial<WizardData>>({});
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const { user, signOut, userStatus } = useAuth();
+  const { user, signOut, userStatus, userRole } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -156,6 +158,38 @@ export function UnderwritingWizard({ address, onBack }: UnderwritingWizardProps)
                 <div className="py-2">
                   <p className="text-xs text-muted-foreground mb-1">Account Status</p>
                   {getStatusBadge(userStatus)}
+                </div>
+                
+                <Separator className="my-2" />
+                
+                <div className="flex flex-col gap-1">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setIsPopoverOpen(false);
+                      navigate('/pipeline');
+                    }}
+                  >
+                    <Columns3 className="w-4 h-4 mr-2" />
+                    View Pipeline
+                  </Button>
+                  
+                  {userRole === 'manager' && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setIsPopoverOpen(false);
+                        navigate('/team');
+                      }}
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      Manage Team
+                    </Button>
+                  )}
                 </div>
                 
                 <Separator className="my-2" />
