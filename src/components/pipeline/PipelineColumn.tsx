@@ -9,6 +9,8 @@ interface Deal {
   owner_names: string[] | null;
   max_investment: number;
   everflow_event_status: string | null;
+  originator_name: string | null;
+  originator_role: string;
 }
 
 interface PipelineColumnProps {

@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, MapPin, User, DollarSign } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, User, DollarSign, UserCheck } from "lucide-react";
 import { format } from "date-fns";
 
 interface DealCardProps {
@@ -9,6 +10,8 @@ interface DealCardProps {
     property_address: string;
     owner_names: string[] | null;
     max_investment: number;
+    originator_name: string | null;
+    originator_role: string;
   };
 }
 
@@ -47,6 +50,16 @@ export function DealCard({ deal }: DealCardProps) {
           <p className="text-xs text-muted-foreground line-clamp-1">
             {ownerNamesDisplay}
           </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <UserCheck className="h-3 w-3 text-primary shrink-0" />
+          <span className="text-xs text-foreground line-clamp-1">
+            {deal.originator_name || "Unknown"}
+          </span>
+          <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 capitalize">
+            {deal.originator_role}
+          </Badge>
         </div>
         
         <div className="flex items-center gap-2 pt-1 border-t border-border">

@@ -24,6 +24,8 @@ interface Deal {
   owner_names: string[] | null;
   max_investment: number;
   everflow_event_status: string | null;
+  originator_name: string | null;
+  originator_role: string;
 }
 
 export function usePipelineDeals() {
@@ -33,11 +35,30 @@ export function usePipelineDeals() {
       // RLS policy handles filtering based on user role
       const { data, error } = await supabase
         .from("deals")
-        .select("id, created_at, property_address, owner_names, max_investment, everflow_event_status")
+        .select(`
+          id, 
+          created_at, 
+          property_address, 
+          owner_names, 
+          max_investment, 
+          everflow_event_status,
+          profiles!user_id (full_name, role)
+        `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Deal[];
+      
+      // Transform data to flatten the profiles join
+      return (data || []).map((deal: any) => ({
+        id: deal.id,
+        created_at: deal.created_at,
+        property_address: deal.property_address,
+        owner_names: deal.owner_names,
+        max_investment: deal.max_investment,
+        everflow_event_status: deal.everflow_event_status,
+        originator_name: deal.profiles?.full_name || null,
+        originator_role: deal.profiles?.role || 'manager',
+      })) as Deal[];
     },
   });
 }
