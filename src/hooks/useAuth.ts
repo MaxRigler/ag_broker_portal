@@ -3,12 +3,14 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
 type UserStatus = 'pending' | 'active' | 'denied' | null;
+type UserRole = 'manager' | 'officer' | null;
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userStatus, setUserStatus] = useState<UserStatus>(null);
+  const [userRole, setUserRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,11 +24,12 @@ export function useAuth() {
         if (session?.user) {
           setTimeout(() => {
             checkAdminRole(session.user.id);
-            checkUserStatus(session.user.id);
+            checkUserProfile(session.user.id);
           }, 0);
         } else {
           setIsAdmin(false);
           setUserStatus(null);
+          setUserRole(null);
           setLoading(false);
         }
       }
@@ -39,7 +42,7 @@ export function useAuth() {
       
       if (session?.user) {
         checkAdminRole(session.user.id);
-        checkUserStatus(session.user.id);
+        checkUserProfile(session.user.id);
       } else {
         setLoading(false);
       }
@@ -71,23 +74,26 @@ export function useAuth() {
     }
   };
 
-  const checkUserStatus = async (userId: string) => {
+  const checkUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('status')
+        .select('status, role')
         .eq('id', userId)
         .maybeSingle();
 
       if (error) {
-        console.error('Error checking user status:', error);
+        console.error('Error checking user profile:', error);
         setUserStatus(null);
+        setUserRole(null);
       } else if (data) {
         setUserStatus(data.status as UserStatus);
+        setUserRole(data.role as UserRole);
       }
     } catch (err) {
-      console.error('Error checking user status:', err);
+      console.error('Error checking user profile:', err);
       setUserStatus(null);
+      setUserRole(null);
     }
   };
 
@@ -95,5 +101,5 @@ export function useAuth() {
     await supabase.auth.signOut();
   };
 
-  return { user, session, isAdmin, userStatus, loading, signOut };
+  return { user, session, isAdmin, userStatus, userRole, loading, signOut };
 }

@@ -8,8 +8,11 @@ import NotFound from "./pages/NotFound";
 import IsoPending from "./pages/IsoPending";
 import AdminDashboard from "./pages/AdminDashboard";
 import ResetPassword from "./pages/ResetPassword";
+import TeamManagement from "./pages/TeamManagement";
+import OfficerSignup from "./pages/OfficerSignup";
 import { IsoLoginWidget } from "./components/IsoLoginWidget";
 import { AdminRoute } from "./components/AdminRoute";
+import { ManagerRoute } from "./components/ManagerRoute";
 import { WizardProvider, useWizard } from "./contexts/WizardContext";
 
 const queryClient = new QueryClient();
@@ -17,7 +20,13 @@ const queryClient = new QueryClient();
 function AppContent() {
   const location = useLocation();
   const { isWizardActive } = useWizard();
-  const hideIsoWidget = location.pathname === '/iso-pending' || location.pathname === '/admin' || location.pathname === '/reset-password' || isWizardActive;
+  const hideIsoWidget = 
+    location.pathname === '/iso-pending' || 
+    location.pathname === '/admin' || 
+    location.pathname === '/reset-password' || 
+    location.pathname === '/team' ||
+    location.pathname.startsWith('/join/') ||
+    isWizardActive;
 
   return (
     <>
@@ -26,6 +35,8 @@ function AppContent() {
         <Route path="/iso-pending" element={<IsoPending />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/team" element={<ManagerRoute><TeamManagement /></ManagerRoute>} />
+        <Route path="/join/:inviteToken" element={<OfficerSignup />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
