@@ -1,7 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, User, DollarSign, UserCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, User, DollarSign, UserCheck, Link } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 interface DealCardProps {
   deal: {
@@ -12,10 +14,12 @@ interface DealCardProps {
     max_investment: number;
     originator_name: string | null;
     originator_role: string;
+    offer_link: string | null;
   };
+  stageName?: string;
 }
 
-export function DealCard({ deal }: DealCardProps) {
+export function DealCard({ deal, stageName }: DealCardProps) {
   const formattedDate = deal.created_at 
     ? format(new Date(deal.created_at), "MMM d, yyyy")
     : "N/A";
@@ -30,12 +34,34 @@ export function DealCard({ deal }: DealCardProps) {
     maximumFractionDigits: 0,
   }).format(deal.max_investment);
 
+  const handleCopyLink = async () => {
+    if (deal.offer_link) {
+      await navigator.clipboard.writeText(deal.offer_link);
+      toast.success("Offer link copied to clipboard!");
+    }
+  };
+
+  const showOfferLink = stageName === "Offer Generated" && deal.offer_link;
+
   return (
     <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow cursor-default">
       <CardContent className="p-3 space-y-2">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Calendar className="h-3 w-3" />
-          <span>{formattedDate}</span>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-3 w-3" />
+            <span>{formattedDate}</span>
+          </div>
+          {showOfferLink && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 text-primary hover:text-primary/80"
+              onClick={handleCopyLink}
+              title="Copy offer link"
+            >
+              <Link className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
         
         <div className="flex items-start gap-2">

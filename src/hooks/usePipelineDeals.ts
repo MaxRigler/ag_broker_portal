@@ -26,6 +26,7 @@ interface Deal {
   everflow_event_status: string | null;
   originator_name: string | null;
   originator_role: string;
+  offer_link: string | null;
 }
 
 export function usePipelineDeals() {
@@ -42,6 +43,7 @@ export function usePipelineDeals() {
           owner_names, 
           max_investment, 
           everflow_event_status,
+          offer_link,
           profiles!user_id (full_name, role)
         `)
         .order("created_at", { ascending: false });
@@ -58,6 +60,7 @@ export function usePipelineDeals() {
         everflow_event_status: deal.everflow_event_status,
         originator_name: deal.profiles?.full_name || null,
         originator_role: deal.profiles?.role || 'manager',
+        offer_link: deal.offer_link,
       })) as Deal[];
     },
   });
