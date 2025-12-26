@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,7 @@ interface OfferLinkModalProps {
 
 export function OfferLinkModal({ open, onOpenChange, offerLink, maxInvestment }: OfferLinkModalProps) {
   const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
 
   const handleCopy = async () => {
     try {
@@ -81,7 +83,10 @@ export function OfferLinkModal({ open, onOpenChange, offerLink, maxInvestment }:
 
           {/* Done button */}
           <div className="flex justify-end">
-            <Button variant="default" onClick={() => onOpenChange(false)}>
+            <Button variant="default" onClick={() => {
+              onOpenChange(false);
+              navigate('/pipeline');
+            }}>
               Done
             </Button>
           </div>
