@@ -146,6 +146,58 @@ supabase/
 | deals | Users can CRUD own; Managers can view officer deals; Admins can view/update all |
 | user_roles | Users can view own roles; Admins can view all |
 
+### 4.2 Database Wiring (Supabase Infrastructure)
+
+#### Essential Triggers
+
+| Trigger | Table | Fires | Purpose |
+|---------|-------|-------|---------|
+| `on_auth_user_created` | `auth.users` | AFTER INSERT | Calls `handle_new_user()` to create profile record. Without this trigger, profiles are never created and users cannot access the portal. |
+| `trigger_onboard_everflow_manager` | `public.profiles` | AFTER INSERT/UPDATE | Fires `net.http_post()` to the `onboard-everflow-manager` Edge Function when `role = 'manager'` AND `everflow_id IS NULL`. |
+
+#### SQL Functions
+
+| Function | Type | Purpose |
+|----------|------|---------|
+| `handle_new_user()` | SECURITY DEFINER | Maps `auth.users.raw_user_meta_data` to `public.profiles`. Extracts `full_name`, `cell_phone`, `company_name`. Handles invite token logic: if `invite_token` present, creates officer under parent manager; otherwise creates manager. |
+| `has_role(uuid, app_role)` | SECURITY DEFINER | Returns boolean if user has specified role. Used in RLS policies to avoid infinite recursion when checking admin privileges. |
+| `trigger_onboard_everflow_manager()` | SECURITY DEFINER | Constructs HTTP POST request with `profile_id` and fires to `onboard-everflow-manager` Edge Function using `net.http_post()`. |
+| `update_updated_at_column()` | TRIGGER FUNCTION | Updates `updated_at` timestamp on row modification. |
+
+#### Security and Permissions (RLS)
+
+**Service Role Access:**
+Edge Functions use `SUPABASE_SERVICE_ROLE_KEY` to create a Supabase client that bypasses RLS. This is essential for:
+- Reading profile data during Everflow onboarding (before user is fully authenticated)
+- Writing Everflow credentials back to profiles table
+- Accessing profiles regardless of ownership during automated workflows
+
+**Manager/Officer Deal Isolation Policy:**
+```sql
+-- Policy: "Users can view own deals and managers can view officer deals"
+-- Applied to: deals table (SELECT)
+USING (
+  (auth.uid() = user_id) 
+  OR 
+  (EXISTS (
+    SELECT 1 FROM profiles 
+    WHERE profiles.id = deals.user_id 
+    AND profiles.parent_id = auth.uid()
+  ))
+)
+```
+This ensures:
+- Officers can only see their own deals
+- Managers can see all deals created by their officers (where `profiles.parent_id = manager.id`)
+- Neither can see deals from other organizations
+
+**Admin Bypass (God Mode):**
+```sql
+-- Policy: "Admins can view all deals"
+USING (has_role(auth.uid(), 'admin'::app_role))
+```
+Admin users (like `max@equityadvance.com`) bypass all isolation and see every deal in the system.
+
 ---
 
 ## 5. Core Workflows
