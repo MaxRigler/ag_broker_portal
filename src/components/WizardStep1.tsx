@@ -257,7 +257,14 @@ export function WizardStep1({
         setPropertyType(data.propertyType);
         const fetchedHomeValue = data.estimatedValue || 500000;
         setHomeValue(fetchedHomeValue);
-        setMortgageBalance(Math.round(fetchedHomeValue * 0.5));
+
+        // Use estimated mortgage if available, otherwise default to 50%
+        if (data.estimatedMortgageBalance > 0) {
+          setMortgageBalance(data.estimatedMortgageBalance);
+        } else {
+          setMortgageBalance(Math.round(fetchedHomeValue * 0.5));
+        }
+
         setPropertyOwner(data.ownerNames);
         const detectedOwnership = detectOwnershipType(data.ownerNames);
         setOwnershipType(detectedOwnership);
