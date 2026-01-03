@@ -34,11 +34,11 @@
 | Supabase Edge Functions | Deno runtime serverless functions |
 
 ### Third-Party Integrations
-| Service | Purpose |
-|---------|---------|
-| Everflow API | Affiliate tracking, broker onboarding |
-| Atom Data API | Property data, AVM valuations |
-| Google Maps API | Address autocomplete |
+| Service | Purpose | Status |
+|---------|---------|--------|
+| Everflow API | Partner tracking, link generation | Working (Deployed) |
+| Atom API | Property data lookup | Integrated |
+| Google Maps API | Address autocomplete | |
 
 ---
 
