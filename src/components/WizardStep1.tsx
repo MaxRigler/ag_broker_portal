@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, AlertCircle, TrendingUp, X, DollarSign, Calendar, RefreshCw, Home, Percent } from 'lucide-react';
 import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency, formatPercentage, calculateMaxInvestment, calculateHEACost } from '@/lib/heaCalculator';
-import { lookupProperty, detectOwnershipType } from '@/lib/api/rentcast';
+import { lookupProperty, detectOwnershipType } from '@/lib/api/atom';
 import { toast } from 'sonner';
 
 interface WizardStep1Props {
@@ -338,7 +338,7 @@ export function WizardStep1({
       const ownerNamesArray = propertyOwner
         ? propertyOwner.split(',').map(name => name.trim()).filter(Boolean)
         : [];
-      
+
       onComplete({
         homeValue,
         state,
@@ -357,7 +357,7 @@ export function WizardStep1({
       <div className="min-h-[400px] flex flex-col items-center justify-center text-center p-8">
         <Loader2 className="w-16 h-16 text-accent animate-spin mb-6" />
         <h3 className="text-xl font-semibold text-foreground mb-2">Analyzing Property Data</h3>
-        <p className="text-muted-foreground">Pulling information from RentCast...</p>
+        <p className="text-muted-foreground">Pulling information from Atom Data...</p>
         <p className="text-sm text-muted-foreground mt-2">{address}</p>
       </div>
     );
@@ -385,14 +385,14 @@ export function WizardStep1({
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
               <div>
-              <p className="text-xs text-foreground/70 font-medium">Property Address</p>
+                <p className="text-xs text-foreground/70 font-medium">Property Address</p>
                 <p className="font-medium text-muted-foreground text-sm">{address}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
               <div>
-              <p className="text-xs text-foreground/70 font-medium">Property Owner</p>
+                <p className="text-xs text-foreground/70 font-medium">Property Owner</p>
                 <p className="font-medium text-muted-foreground">{propertyOwner}</p>
               </div>
             </div>
@@ -669,10 +669,10 @@ export function WizardStep1({
         <Button variant="outline" onClick={onBack} className="flex-1">
           Back
         </Button>
-        <Button 
-          variant="success" 
-          onClick={handleConfirmProperty} 
-          className="flex-1" 
+        <Button
+          variant="success"
+          onClick={handleConfirmProperty}
+          className="flex-1"
           disabled={!isFullyEligible}
         >
           Confirm Property Details

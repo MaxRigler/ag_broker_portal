@@ -26,7 +26,7 @@
 | React Hook Form + Zod | Form handling & validation |
 | Recharts | Data visualization |
 
-### Backend (Lovable Cloud)
+### Backend (Supabase)
 | Technology | Purpose |
 |------------|---------|
 | Supabase Auth | Email/password authentication |
@@ -37,7 +37,7 @@
 | Service | Purpose |
 |---------|---------|
 | Everflow API | Affiliate tracking, broker onboarding |
-| RentCast API | Property data, AVM valuations |
+| Atom Data API | Property data, AVM valuations |
 | Google Maps API | Address autocomplete |
 
 ---
@@ -51,7 +51,7 @@ src/
 │   └── usePipelineDeals.ts     # Pipeline data fetching and stage grouping
 ├── lib/
 │   ├── heaCalculator.ts        # HEA underwriting logic (19.9% cap, eligibility)
-│   └── api/rentcast.ts         # RentCast API client wrapper
+│   └── api/atom.ts             # Atom Data API client wrapper
 ├── components/
 │   ├── IsoAuthModal.tsx        # Login/Signup modal with Everflow trigger
 │   ├── WizardStep1.tsx         # Property validation (fetches RentCast data)
@@ -77,7 +77,7 @@ src/
 supabase/
 ├── functions/
 │   ├── onboard-everflow-manager/   # Everflow affiliate creation
-│   └── rentcast-property-lookup/   # Property data API proxy
+│   └── atom-property-lookup/   # Property data API proxy
 └── migrations/                     # Database schema migrations (DO NOT EDIT)
 ```
 
@@ -239,9 +239,9 @@ sequenceDiagram
     User->>Hero: Enter property address
     Hero->>WizardStep1: Open wizard
     WizardStep1->>Edge Function: lookupProperty()
-    Edge Function->>RentCast API: /v1/properties
-    Edge Function->>RentCast API: /v1/avm/value
-    RentCast API-->>Edge Function: Property data + AVM
+    Edge Function->>Atom API: /property/detail
+    Edge Function->>Atom API: /attomavm/detail
+    Atom API-->>Edge Function: Property data + AVM
     Edge Function-->>WizardStep1: Return formatted data
     WizardStep1->>WizardStep1: validateProperty()
     User->>WizardStep1: Adjust sliders (value, mortgage)
@@ -285,14 +285,14 @@ sequenceDiagram
 
 ## 7. Environment Variables
 
-### Required Secrets (Lovable Cloud)
+### Required Secrets
 | Variable | Purpose |
 |----------|---------|
 | SUPABASE_URL | Database project URL |
 | SUPABASE_ANON_KEY | Anonymous key for client |
 | SUPABASE_SERVICE_ROLE_KEY | Service role key for edge functions |
 | Everflow | Everflow API key |
-| RENTCAST_API_KEY | RentCast API key |
+| ATOM_API_KEY | Atom Data API key |
 | VITE_GOOGLE_MAPS_API_KEY | Google Maps address autocomplete |
 
 ---
@@ -323,4 +323,4 @@ sequenceDiagram
 
 ---
 
-*Last Updated: December 2024*
+*Last Updated: January 3, 2025*
