@@ -240,6 +240,28 @@ export function WizardStep1({
     }
   }, [maxInvestment]);
 
+  // Combine all validation errors for display
+  const displayErrors = useMemo(() => {
+    const errors: string[] = [];
+
+    // Add errors from property validation (State, Type, Ownership, Value)
+    if (validation?.errors) {
+      errors.push(...validation.errors);
+    }
+
+    // Add CLTV error
+    if (currentCLTV > 80) {
+      errors.push(`Current Loan-to-Value (LTV) cannot exceed 80%. Your LTV is ${currentCLTV.toFixed(1)}%.`);
+    }
+
+    // Add Investment/Equity error
+    if (maxInvestment < 15000) {
+      errors.push('Available equity must allow for a minimum investment of $15,000.');
+    }
+
+    return errors;
+  }, [validation, currentCLTV, maxInvestment]);
+
   // Payoff calculation
   const calculation = useMemo(() => {
     return calculateHEACost(fundingAmount, homeValue, settlementYear, hpaRate / 100);
@@ -670,6 +692,23 @@ export function WizardStep1({
           </div>
         </div>
       </div>
+
+      {/* Validation Errors */}
+      {displayErrors.length > 0 && (
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 mb-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
+            <div className="text-sm font-medium text-destructive">
+              <p className="mb-1 font-bold">Unable to Proceed</p>
+              <ul className="list-disc pl-4 space-y-1">
+                {displayErrors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="flex gap-3">

@@ -5,7 +5,109 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
+// --- Type Definitions ---
+
+interface AtomOwnerIdentity {
+  fullname?: string;
+  lastname?: string;
+  firstname?: string;
+  firstnameandmi?: string;
+}
+
+interface AtomOwnerData {
+  owner1?: AtomOwnerIdentity;
+  owner2?: AtomOwnerIdentity;
+}
+
+interface AtomAddress {
+  countrySubd?: string; // State
+}
+
+interface AtomSummary {
+  propertyType?: string;
+  propclass?: string;
+}
+
+interface AtomMortgageAssessment {
+  FirstConcAmount?: number;
+  SecondConcAmount?: number;
+}
+
+interface AtomAssessment {
+  owner?: AtomOwnerData;
+  mortgage?: AtomMortgageAssessment;
+}
+
+interface AtomProperty {
+  address?: AtomAddress;
+  summary?: AtomSummary;
+  assessment?: AtomAssessment;
+}
+
+interface AtomPropertyResponse {
+  status: { msg: string };
+  property?: AtomProperty[];
+}
+
+// AVM Specifics
+interface AtomAVMMortgageRecord {
+  amount?: number;
+}
+
+interface AtomAVMSale {
+  mortgage?: {
+    FirstConcurrent?: AtomAVMMortgageRecord;
+    SecondConcurrent?: AtomAVMMortgageRecord;
+  };
+}
+
+interface AtomAVMDetail {
+  amount?: {
+    value: number;
+  };
+}
+
+interface AtomAVMProperty {
+  avm?: AtomAVMDetail;
+  assessment?: AtomAssessment; // Owners can be here too
+  owner?: AtomOwnerData;      // Or here
+  sale?: AtomAVMSale;
+  address?: AtomAddress;
+}
+
+interface AtomAVMResponse {
+  property?: AtomAVMProperty[];
+}
+
+// Mortgage History
+interface AtomMortgageHistoryRecord {
+  amount?: number;
+  firstConcAmount?: number;
+  recordingDate?: string;
+}
+
+interface AtomMortgageHistoryProperty {
+  mortgage?: AtomMortgageHistoryRecord | AtomMortgageHistoryRecord[];
+}
+
+interface AtomMortgageHistoryResponse {
+  property?: AtomMortgageHistoryProperty[];
+}
+
+interface ResultData {
+  ownerNames: string;
+  state: string;
+  propertyType: string;
+  estimatedValue: number;
+  estimatedMortgageBalance: number;
+  rawPropertyData: AtomPropertyResponse | null;
+  rawAvmData: AtomAVMResponse | null;
+  rawMortgageHistory: AtomMortgageHistoryResponse | null;
+}
+
+// --- End Type Definitions ---
+
+serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -62,6 +164,37 @@ serve(async (req) => {
 
     if (!propertyResponse.ok) {
       const errorText = await propertyResponse.text();
+
+      // Check for "SuccessWithoutResult" which indicates address not found but valid request
+      // We handle this by returning success with empty data to allow manual entry in UI
+      let isNoResult = false;
+      try {
+        const errorJson = JSON.parse(errorText);
+        // Atom API returns 400 with "SuccessWithoutResult" when address is valid but not in DB
+        if (propertyResponse.status === 400 && errorJson?.status?.msg === 'SuccessWithoutResult') {
+          isNoResult = true;
+        }
+      } catch (_e) {
+        // failed to parse, fallback to standard error handling
+      }
+
+      if (isNoResult) {
+        console.warn(`Property lookup returned SuccessWithoutResult (400) for address: ${address}. Returning empty result.`);
+        return new Response(
+          JSON.stringify({
+            ownerNames: '',
+            state: '',
+            propertyType: '',
+            estimatedValue: 0,
+            estimatedMortgageBalance: 0,
+            rawPropertyData: null,
+            rawAvmData: null,
+            rawMortgageHistory: null
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       console.error('Property API error:', propertyResponse.status, errorText);
       // Allow 404/no results to handle gracefully?
       // If 404, we might just return empty data or error.
@@ -71,7 +204,7 @@ serve(async (req) => {
       );
     }
 
-    const propertyData = await propertyResponse.json();
+    const propertyData: AtomPropertyResponse = await propertyResponse.json();
     // console.log('Property data received:', JSON.stringify(propertyData));
 
     // Step 2: Get AVM estimate
@@ -86,13 +219,13 @@ serve(async (req) => {
     });
 
     let estimatedValue = 0;
-    let avmData = null;
+    let avmData: AtomAVMResponse | null = null;
 
     if (avmResponse.ok) {
       avmData = await avmResponse.json();
       // Atom AVM structure: response.property[0].avm.amount.value
       // Check structure carefully
-      const avmProp = avmData.property?.[0];
+      const avmProp = avmData?.property?.[0];
       if (avmProp && avmProp.avm) {
         estimatedValue = avmProp.avm.amount?.value || 0;
       }
@@ -110,8 +243,8 @@ serve(async (req) => {
     let ownerNames = 'Unknown Owner';
 
     // Helper to extract owner from an owner object
-    const extractOwner = (ownerObj: any) => {
-      const owners = [];
+    const extractOwner = (ownerObj: AtomOwnerData) => {
+      const owners: string[] = [];
       if (ownerObj?.owner1) {
         if (ownerObj.owner1.fullname) owners.push(ownerObj.owner1.fullname);
         else if (ownerObj.owner1.lastname) owners.push(`${ownerObj.owner1.firstnameandmi || ownerObj.owner1.firstname || ''} ${ownerObj.owner1.lastname}`.trim());
@@ -169,15 +302,71 @@ serve(async (req) => {
       estimatedMortgageBalance = amt1 + amt2;
     }
 
-    const result = {
+    const result: ResultData = {
       ownerNames,
       state,
       propertyType,
       estimatedValue,
       estimatedMortgageBalance,
       rawPropertyData: propertyData,
-      rawAvmData: avmData
+      rawAvmData: avmData,
+      rawMortgageHistory: null
     };
+
+    // Step 3: Mortgage History Fallback (if mortgage is 0)
+    if (estimatedMortgageBalance === 0) {
+      const mortgageHistoryUrl = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detailmortgage?address1=${encodedAddress1}&address2=${encodedAddress2}`;
+      console.log('Fetching Mortgage History from Atom (fallback)...');
+      try {
+        const historyResponse = await fetch(mortgageHistoryUrl, {
+          headers: {
+            'apikey': apiKey,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (historyResponse.ok) {
+          const historyData: AtomMortgageHistoryResponse = await historyResponse.json();
+          result.rawMortgageHistory = historyData; // Keep key for backward compat logging or rename to rawMortgageHistory if preferred
+
+          const mortgageProp = historyData.property?.[0];
+
+          if (mortgageProp?.mortgage) {
+            const mortgageList = Array.isArray(mortgageProp.mortgage) ? mortgageProp.mortgage : [mortgageProp.mortgage];
+
+            console.log(`Found ${mortgageList.length} mortgage records`);
+
+            // Sort by recording date descending
+            mortgageList.sort((a, b) => {
+              const dateA = new Date(a.recordingDate || 0).getTime();
+              const dateB = new Date(b.recordingDate || 0).getTime();
+              return dateB - dateA;
+            });
+
+            // Find most recent valid mortgage amount
+            for (const m of mortgageList) {
+              const amount = m.amount || m.firstConcAmount || 0;
+
+              if (amount > 0) {
+                console.log(`Found historical mortgage from ${m.recordingDate}: $${amount}`);
+                estimatedMortgageBalance = amount;
+                result.estimatedMortgageBalance = amount;
+                break;
+              }
+            }
+          } else {
+            console.log('No mortgage history items found in response.');
+          }
+
+        } else {
+          console.warn('Mortgage History lookup failed:', historyResponse.status);
+        }
+      } catch (err) {
+        console.error('Error fetching mortgage history:', err);
+      }
+    }
+
+    console.log('Final Result:', JSON.stringify(result));
 
     console.log('Returning result:', JSON.stringify(result));
 

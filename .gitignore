@@ -26,3 +26,6 @@ dist-ssr
 # Supabase
 supabase-cli
 supabase/.temp
+
+# Environment Variables
+.env
