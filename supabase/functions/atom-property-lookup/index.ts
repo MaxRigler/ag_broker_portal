@@ -103,53 +103,69 @@ serve(async (req) => {
     // Extract Data
     // Atom structure: response.property[0]...
     const mainProp = propertyData.property?.[0];
+    const avmProp = avmData?.property?.[0];
 
     // Owner names
-    // Atom: assessment.owner.owner1.fullname
+    // Check main property data first, then fall back to AVM data which often has it
     let ownerNames = 'Unknown Owner';
-    if (mainProp && mainProp.assessment && mainProp.assessment.owner) {
-      const owner = mainProp.assessment.owner;
-      const owners = [];
-      // Check for fullname, if not check for lsatname/firstname combo
-      if (owner.owner1) {
-        if (owner.owner1.fullname) owners.push(owner.owner1.fullname);
-        else if (owner.owner1.lastname) owners.push(`${owner.owner1.firstname || ''} ${owner.owner1.lastname}`.trim());
-      }
-      if (owner.owner2) {
-        if (owner.owner2.fullname) owners.push(owner.owner2.fullname);
-        else if (owner.owner2.lastname) owners.push(`${owner.owner2.firstname || ''} ${owner.owner2.lastname}`.trim());
-      }
 
-      if (owners.length > 0) ownerNames = owners.join(' & ');
+    // Helper to extract owner from an owner object
+    const extractOwner = (ownerObj: any) => {
+      const owners = [];
+      if (ownerObj?.owner1) {
+        if (ownerObj.owner1.fullname) owners.push(ownerObj.owner1.fullname);
+        else if (ownerObj.owner1.lastname) owners.push(`${ownerObj.owner1.firstnameandmi || ownerObj.owner1.firstname || ''} ${ownerObj.owner1.lastname}`.trim());
+      }
+      if (ownerObj?.owner2) {
+        if (ownerObj.owner2.fullname) owners.push(ownerObj.owner2.fullname);
+        else if (ownerObj.owner2.lastname) owners.push(`${ownerObj.owner2.firstnameandmi || ownerObj.owner2.firstname || ''} ${ownerObj.owner2.lastname}`.trim());
+      }
+      return owners;
+    };
+
+    let ownersList: string[] = [];
+
+    if (mainProp?.assessment?.owner) {
+      ownersList = extractOwner(mainProp.assessment.owner);
+    }
+
+    // If not found in main property data, check AVM data structure
+    if (ownersList.length === 0 && avmProp?.assessment?.owner) {
+      ownersList = extractOwner(avmProp.assessment.owner);
+    }
+
+    // Sometimes it is directly under owner in some responses
+    if (ownersList.length === 0 && avmProp?.owner) {
+      ownersList = extractOwner(avmProp.owner);
+    }
+
+    if (ownersList.length > 0) {
+      ownerNames = ownersList.join(' & ');
     }
 
     // State
-    const state = mainProp?.address?.countrySubd || ''; // "CO"
+    const state = mainProp?.address?.countrySubd || avmProp?.address?.countrySubd || ''; // "CO"
 
     // Property Type
-    // Atom: summary.propclass or summary.propertyType
-    // "Single Family Residence", "Condominium"
-    const propertyType = mainProp?.summary?.propclass || mainProp?.summary?.propertyType || 'Single Family';
+    // Priority: summary.propertyType (e.g. "SINGLE FAMILY RESIDENCE") -> summary.propclass (e.g. "Single Family ... / Townhouse")
+    const propertyType = mainProp?.summary?.propertyType || mainProp?.summary?.propclass || 'Single Family';
 
     // Estimated Mortgage Balance
-    // Improve extraction - look for loan info in assessment or loans array if available
-    // Note: detailed open lien data often requires a separate premium endpoint, but we check available fields
     let estimatedMortgageBalance = 0;
 
-    // Attempt to find loan information from assessment info if available
-    // Some Atom responses include 'loans' array or 'assessment.mortgage'
-    if (mainProp?.loans) {
-      // Sum up active loans if we can identify them. 
-      // This is a heuristic as 'loans' might be history. 
-      // We often just want the most recent open liens. This is complex without the specific endpoint.
-      // For now, let's leave 0 if not explicitly found, but check assessment.
-    }
-
-    // Check assessment.mortgage for concurrent amounts (approximate)
+    // Check assessment.mortgage for concurrent amounts (approximate) from main prop
     if (mainProp?.assessment?.mortgage) {
       const m = mainProp.assessment.mortgage;
       const amt1 = m.FirstConcAmount || 0;
       const amt2 = m.SecondConcAmount || 0;
+      estimatedMortgageBalance = amt1 + amt2;
+    }
+
+    // Check AVM data for sale/mortgage info if main prop was empty
+    if (estimatedMortgageBalance === 0 && avmProp?.sale?.mortgage) {
+      const m = avmProp.sale.mortgage;
+      const amt1 = m.FirstConcurrent?.amount || 0;
+      const amt2 = m.SecondConcurrent?.amount || 0;
       estimatedMortgageBalance = amt1 + amt2;
     }
 

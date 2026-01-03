@@ -74,10 +74,11 @@ function mapPropertyType(atomType: string): string {
     }
 
     // Fallback logic
+    // Priority matters here: "Single Family Residence / Townhouse" should map to Single Family
+    if (upperType.includes('FAMILY') || upperType.includes('SFR') || upperType.includes('RESIDENTIAL')) return 'Single Family';
     if (upperType.includes('CONDO')) return 'Condo';
     if (upperType.includes('TOWNHOUSE')) return 'Townhouse';
     if (upperType.includes('MULTI')) return 'Multi-Family';
-    if (upperType.includes('FAMILY')) return 'Single Family';
     if (upperType.includes('LAND')) return 'Land';
 
     return 'Single Family';
