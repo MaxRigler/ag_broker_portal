@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { User, Columns3, Users, LogOut, Upload, ChevronDown } from "lucide-react";
+import { User, Columns3, Users, LogOut, Upload, ChevronDown, UserCog } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
 interface UserMenuProps {
-    className?: string; // Additional classes for the trigger button
-    showArrow?: boolean; // Whether to show the chevron arrow (default: true for internal pages)
-    variant?: "ghost" | "navy"; // Style variant
-    size?: "default" | "sm" | "lg" | "icon"; // Button size
+    className?: string;
+    showArrow?: boolean;
+    variant?: "ghost" | "navy";
+    size?: "default" | "sm" | "lg" | "icon";
 }
 
 export function UserMenu({ className, showArrow = true, variant = "ghost", size }: UserMenuProps) {
@@ -24,12 +24,12 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
     useEffect(() => {
         const fetchProfile = async () => {
             if (!user) return;
-            const { data } = await supabase
+            const { data, error } = await supabase
                 .from('profiles')
                 .select('full_name, company_name')
                 .eq('id', user.id)
                 .single();
-            if (data) setProfile(data);
+            if (data && !error) setProfile(data);
         };
         fetchProfile();
     }, [user]);
@@ -43,11 +43,14 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
             case 'denied':
                 return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Denied</Badge>;
             default:
-                return null; // Or unknown badge
+                return null;
         }
     };
 
     if (!user) return null;
+
+    const displayName = profile?.full_name || user.email?.split('@')[0] || 'User';
+    const displayCompany = profile?.company_name || '';
 
     return (
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -61,17 +64,15 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
                         <>
                             <User className="w-4 h-4" />
                             <span className="flex flex-col items-start text-left leading-tight">
-                                <span className="text-sm font-semibold">{profile?.full_name || 'Partner'}</span>
-                                <span className="text-xs opacity-80">{profile?.company_name || 'Company'}</span>
+                                <span className="text-sm font-semibold">{displayName}</span>
+                                {displayCompany && <span className="text-xs opacity-80">{displayCompany}</span>}
                             </span>
                         </>
                     ) : (
                         <>
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                <User className="w-4 h-4 text-primary" />
-                            </div>
+                            <User className="w-4 h-4 text-muted-foreground" />
                             <span className="hidden sm:inline text-sm font-medium">
-                                {profile?.full_name || user.email?.split('@')[0]}
+                                {displayName}
                             </span>
                         </>
                     )}
@@ -80,18 +81,13 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64" align="end">
-                <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <User className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">
-                            {profile?.full_name || 'User'}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                            {profile?.company_name || user.email}
-                        </p>
-                    </div>
+                <div className="flex flex-col mb-3">
+                    <p className="font-medium truncate">
+                        {displayName}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                        {displayCompany || user.email}
+                    </p>
                 </div>
 
                 <Separator className="my-2" />
@@ -104,6 +100,19 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
                 <Separator className="my-2" />
 
                 <div className="flex flex-col gap-1">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start"
+                        onClick={() => {
+                            setIsPopoverOpen(false);
+                            navigate('/profile');
+                        }}
+                    >
+                        <UserCog className="w-4 h-4 mr-2" />
+                        Profile Settings
+                    </Button>
+
                     <Button
                         variant="ghost"
                         size="sm"
@@ -127,7 +136,7 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
                         }}
                     >
                         <Upload className="w-4 h-4 mr-2" />
-                        Bulk Import
+                        Bulk PreQual
                     </Button>
 
                     {userRole === 'manager' && (

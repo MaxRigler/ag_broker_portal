@@ -23,11 +23,11 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
   const [isLoading, setIsLoading] = useState(false);
   const [view, setView] = useState<ViewType>(initialView);
   const navigate = useNavigate();
-  
+
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  
+
   // Signup form state
   const [companyName, setCompanyName] = useState('');
   const [contactName, setContactName] = useState('');
@@ -105,7 +105,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!companyName || !contactName || !signupEmail || !phoneNumber || !signupPassword || !confirmPassword) {
       toast({
@@ -115,7 +115,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       });
       return;
     }
-    
+
     if (signupPassword !== confirmPassword) {
       toast({
         title: "Error",
@@ -124,7 +124,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       });
       return;
     }
-    
+
     // Check phone number is exactly 10 digits
     const phoneDigits = phoneNumber.replace(/\D/g, '');
     if (phoneDigits.length !== 10) {
@@ -135,9 +135,9 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       });
       return;
     }
-    
+
     // Everflow requires: min 12 chars, uppercase, lowercase, number, special char
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{12,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{12,}$/;
     if (!passwordRegex.test(signupPassword)) {
       toast({
         title: "Error",
@@ -146,7 +146,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       });
       return;
     }
-    
+
     setIsLoading(true);
 
     const redirectUrl = `${window.location.origin}/`;
@@ -195,7 +195,7 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!forgotEmail) {
       toast({
         title: "Error",
@@ -204,17 +204,17 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     const redirectUrl = `${window.location.origin}/reset-password`;
-    
+
     const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
       redirectTo: redirectUrl,
     });
-    
+
     setIsLoading(false);
-    
+
     if (error) {
       toast({
         title: "Error",
@@ -223,12 +223,12 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       });
       return;
     }
-    
+
     toast({
       title: "Check your email",
       description: "We've sent you a password reset link.",
     });
-    
+
     setView('login');
     setForgotEmail('');
   };
@@ -237,9 +237,9 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
     return (
       <div className="space-y-6 animate-fade-in">
         <div className="flex flex-col items-center">
-          <img 
-            src={logoBlue} 
-            alt="Equity Advance" 
+          <img
+            src={logoBlue}
+            alt="Equity Advance"
             className="w-[66%] mb-5"
           />
           <div className="flex items-center justify-center gap-2 text-amber-600">
@@ -254,9 +254,9 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
           </p>
         </div>
 
-        <Button 
-          variant="navy" 
-          className="w-full" 
+        <Button
+          variant="navy"
+          className="w-full"
           onClick={() => navigate('/iso-pending')}
         >
           <Calendar className="mr-2 h-4 w-4" />
@@ -270,9 +270,9 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
     return (
       <div className="space-y-6">
         <div className="flex flex-col items-center">
-          <img 
-            src={logoBlue} 
-            alt="Equity Advance" 
+          <img
+            src={logoBlue}
+            alt="Equity Advance"
             className="w-[66%] mb-5"
           />
           <div className="flex items-center justify-center gap-2 text-primary">
@@ -289,10 +289,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
             <Label htmlFor="forgot-email">Email</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input 
-                id="forgot-email" 
-                type="email" 
-                placeholder="partner@company.com" 
+              <Input
+                id="forgot-email"
+                type="email"
+                placeholder="partner@company.com"
                 className="pl-10"
                 value={forgotEmail}
                 onChange={(e) => setForgotEmail(e.target.value)}
@@ -320,9 +320,9 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center">
-        <img 
-          src={logoBlue} 
-          alt="Equity Advance" 
+        <img
+          src={logoBlue}
+          alt="Equity Advance"
           className="w-[66%] mb-5"
         />
         <div className="flex items-center justify-center gap-2 text-primary">
@@ -348,10 +348,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
               <Label htmlFor="login-email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input 
-                  id="login-email" 
-                  type="email" 
-                  placeholder="partner@company.com" 
+                <Input
+                  id="login-email"
+                  type="email"
+                  placeholder="partner@company.com"
                   className="pl-10"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
@@ -363,10 +363,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
               <Label htmlFor="login-password">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input 
-                  id="login-password" 
-                  type="password" 
-                  placeholder="••••••••" 
+                <Input
+                  id="login-password"
+                  type="password"
+                  placeholder="••••••••"
                   className="pl-10"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
@@ -397,10 +397,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
                 <Label htmlFor="company-name">Company Name</Label>
                 <div className="relative">
                   <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="company-name" 
-                    type="text" 
-                    placeholder="ABC Funding" 
+                  <Input
+                    id="company-name"
+                    type="text"
+                    placeholder="ABC Funding"
                     className="pl-10"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
@@ -412,10 +412,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
                 <Label htmlFor="contact-name">Contact Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="contact-name" 
-                    type="text" 
-                    placeholder="John Smith" 
+                  <Input
+                    id="contact-name"
+                    type="text"
+                    placeholder="John Smith"
                     className="pl-10"
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
@@ -429,10 +429,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
                 <Label htmlFor="signup-email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="signup-email" 
-                    type="email" 
-                    placeholder="partner@company.com" 
+                  <Input
+                    id="signup-email"
+                    type="email"
+                    placeholder="partner@company.com"
                     className="pl-10"
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
@@ -444,10 +444,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
                 <Label htmlFor="phone-number">Phone Number</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="phone-number" 
-                    type="tel" 
-                    placeholder="5551234567" 
+                  <Input
+                    id="phone-number"
+                    type="tel"
+                    placeholder="5551234567"
                     className="pl-10"
                     maxLength={10}
                     inputMode="numeric"
@@ -466,10 +466,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
                 <Label htmlFor="signup-password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="signup-password" 
-                    type="password" 
-                    placeholder="Min 12 chars, Aa1!" 
+                  <Input
+                    id="signup-password"
+                    type="password"
+                    placeholder="Min 12 chars, Aa1!"
                     className="pl-10"
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
@@ -481,10 +481,10 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
                 <Label htmlFor="confirm-password">Confirm Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="confirm-password" 
-                    type="password" 
-                    placeholder="••••••••" 
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="••••••••"
                     className="pl-10"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}

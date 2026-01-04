@@ -9,6 +9,15 @@ interface AddressAutocompleteProps {
   placeholder?: string;
 }
 
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    google?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any; // Allow dynamic callback names
+  }
+}
+
 interface Prediction {
   place_id: string;
   description: string;
@@ -70,14 +79,14 @@ export function AddressAutocomplete({ onSelect, onChange, placeholder = "Enter C
     const callbackName = `initGoogleMapsAutocomplete_${Date.now()}`;
 
     // Set up the callback BEFORE loading the script
-    (window as any)[callbackName] = () => {
+    (window as Window)[callbackName] = () => {
       if (initializeService()) {
         // Success
       } else {
         setLoadError('Address lookup failed to initialize. Please ensure the Places API is enabled.');
       }
       // Clean up the global callback
-      delete (window as any)[callbackName];
+      delete (window as Window)[callbackName];
     };
 
     const script = document.createElement('script');
@@ -87,7 +96,7 @@ export function AddressAutocomplete({ onSelect, onChange, placeholder = "Enter C
     script.onerror = () => {
       console.error('Failed to load Google Maps script');
       setLoadError('Failed to load address lookup. Please check your internet connection.');
-      delete (window as any)[callbackName];
+      delete (window as Window)[callbackName];
     };
     document.head.appendChild(script);
   }, [isLoaded]);
@@ -219,8 +228,8 @@ export function AddressAutocomplete({ onSelect, onChange, placeholder = "Enter C
               onClick={() => handleSelect(prediction)}
               onMouseEnter={() => setHighlightedIndex(index)}
               className={`w-full px-4 py-3 text-left text-foreground transition-colors ${index === highlightedIndex
-                  ? 'bg-slate-100 dark:bg-slate-800'
-                  : 'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                ? 'bg-slate-100 dark:bg-slate-800'
+                : 'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
             >
               {prediction.description}

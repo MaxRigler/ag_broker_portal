@@ -55,7 +55,7 @@ export default function ResetPassword() {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newPassword || !confirmPassword) {
       toast({
         title: "Error",
@@ -64,7 +64,7 @@ export default function ResetPassword() {
       });
       return;
     }
-    
+
     if (newPassword !== confirmPassword) {
       toast({
         title: "Error",
@@ -73,9 +73,9 @@ export default function ResetPassword() {
       });
       return;
     }
-    
+
     // Everflow requires: min 12 chars, uppercase, lowercase, number, special char
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{12,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{12,}$/;
     if (!passwordRegex.test(newPassword)) {
       toast({
         title: "Error",
@@ -84,15 +84,15 @@ export default function ResetPassword() {
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     const { error } = await supabase.auth.updateUser({
       password: newPassword,
     });
-    
+
     setIsLoading(false);
-    
+
     if (error) {
       toast({
         title: "Error",
@@ -101,12 +101,12 @@ export default function ResetPassword() {
       });
       return;
     }
-    
+
     toast({
       title: "Password updated",
       description: "Your password has been successfully updated.",
     });
-    
+
     navigate('/');
   };
 
@@ -131,9 +131,9 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-          <img 
-            src={logoBlue} 
-            alt="Equity Advance" 
+          <img
+            src={logoBlue}
+            alt="Equity Advance"
             className="w-[50%] mx-auto"
           />
           <div className="flex items-center justify-center gap-2 text-primary">
@@ -150,10 +150,10 @@ export default function ResetPassword() {
               <Label htmlFor="new-password">New Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input 
-                  id="new-password" 
-                  type="password" 
-                  placeholder="Min 12 chars, Aa1!" 
+                <Input
+                  id="new-password"
+                  type="password"
+                  placeholder="Min 12 chars, Aa1!"
                   className="pl-10"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
@@ -165,10 +165,10 @@ export default function ResetPassword() {
               <Label htmlFor="confirm-new-password">Confirm New Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input 
-                  id="confirm-new-password" 
-                  type="password" 
-                  placeholder="••••••••" 
+                <Input
+                  id="confirm-new-password"
+                  type="password"
+                  placeholder="••••••••"
                   className="pl-10"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}

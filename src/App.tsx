@@ -11,6 +11,7 @@ import ResetPassword from "./pages/ResetPassword";
 import TeamManagement from "./pages/TeamManagement";
 import { BulkImportPage } from "@/pages/BulkImportPage";
 import OfficerSignup from "./pages/OfficerSignup";
+import Profile from "./pages/Profile";
 import Pipeline from "./pages/Pipeline";
 import { IsoLoginWidget } from "./components/IsoLoginWidget";
 import { AdminRoute } from "./components/AdminRoute";
@@ -31,6 +32,7 @@ function AppContent() {
     location.pathname === '/team' ||
     location.pathname === '/pipeline' ||
     location.pathname === '/bulk-import' ||
+    location.pathname === '/profile' ||
     location.pathname.startsWith('/join/') ||
     isWizardActive;
 
@@ -45,6 +47,11 @@ function AppContent() {
         <Route path="/join/:inviteToken" element={<OfficerSignup />} />
         <Route path="/pipeline" element={<Pipeline />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
         <Route path="/bulk-import" element={
           <ProtectedRoute>
             <BulkImportPage />

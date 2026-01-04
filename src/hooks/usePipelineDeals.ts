@@ -53,6 +53,7 @@ export function usePipelineDeals() {
       if (error) throw error;
 
       // Transform data to flatten the profiles join
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (data || []).map((deal: any) => ({
         id: deal.id,
         created_at: deal.created_at,

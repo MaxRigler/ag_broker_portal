@@ -114,11 +114,11 @@ export default function OfficerSignup() {
 
       // Navigate to home after successful signup
       setTimeout(() => navigate('/'), 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Signup error:', error);
       toast({
         title: 'Error',
-        description: error.message || 'Failed to create account',
+        description: (error as Error).message || 'Failed to create account',
         variant: 'destructive',
       });
     } finally {
@@ -145,8 +145,8 @@ export default function OfficerSignup() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              onClick={() => navigate('/')} 
+            <Button
+              onClick={() => navigate('/')}
               className="w-full"
               variant="outline"
             >
@@ -162,9 +162,9 @@ export default function OfficerSignup() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
-          <img 
-            src={logoBluePng} 
-            alt="Logo" 
+          <img
+            src={logoBluePng}
+            alt="Logo"
             className="h-10 mx-auto mb-4"
           />
           <CardTitle className="flex items-center justify-center gap-2">
@@ -172,7 +172,7 @@ export default function OfficerSignup() {
             Join as Officer
           </CardTitle>
           <CardDescription>
-            {managerInfo?.company_name 
+            {managerInfo?.company_name
               ? `You've been invited to join ${managerInfo.company_name}`
               : managerInfo?.full_name
                 ? `You've been invited by ${managerInfo.full_name}`
