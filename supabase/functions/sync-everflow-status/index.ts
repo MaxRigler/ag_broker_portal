@@ -1,5 +1,4 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-// Force Deploy Version 15.0 - Debug Mode for Raw Clicks
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -13,52 +12,66 @@ Deno.serve(async (req) => {
     }
 
     try {
-        const { deal_id } = await req.json();
-
-        if (!deal_id) {
-            return new Response(
-                JSON.stringify({ error: "Missing required parameter: deal_id" }),
-                { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
+        // Parse request body - handle potential empty body for batch mode
+        let body = {};
+        try {
+            const text = await req.text();
+            if (text) body = JSON.parse(text);
+        } catch (e) {
+            console.log("Empty or invalid body, proceeding with defaults");
         }
 
-        console.log(`[V15.0] Syncing status for Deal ID: ${deal_id}`);
+        const { deal_id } = body as { deal_id?: string };
+        const isBatchMode = !deal_id;
+
+        console.log(`[V16.0 Batch-Sync] Starting sync. Mode: ${isBatchMode ? "BATCH (All Deals)" : `SINGLE (Deal: ${deal_id})`}`);
 
         // Initialize Supabase client
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
         const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-        // 1. Verify Deal Exists and Get Current Status
-        const { data: deal, error: fetchError } = await supabase
-            .from("deals")
-            .select("id, everflow_event_status")
-            .eq("id", deal_id)
-            .maybeSingle();
-
-        if (fetchError || !deal) {
-            console.error("Error fetching deal:", fetchError);
-            return new Response(
-                JSON.stringify({ error: "Deal not found" }),
-                { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
-        }
-
-        // 2. Get Everflow API Key
+        // Initialize Everflow API Key
         const everflowApiKey = Deno.env.get("Everflow");
         if (!everflowApiKey) {
-            return new Response(
-                JSON.stringify({ error: "Everflow API key not configured" }),
-                { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
+            throw new Error("Everflow API key not configured");
         }
 
-        // 3. Build date range for Raw Clicks query - use UTC dates
+        // 1. Fetch relevant deals from Supabase
+        // If batch mode: Fetch all deals that are NOT already clicked (optimization)
+        // If single mode: Fetch specific deal
+        let query = supabase
+            .from("deals")
+            .select("id, everflow_event_status");
+
+        if (deal_id) {
+            query = query.eq("id", deal_id);
+        } else {
+            // Optimization: Only check deals that haven't converted yet 
+            // OR checks all deals. Checking all is safer to catch missed updates.
+            // Let's filter to improve DB performance, assuming 'Offer Link Clicked' is final for this step.
+            // Actually, let's fetch ALL for now to be safe, or at least active ones. 
+            // For now, simply removing the filter ensures we don't miss anything.
+        }
+
+        const { data: deals, error: fetchError } = await query;
+
+        if (fetchError || !deals || deals.length === 0) {
+            console.log("No deals found to sync.");
+            return new Response(JSON.stringify({ message: "No deals to sync" }), {
+                headers: { ...corsHeaders, "Content-Type": "application/json" }
+            });
+        }
+
+        console.log(`[V16.0] Checking status for ${deals.length} deals.`);
+
+        // 2. Fetch Global Click History from Everflow (Last 14 days)
+        // We do this ONCE.
+
         const today = new Date();
         const fromDate = new Date(today);
         fromDate.setDate(today.getDate() - 14);
 
-        // Format: YYYY-MM-DD HH:MM:SS (use UTC for consistency)
         const formatDateTime = (d: Date) => {
             const pad = (n: number) => n.toString().padStart(2, '0');
             return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`;
@@ -67,147 +80,97 @@ Deno.serve(async (req) => {
         const fromStr = formatDateTime(fromDate);
         const toStr = formatDateTime(today);
 
-        console.log(`[V15.0] Date Range (UTC): ${fromStr} to ${toStr}`);
-
-        // 4. First, query ALL clicks without filter to see what exists
-        const allClicksPayload = {
+        // Fetch ALL clicks (stream)
+        const clicksPayload = {
             from: fromStr,
             to: toStr,
             timezone_id: 90 // UTC
         };
 
-        console.log(`[V15.0] First checking ALL recent clicks (no filter)...`);
-        const allClicksRes = await fetch("https://api.eflow.team/v1/networks/reporting/clicks/stream", {
+        console.log(`[V16.0] Fetching Everflow clicks from ${fromStr} to ${toStr}...`);
+
+        const clicksRes = await fetch("https://api.eflow.team/v1/networks/reporting/clicks/stream", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-Eflow-API-Key": everflowApiKey
             },
-            body: JSON.stringify(allClicksPayload)
+            body: JSON.stringify(clicksPayload)
         });
 
-        let allClicksData: any = null;
-        let foundSub5Values: string[] = [];
+        if (!clicksRes.ok) {
+            throw new Error(`Everflow API Error: ${clicksRes.status} ${await clicksRes.text()}`);
+        }
 
-        if (allClicksRes.ok) {
-            allClicksData = await allClicksRes.json();
-            const totalClicks = allClicksData.clicks?.length || 0;
-            console.log(`[V15.0] Total clicks in last 14 days: ${totalClicks}`);
+        const clicksData = await clicksRes.json();
+        const allClicks = clicksData.clicks || [];
+        console.log(`[V16.0] Retrieved ${allClicks.length} total clicks.`);
 
-            // Extract unique sub5 values
-            if (allClicksData.clicks && allClicksData.clicks.length > 0) {
-                foundSub5Values = [...new Set(allClicksData.clicks.map((c: any) => c.sub5).filter((s: string) => s))];
-                console.log(`[V15.0] Unique sub5 values found: ${JSON.stringify(foundSub5Values.slice(0, 10))}`);
+        // 3. Create Lookup Map (sub5 -> Click)
+        // We use a Set for fast existence checks. 
+        // We assume 'sub5' holds the deal_id.
+        const clickedDealIds = new Set<string>();
 
-                // Check if our deal_id is in any of these clicks
-                const matchingClick = allClicksData.clicks.find((c: any) => c.sub5 === deal_id);
-                if (matchingClick) {
-                    console.log(`[V15.0] FOUND matching click for deal_id: ${deal_id}`);
-                    console.log(`[V15.0] Click timestamp: ${matchingClick.unix_timestamp}, sub5: ${matchingClick.sub5}`);
-                } else {
-                    console.log(`[V15.0] No matching click found for deal_id: ${deal_id} in ${totalClicks} clicks`);
+        for (const click of allClicks) {
+            if (click.sub5) {
+                clickedDealIds.add(click.sub5);
+            }
+        }
+
+        console.log(`[V16.0] Found ${clickedDealIds.size} unique deal IDs with clicks.`);
+
+        // 4. Match and Prepare Updates
+        const updates = [];
+        let updatesCount = 0;
+
+        for (const deal of deals) {
+            // Logic: If deal has click in Everflow BUT status is not 'Offer Link Clicked'
+            // Then we update it.
+            if (clickedDealIds.has(deal.id)) {
+                if (deal.everflow_event_status !== "Offer Link Clicked") {
+                    updates.push({
+                        id: deal.id,
+                        everflow_event_status: "Offer Link Clicked"
+                    });
+                    updatesCount++;
                 }
             }
+        }
+
+        console.log(`[V16.0] Identified ${updatesCount} deals needing updates.`);
+
+        // 5. Perform Updates (one at a time, but in parallel)
+        if (updates.length > 0) {
+            const updatePromises = updates.map(async (update) => {
+                const { error } = await supabase
+                    .from("deals")
+                    .update({ everflow_event_status: update.everflow_event_status })
+                    .eq("id", update.id);
+
+                if (error) {
+                    console.error(`Failed to update deal ${update.id}:`, error);
+                    throw error;
+                }
+                console.log(`[V16.1] Updated deal ${update.id} to "Offer Link Clicked"`);
+            });
+
+            await Promise.all(updatePromises);
+            console.log(`[V16.1] Successfully updated ${updates.length} deals.`);
         } else {
-            const errorText = await allClicksRes.text();
-            console.error(`[V15.0] Error fetching all clicks: ${allClicksRes.status} - ${errorText}`);
-        }
-
-        // 5. Now try with the s5 filter
-        const filteredPayload = {
-            from: fromStr,
-            to: toStr,
-            timezone_id: 90,
-            query: {
-                filters: [
-                    { filter_id_value: deal_id, resource_type: "s5" }
-                ]
-            }
-        };
-
-        console.log(`[V15.0] Now querying with s5 filter: ${deal_id}`);
-        console.log(`[V15.0] Filter payload: ${JSON.stringify(filteredPayload)}`);
-
-        const filteredRes = await fetch("https://api.eflow.team/v1/networks/reporting/clicks/stream", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Eflow-API-Key": everflowApiKey
-            },
-            body: JSON.stringify(filteredPayload)
-        });
-
-        let hasClicks = false;
-        let debugData: any = {
-            total_clicks: allClicksData?.clicks?.length || 0,
-            unique_sub5_values: foundSub5Values.slice(0, 10),
-            deal_id_searched: deal_id
-        };
-
-        if (filteredRes.ok) {
-            const data = await filteredRes.json();
-            debugData.filtered_clicks_count = data.clicks?.length || 0;
-            console.log(`[V15.0] Filtered clicks: ${data.clicks?.length || 0}`);
-
-            if (data.clicks && data.clicks.length > 0) {
-                hasClicks = true;
-            }
-        } else {
-            const errorText = await filteredRes.text();
-            console.error(`[V15.0] Filter API Error: ${filteredRes.status} - ${errorText}`);
-            debugData.filter_error = errorText;
-        }
-
-        // 6. Manual match check - if we found clicks in all clicks, check if any match
-        if (!hasClicks && allClicksData?.clicks) {
-            const manualMatch = allClicksData.clicks.find((c: any) => c.sub5 === deal_id);
-            if (manualMatch) {
-                console.log(`[V15.0] Manual match FOUND - filter may not be working correctly`);
-                hasClicks = true;
-                debugData.manual_match_found = true;
-            }
-        }
-
-        console.log(`[V15.0] Has Clicks (final): ${hasClicks}`);
-
-        // 7. Determine new status
-        let newStatus = deal.everflow_event_status;
-        let latestEventName = "None";
-
-        if (hasClicks) {
-            newStatus = "Offer Link Clicked";
-            latestEventName = "Click Detected";
-        }
-
-        console.log(`[V15.0] Final Status: ${newStatus}`);
-
-        // 8. Update if changed
-        if (newStatus !== deal.everflow_event_status) {
-            const { error: updateError } = await supabase
-                .from("deals")
-                .update({ everflow_event_status: newStatus })
-                .eq("id", deal_id);
-
-            if (updateError) {
-                console.error("Error updating deal status:", updateError);
-                return new Response(
-                    JSON.stringify({ error: "Database update failed" }),
-                    { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-                );
-            }
-            console.log("[V15.0] Database updated successfully.");
-        } else {
-            console.log("[V15.0] Status unchanged.");
+            console.log("[V16.1] No updates required.");
         }
 
         return new Response(
             JSON.stringify({
                 success: true,
-                deal_id: deal_id,
-                previous_status: deal.everflow_event_status,
-                new_status: newStatus,
-                latest_event: latestEventName,
-                debug: debugData
+                message: isBatchMode
+                    ? `Batch sync complete. Scanned ${deals.length} deals, updated ${updatesCount}.`
+                    : `Sync complete for deal ${deal_id}. Updated: ${updatesCount > 0}`,
+                stats: {
+                    total_deals_checked: deals.length,
+                    total_clicks_fetched: allClicks.length,
+                    updates_performed: updatesCount
+                }
             }),
             { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );

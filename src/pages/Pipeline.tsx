@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Loader2, User, Columns3, Users, LogOut, ChevronDown, RefreshCw } from "lucide-react";
+import { ArrowLeft, Loader2, User, Columns3, Users, LogOut, ChevronDown, RefreshCw, Upload } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PipelineColumn } from "@/components/pipeline/PipelineColumn";
 import { usePipelineDeals, groupDealsByStage, PIPELINE_STAGES } from "@/hooks/usePipelineDeals";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { UserMenu } from "@/components/UserMenu";
+// import { supabase } from "@/integrations/supabase/client"; // Removed if no longer needed for profile fetch logic here
 
 export default function Pipeline() {
   const navigate = useNavigate();
@@ -24,31 +25,12 @@ export default function Pipeline() {
     }
   }, [user, authLoading, navigate]);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user) return;
-      const { data } = await supabase
-        .from('profiles')
-        .select('full_name, company_name')
-        .eq('id', user.id)
-        .single();
-      if (data) setProfile(data);
-    };
-    fetchProfile();
-  }, [user]);
 
-  const getStatusBadge = () => {
-    switch (userStatus) {
-      case 'active':
-        return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Active</Badge>;
-      case 'pending':
-        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">Pending</Badge>;
-      case 'denied':
-        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Denied</Badge>;
-      default:
-        return null;
-    }
-  };
+  // Profile fetch logic removed as it is now in UserMenu. 
+  // If profile is used elsewhere in this file, we might need to keep it, but it seems only used for the menu.
+  // Checking usage... profile is only used in the Popover trigger.
+  // getStatusBadge is also only used in the menu.
+
 
   if (authLoading) {
     return (
@@ -82,7 +64,7 @@ export default function Pipeline() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => deals && syncDeals(deals)}
+              onClick={() => syncDeals()}
               disabled={isSyncing || isLoading}
               className="ml-4 gap-2"
             >
@@ -96,88 +78,7 @@ export default function Pipeline() {
           </div>
 
           {/* Profile Button */}
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="w-4 h-4 text-primary" />
-                </div>
-                <span className="hidden sm:inline text-sm font-medium">
-                  {profile?.full_name || user.email?.split('@')[0]}
-                </span>
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64" align="end">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="w-5 h-5 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">
-                    {profile?.full_name || 'User'}
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {profile?.company_name || user.email}
-                  </p>
-                </div>
-              </div>
-
-              <Separator className="my-2" />
-
-              <div className="space-y-1 mb-2">
-                <p className="text-xs text-muted-foreground">Account Status</p>
-                {getStatusBadge()}
-              </div>
-
-              <Separator className="my-2" />
-
-              <div className="flex flex-col gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start bg-accent/50"
-                  onClick={() => {
-                    setIsPopoverOpen(false);
-                    navigate('/pipeline');
-                  }}
-                >
-                  <Columns3 className="w-4 h-4 mr-2" />
-                  View Pipeline
-                </Button>
-
-                {userRole === 'manager' && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      setIsPopoverOpen(false);
-                      navigate('/team');
-                    }}
-                  >
-                    <Users className="w-4 h-4 mr-2" />
-                    Manage Team
-                  </Button>
-                )}
-              </div>
-
-              <Separator className="my-2" />
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={() => {
-                  setIsPopoverOpen(false);
-                  signOut();
-                }}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </PopoverContent>
-          </Popover>
+          <UserMenu showArrow />
         </div>
       </header>
 

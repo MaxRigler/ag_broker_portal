@@ -68,21 +68,14 @@ export function usePipelineDeals() {
   });
 
   const syncMutation = useMutation({
-    mutationFn: async (deals: Deal[]) => {
-      if (!deals.length) return;
+    mutationFn: async () => {
+      // Trigger batch sync mode by sending empty body or specific mode flag
+      const { data, error } = await supabase.functions.invoke('sync-everflow-status', {
+        body: {}
+      });
 
-      // Sync in parallel
-      const results = await Promise.allSettled(
-        deals.map(async (deal) => {
-          const { data, error } = await supabase.functions.invoke('sync-everflow-status', {
-            body: { deal_id: deal.id }
-          });
-          if (error) throw error;
-          return data;
-        })
-      );
-
-      return results;
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       // Refetch stats to update UI

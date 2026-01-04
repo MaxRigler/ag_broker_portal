@@ -5,15 +5,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Briefcase, LogOut, User, Columns3, Users } from 'lucide-react';
+import { Briefcase, User } from 'lucide-react';
 import { IsoAuthModal } from './IsoAuthModal';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-
-interface UserProfile {
-  full_name: string | null;
-  company_name: string | null;
-}
+import { UserMenu } from "@/components/UserMenu";
+// import { supabase } from '@/integrations/supabase/client';
 
 const getStatusBadge = (status: string | null) => {
   switch (status) {
@@ -30,8 +26,6 @@ const getStatusBadge = (status: string | null) => {
 
 export function IsoLoginWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isWideModal, setIsWideModal] = useState(false);
   const [showPostSignupPending, setShowPostSignupPending] = useState(false);
   const location = useLocation();
@@ -42,115 +36,21 @@ export function IsoLoginWidget() {
     setIsOpen(false);
   }, [location.pathname]);
 
-  useEffect(() => {
-    if (user) {
-      fetchProfile(user.id);
-    } else {
-      setProfile(null);
-    }
-  }, [user]);
-
-  const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('full_name, company_name')
-      .eq('id', userId)
-      .maybeSingle();
-
-    if (!error && data) {
-      setProfile(data);
-    }
-  };
+  /* Profile fetch logic removed - handled by UserMenu */
+  /* getStatusBadge removed - handled by UserMenu */
 
   const handleLoginSuccess = () => {
     setIsOpen(false);
   };
 
-  const handleSignOut = async () => {
-    setIsPopoverOpen(false);
-    await signOut();
-  };
+  /* handleSignOut removed - handled by UserMenu */
 
   // If user is logged in and NOT showing post-signup pending modal, show user widget
   if (user && !showPostSignupPending) {
-    if (!profile) return null; // Don't show anything while profile is loading
-    
     return (
       <div className="fixed bottom-6 right-1/2 translate-x-1/2 md:right-6 md:translate-x-0 z-50">
         <div className="p-2 bg-card/10 backdrop-blur-sm rounded-xl border border-primary-foreground/10">
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="navy" size="lg">
-                <User className="w-4 h-4" />
-                <span className="flex flex-col items-start text-left leading-tight">
-                  <span className="text-sm font-semibold">{profile.full_name || 'Partner'}</span>
-                  <span className="text-xs opacity-80">{profile.company_name || 'Company'}</span>
-                </span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56 p-3" align="end">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="w-5 h-5 text-primary" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold">{profile.full_name || 'Partner'}</span>
-                  <span className="text-xs text-muted-foreground">{profile.company_name || 'Company'}</span>
-                </div>
-              </div>
-              
-              <Separator className="my-2" />
-              
-              <div className="py-2">
-                <p className="text-xs text-muted-foreground mb-1">Account Status</p>
-                {getStatusBadge(userStatus)}
-              </div>
-              
-              <Separator className="my-2" />
-              
-              <div className="flex flex-col gap-1">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start"
-                  onClick={() => {
-                    setIsPopoverOpen(false);
-                    navigate('/pipeline');
-                  }}
-                >
-                  <Columns3 className="w-4 h-4 mr-2" />
-                  View Pipeline
-                </Button>
-                
-                {userRole === 'manager' && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="w-full justify-start"
-                    onClick={() => {
-                      setIsPopoverOpen(false);
-                      navigate('/team');
-                    }}
-                  >
-                    <Users className="w-4 h-4 mr-2" />
-                    Manage Team
-                  </Button>
-                )}
-              </div>
-              
-              <Separator className="my-2" />
-              
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={handleSignOut}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </PopoverContent>
-          </Popover>
+          <UserMenu variant="navy" size="lg" showArrow={true} />
         </div>
       </div>
     );
@@ -161,7 +61,7 @@ export function IsoLoginWidget() {
     <>
       <div className="fixed bottom-6 right-1/2 translate-x-1/2 md:right-6 md:translate-x-0 z-50">
         <div className="p-2 bg-card/10 backdrop-blur-sm rounded-xl border border-primary-foreground/10">
-          <Button 
+          <Button
             variant="navy"
             size="lg"
             onClick={() => setIsOpen(true)}
@@ -186,8 +86,8 @@ export function IsoLoginWidget() {
               Login or create an account to access the ISO partner portal.
             </DialogDescription>
           </DialogHeader>
-          <IsoAuthModal 
-            onLoginSuccess={handleLoginSuccess} 
+          <IsoAuthModal
+            onLoginSuccess={handleLoginSuccess}
             onTabChange={(tab) => setIsWideModal(tab === 'signup')}
             onShowPending={() => setShowPostSignupPending(true)}
             initialView={showPostSignupPending ? 'account-pending' : 'login'}

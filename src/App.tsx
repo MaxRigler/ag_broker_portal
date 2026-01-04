@@ -9,11 +9,14 @@ import IsoPending from "./pages/IsoPending";
 import AdminDashboard from "./pages/AdminDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import TeamManagement from "./pages/TeamManagement";
+import { BulkImportPage } from "@/pages/BulkImportPage";
 import OfficerSignup from "./pages/OfficerSignup";
 import Pipeline from "./pages/Pipeline";
 import { IsoLoginWidget } from "./components/IsoLoginWidget";
 import { AdminRoute } from "./components/AdminRoute";
 import { ManagerRoute } from "./components/ManagerRoute";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Navigate } from "react-router-dom";
 import { WizardProvider, useWizard } from "./contexts/WizardContext";
 
 const queryClient = new QueryClient();
@@ -21,12 +24,13 @@ const queryClient = new QueryClient();
 function AppContent() {
   const location = useLocation();
   const { isWizardActive } = useWizard();
-  const hideIsoWidget = 
-    location.pathname === '/iso-pending' || 
-    location.pathname === '/admin' || 
-    location.pathname === '/reset-password' || 
+  const hideIsoWidget =
+    location.pathname === '/iso-pending' ||
+    location.pathname === '/admin' ||
+    location.pathname === '/reset-password' ||
     location.pathname === '/team' ||
     location.pathname === '/pipeline' ||
+    location.pathname === '/bulk-import' ||
     location.pathname.startsWith('/join/') ||
     isWizardActive;
 
@@ -41,7 +45,12 @@ function AppContent() {
         <Route path="/join/:inviteToken" element={<OfficerSignup />} />
         <Route path="/pipeline" element={<Pipeline />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="/bulk-import" element={
+          <ProtectedRoute>
+            <BulkImportPage />
+          </ProtectedRoute>
+        } />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       {!hideIsoWidget && <IsoLoginWidget />}
     </>
