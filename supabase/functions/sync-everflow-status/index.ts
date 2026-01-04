@@ -1,27 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-// Force Deploy Version 13.0
+// Force Deploy Version 15.0 - Debug Mode for Raw Clicks
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-/**
- * Everflow Reporting API Payload Interface
- */
-interface EverflowReportingPayload {
-    from: string;
-    to: string;
-    timezone_id: number;
-    currency_id: string;
-    show_conversions: boolean;
-    show_events: boolean;
-    columns: Array<{ column: string }>;
-    query?: {
-        filters?: Array<{ resource_type: string; filter_id_value: string }>;
-    };
-    filters?: Array<{ resource_type: string; filter_id_value: string }>; // Keeping for backward compatibility if needed, but query is preferred
-}
 
 Deno.serve(async (req) => {
     // Handle CORS preflight requests
@@ -39,7 +22,7 @@ Deno.serve(async (req) => {
             );
         }
 
-        console.log(`Syncing status for Deal ID: ${deal_id}`);
+        console.log(`[V15.0] Syncing status for Deal ID: ${deal_id}`);
 
         // Initialize Supabase client
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -61,7 +44,7 @@ Deno.serve(async (req) => {
             );
         }
 
-        // 2. Prepare Everflow API Request
+        // 2. Get Everflow API Key
         const everflowApiKey = Deno.env.get("Everflow");
         if (!everflowApiKey) {
             return new Response(
@@ -70,142 +53,135 @@ Deno.serve(async (req) => {
             );
         }
 
-        // Date Range: Look back 2 days and AHEAD 2 days to account for all Timezone differences
-        // The click happened at 17:47 MST which might be "Tomorrow" in UTC
-        // Date Range: Look back 5 days and AHEAD 2 days
+        // 3. Build date range for Raw Clicks query - use UTC dates
         const today = new Date();
         const fromDate = new Date(today);
-        fromDate.setDate(today.getDate() - 5);
-        const toDate = new Date(today);
-        toDate.setDate(today.getDate() + 2);
+        fromDate.setDate(today.getDate() - 14);
 
-        // Format YYYY-MM-DD
-        const formatDate = (d: Date) => d.toISOString().split('T')[0];
-        const fromStr = formatDate(fromDate);
-        const toStr = formatDate(toDate);
-
-        console.log(`[Version 13.0] Entity/Fallback - Querying from ${fromStr} to ${toStr}`);
-
-        // Query 1: Conversions / Events (Mocked)
-        const conversionsPromise = Promise.resolve({ ok: true, json: async () => ({ conversions: [] }) });
-
-        // Query 2: Clicks / Stats
-        // Strategy: Entity Reporting (Simplified) - Version 13.0
-        // V12 (Entity) crashed. We suspect 'network_id' or 'total_click' was the issue.
-        // We will try 'gross_click' and remove 'network_id'.
-        const entityPayload = {
-            from: fromStr,
-            to: toStr,
-            timezone_id: 106,
-            currency_id: "USD",
-            query: {},
-            columns: [
-                { column: "sub5" },
-                { column: "gross_click" }
-            ]
+        // Format: YYYY-MM-DD HH:MM:SS (use UTC for consistency)
+        const formatDateTime = (d: Date) => {
+            const pad = (n: number) => n.toString().padStart(2, '0');
+            return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`;
         };
 
-        const entityPromise = fetch("https://api.eflow.team/v1/networks/reporting/entity", {
+        const fromStr = formatDateTime(fromDate);
+        const toStr = formatDateTime(today);
+
+        console.log(`[V15.0] Date Range (UTC): ${fromStr} to ${toStr}`);
+
+        // 4. First, query ALL clicks without filter to see what exists
+        const allClicksPayload = {
+            from: fromStr,
+            to: toStr,
+            timezone_id: 90 // UTC
+        };
+
+        console.log(`[V15.0] First checking ALL recent clicks (no filter)...`);
+        const allClicksRes = await fetch("https://api.eflow.team/v1/networks/reporting/clicks/stream", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-Eflow-API-Key": everflowApiKey
             },
-            body: JSON.stringify(entityPayload)
+            body: JSON.stringify(allClicksPayload)
         });
 
-        const [conversionsRes, entityRes] = await Promise.all([conversionsPromise, entityPromise]);
+        let allClicksData: any = null;
+        let foundSub5Values: string[] = [];
 
-        // Process Conversions
-        let latestConversion: any = null;
-        if (conversionsRes.ok) {
-            // Mocked
-        }
+        if (allClicksRes.ok) {
+            allClicksData = await allClicksRes.json();
+            const totalClicks = allClicksData.clicks?.length || 0;
+            console.log(`[V15.0] Total clicks in last 14 days: ${totalClicks}`);
 
-        // Process Entity Stats
-        let hasClicks = false;
-        let debugData: any = null;
+            // Extract unique sub5 values
+            if (allClicksData.clicks && allClicksData.clicks.length > 0) {
+                foundSub5Values = [...new Set(allClicksData.clicks.map((c: any) => c.sub5).filter((s: string) => s))];
+                console.log(`[V15.0] Unique sub5 values found: ${JSON.stringify(foundSub5Values.slice(0, 10))}`);
 
-        if (entityRes.ok) {
-            const data = await entityRes.json();
-            debugData = data;
-            console.log(`[Version 13.0] Entity Stats Response: ${JSON.stringify(data).substring(0, 500)}`);
-
-            let rows: any[] = [];
-            if (data.table) rows = data.table;
-            else if (data.reporting) rows = data.reporting;
-            else if (Array.isArray(data)) rows = data;
-
-            // Filter for our Deal ID
-            const dealRow = rows.find((r: any) => r.sub5 === deal_id);
-
-            if (dealRow) {
-                console.log("Found Entity Stats:", dealRow);
-                // Check if gross_click > 0 (or total_click if returned)
-                const clicks = Number(dealRow.gross_click || dealRow.total_click || 0);
-                if (clicks > 0) {
-                    hasClicks = true;
+                // Check if our deal_id is in any of these clicks
+                const matchingClick = allClicksData.clicks.find((c: any) => c.sub5 === deal_id);
+                if (matchingClick) {
+                    console.log(`[V15.0] FOUND matching click for deal_id: ${deal_id}`);
+                    console.log(`[V15.0] Click timestamp: ${matchingClick.unix_timestamp}, sub5: ${matchingClick.sub5}`);
+                } else {
+                    console.log(`[V15.0] No matching click found for deal_id: ${deal_id} in ${totalClicks} clicks`);
                 }
-            } else {
-                console.log("No matching sub5 found in Entity Stats.");
             }
         } else {
-            const errorText = await entityRes.text();
-            console.warn(`Entity API Error: ${errorText}. Falling back to List...`);
-            debugData = { error: errorText };
+            const errorText = await allClicksRes.text();
+            console.error(`[V15.0] Error fetching all clicks: ${allClicksRes.status} - ${errorText}`);
+        }
 
-            // Fallback: Reporting/Clicks with HUGE page size
-            // If Entity crashes, maybe the raw list works but needs more depth.
-            try {
-                const listPayload = {
-                    from: fromStr,
-                    to: toStr,
-                    timezone_id: 106,
-                    page_size: 1000,
-                    columns: [{ column: "sub5" }, { column: "transaction_id" }]
-                };
-                const listRes = await fetch("https://api.eflow.team/v1/networks/reporting/clicks", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Eflow-API-Key": everflowApiKey
-                    },
-                    body: JSON.stringify(listPayload)
-                });
-                if (listRes.ok) {
-                    const listData = await listRes.json();
-                    console.log(`[Version 13.0] Fallback List Response: ${JSON.stringify(listData).substring(0, 500)}`);
-                    let listRows: any[] = [];
-                    if (listData.table) listRows = listData.table;
-                    else if (listData.clicks) listRows = listData.clicks;
+        // 5. Now try with the s5 filter
+        const filteredPayload = {
+            from: fromStr,
+            to: toStr,
+            timezone_id: 90,
+            query: {
+                filters: [
+                    { filter_id_value: deal_id, resource_type: "s5" }
+                ]
+            }
+        };
 
-                    if (listRows.find((r: any) => r.sub5 === deal_id)) {
-                        console.log("Found Click in Fallback List!");
-                        hasClicks = true;
-                    }
-                }
-            } catch (e) {
-                console.error("Fallback failed", e);
+        console.log(`[V15.0] Now querying with s5 filter: ${deal_id}`);
+        console.log(`[V15.0] Filter payload: ${JSON.stringify(filteredPayload)}`);
+
+        const filteredRes = await fetch("https://api.eflow.team/v1/networks/reporting/clicks/stream", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Eflow-API-Key": everflowApiKey
+            },
+            body: JSON.stringify(filteredPayload)
+        });
+
+        let hasClicks = false;
+        let debugData: any = {
+            total_clicks: allClicksData?.clicks?.length || 0,
+            unique_sub5_values: foundSub5Values.slice(0, 10),
+            deal_id_searched: deal_id
+        };
+
+        if (filteredRes.ok) {
+            const data = await filteredRes.json();
+            debugData.filtered_clicks_count = data.clicks?.length || 0;
+            console.log(`[V15.0] Filtered clicks: ${data.clicks?.length || 0}`);
+
+            if (data.clicks && data.clicks.length > 0) {
+                hasClicks = true;
+            }
+        } else {
+            const errorText = await filteredRes.text();
+            console.error(`[V15.0] Filter API Error: ${filteredRes.status} - ${errorText}`);
+            debugData.filter_error = errorText;
+        }
+
+        // 6. Manual match check - if we found clicks in all clicks, check if any match
+        if (!hasClicks && allClicksData?.clicks) {
+            const manualMatch = allClicksData.clicks.find((c: any) => c.sub5 === deal_id);
+            if (manualMatch) {
+                console.log(`[V15.0] Manual match FOUND - filter may not be working correctly`);
+                hasClicks = true;
+                debugData.manual_match_found = true;
             }
         }
 
-        console.log("Latest Conversion:", latestConversion);
-        console.log("Has Clicks:", hasClicks);
+        console.log(`[V15.0] Has Clicks (final): ${hasClicks}`);
 
+        // 7. Determine new status
         let newStatus = deal.everflow_event_status;
         let latestEventName = "None";
 
-        // Logic: Conversion takes precedence over Click
-        if (latestConversion) {
-            newStatus = latestConversion.event_status || "unknown";
-            latestEventName = latestConversion.event || "unknown";
-        } else if (hasClicks) {
+        if (hasClicks) {
             newStatus = "Offer Link Clicked";
-            latestEventName = "Click (Aggregate)";
+            latestEventName = "Click Detected";
         }
 
-        console.log(`Determined Status: ${newStatus}, Event: ${latestEventName}`);
+        console.log(`[V15.0] Final Status: ${newStatus}`);
 
+        // 8. Update if changed
         if (newStatus !== deal.everflow_event_status) {
             const { error: updateError } = await supabase
                 .from("deals")
@@ -219,9 +195,9 @@ Deno.serve(async (req) => {
                     { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
                 );
             }
-            console.log("Database updated successfully.");
+            console.log("[V15.0] Database updated successfully.");
         } else {
-            console.log("Status unchanged.");
+            console.log("[V15.0] Status unchanged.");
         }
 
         return new Response(
@@ -231,7 +207,7 @@ Deno.serve(async (req) => {
                 previous_status: deal.everflow_event_status,
                 new_status: newStatus,
                 latest_event: latestEventName,
-                debug_everflow_response: debugData // LEAKING DATA TO CLIENT
+                debug: debugData
             }),
             { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
