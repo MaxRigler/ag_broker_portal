@@ -60,14 +60,14 @@ export function Hero({ onCheckEligibility }: HeroProps) {
   return (
     <section className="relative min-h-screen bg-[hsl(var(--navy-deep))] overflow-hidden">
       {/* Background image layer */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url('https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1000w,f_auto,q_auto:best/rockcms/2025-06/250611-homes-suburbs-ch-1721-69f6cf.jpg')` }}
       />
-      
+
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--navy-deep))] via-[hsl(var(--navy-medium))] to-[hsl(var(--navy-deep))] opacity-95" />
-      
+
       {/* Animated decorative elements with combined float + glow */}
       <div className="absolute top-20 right-10 w-72 h-72 bg-accent rounded-full blur-3xl animate-float-glow" />
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-float-glow-reverse" />
@@ -94,7 +94,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
               <span className="block whitespace-nowrap">via Home Equity</span>
             </span>
           </h1>
-          
+
           {/* Mobile Subheadline - Vertical stacked list (before form on mobile) */}
           <div className="mb-12 max-w-3xl mx-auto animate-slide-up md:hidden">
             <div className="flex flex-col items-start gap-3">
@@ -110,11 +110,12 @@ export function Hero({ onCheckEligibility }: HeroProps) {
           {/* Address Input Form */}
           <form onSubmit={handleSubmit} className="relative z-50 max-w-2xl mx-auto mb-8 md:mt-12 md:mb-12 animate-slide-up" style={{ animationDelay: '0.1s' }}>
             <div className="flex flex-col sm:flex-row gap-3 p-2 bg-card/10 backdrop-blur-sm rounded-xl border border-primary-foreground/10">
-              <AddressAutocomplete 
+              <AddressAutocomplete
                 onSelect={(selectedAddress) => {
                   setAddress(selectedAddress);
                   handleCheckEligibility(selectedAddress);
                 }}
+                onChange={(value) => setAddress(value)}
                 placeholder="Enter Client's Property Address"
               />
               <Button type="submit" variant="blue" size="xl" className="w-full sm:w-auto">
@@ -146,7 +147,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
         if (!open) setIsWideModal(false);
       }}>
         <DialogContent className={`max-w-[calc(100%-2rem)] rounded-lg transition-all duration-300 ease-in-out ${isWideModal ? 'sm:max-w-2xl' : 'sm:max-w-md'}`}>
-          <IsoAuthModal 
+          <IsoAuthModal
             onLoginSuccess={handleAuthSuccess}
             disclaimerMessage="In order to underwrite a property, either log in or create an account."
             onTabChange={(tab) => setIsWideModal(tab === 'signup')}
@@ -156,7 +157,7 @@ export function Hero({ onCheckEligibility }: HeroProps) {
 
       <Dialog open={showPendingModal} onOpenChange={setShowPendingModal}>
         <DialogContent className="sm:max-w-md">
-          <IsoAuthModal 
+          <IsoAuthModal
             initialView="account-pending"
           />
         </DialogContent>

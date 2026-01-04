@@ -3,19 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Copy, Check, CheckCircle2 } from 'lucide-react';
+import { Copy, Check, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/heaCalculator';
+import { supabase } from '@/integrations/supabase/client';
 
 interface OfferLinkModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   offerLink: string;
   maxInvestment: number;
+  dealId: string | null;
 }
 
-export function OfferLinkModal({ open, onOpenChange, offerLink, maxInvestment }: OfferLinkModalProps) {
+export function OfferLinkModal({ open, onOpenChange, offerLink, maxInvestment, dealId }: OfferLinkModalProps) {
   const [copied, setCopied] = useState(false);
+  const [isOpeningLink, setIsOpeningLink] = useState(false);
   const navigate = useNavigate();
 
   const handleCopy = async () => {
@@ -26,6 +29,38 @@ export function OfferLinkModal({ open, onOpenChange, offerLink, maxInvestment }:
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       toast.error('Failed to copy link');
+    }
+  };
+
+  const handleOpenLink = async () => {
+    if (!dealId) {
+      // Just open the link if no dealId
+      window.open(offerLink, '_blank');
+      return;
+    }
+
+    setIsOpeningLink(true);
+    try {
+      // Update the deal status to "Offer Link Clicked"
+      const { error } = await supabase
+        .from('deals')
+        .update({ everflow_event_status: 'Offer Link Clicked' })
+        .eq('id', dealId);
+
+      if (error) {
+        console.error('Error updating deal status:', error);
+        toast.error('Failed to update deal status');
+      } else {
+        toast.success('Deal status updated!');
+      }
+
+      // Open the link in a new tab
+      window.open(offerLink, '_blank');
+    } catch (err) {
+      console.error('Error opening link:', err);
+      toast.error('An error occurred');
+    } finally {
+      setIsOpeningLink(false);
     }
   };
 
@@ -81,8 +116,25 @@ export function OfferLinkModal({ open, onOpenChange, offerLink, maxInvestment }:
             </Button>
           </div>
 
-          {/* Done button */}
-          <div className="flex justify-end">
+          {/* Action buttons */}
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={handleOpenLink}
+              disabled={isOpeningLink}
+            >
+              {isOpeningLink ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Opening...
+                </>
+              ) : (
+                <>
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Open Link
+                </>
+              )}
+            </Button>
             <Button variant="default" onClick={() => {
               onOpenChange(false);
               navigate('/pipeline');
@@ -95,3 +147,4 @@ export function OfferLinkModal({ open, onOpenChange, offerLink, maxInvestment }:
     </Dialog>
   );
 }
+

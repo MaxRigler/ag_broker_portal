@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Loader2, User, Columns3, Users, LogOut, ChevronDown } from "lucide-react";
+import { ArrowLeft, Loader2, User, Columns3, Users, LogOut, ChevronDown, RefreshCw } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PipelineColumn } from "@/components/pipeline/PipelineColumn";
 import { usePipelineDeals, groupDealsByStage, PIPELINE_STAGES } from "@/hooks/usePipelineDeals";
@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 export default function Pipeline() {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut, userStatus, userRole } = useAuth();
-  const { data: deals, isLoading, error } = usePipelineDeals();
+  const { data: deals, isLoading, error, syncDeals, isSyncing } = usePipelineDeals();
   const [profile, setProfile] = useState<{ full_name: string | null; company_name: string | null } | null>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -79,6 +79,20 @@ export default function Pipeline() {
                 Track deals across all stages
               </p>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => deals && syncDeals(deals)}
+              disabled={isSyncing || isLoading}
+              className="ml-4 gap-2"
+            >
+              {isSyncing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              {isSyncing ? "Syncing..." : "Refresh Status"}
+            </Button>
           </div>
 
           {/* Profile Button */}
@@ -108,20 +122,20 @@ export default function Pipeline() {
                   </p>
                 </div>
               </div>
-              
+
               <Separator className="my-2" />
-              
+
               <div className="space-y-1 mb-2">
                 <p className="text-xs text-muted-foreground">Account Status</p>
                 {getStatusBadge()}
               </div>
-              
+
               <Separator className="my-2" />
-              
+
               <div className="flex flex-col gap-1">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="w-full justify-start bg-accent/50"
                   onClick={() => {
                     setIsPopoverOpen(false);
@@ -131,11 +145,11 @@ export default function Pipeline() {
                   <Columns3 className="w-4 h-4 mr-2" />
                   View Pipeline
                 </Button>
-                
+
                 {userRole === 'manager' && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="w-full justify-start"
                     onClick={() => {
                       setIsPopoverOpen(false);
@@ -147,12 +161,12 @@ export default function Pipeline() {
                   </Button>
                 )}
               </div>
-              
+
               <Separator className="my-2" />
-              
-              <Button 
-                variant="ghost" 
-                size="sm" 
+
+              <Button
+                variant="ghost"
+                size="sm"
                 className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={() => {
                   setIsPopoverOpen(false);

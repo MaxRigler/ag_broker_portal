@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const PIPELINE_STAGES = [
@@ -30,7 +30,9 @@ interface Deal {
 }
 
 export function usePipelineDeals() {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
     queryKey: ["pipeline-deals"],
     queryFn: async () => {
       // RLS policy handles filtering based on user role
@@ -49,7 +51,7 @@ export function usePipelineDeals() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      
+
       // Transform data to flatten the profiles join
       return (data || []).map((deal: any) => ({
         id: deal.id,
@@ -64,11 +66,36 @@ export function usePipelineDeals() {
       })) as Deal[];
     },
   });
+
+  const syncMutation = useMutation({
+    mutationFn: async (deals: Deal[]) => {
+      if (!deals.length) return;
+
+      // Sync in parallel
+      const results = await Promise.allSettled(
+        deals.map(async (deal) => {
+          const { data, error } = await supabase.functions.invoke('sync-everflow-status', {
+            body: { deal_id: deal.id }
+          });
+          if (error) throw error;
+          return data;
+        })
+      );
+
+      return results;
+    },
+    onSuccess: () => {
+      // Refetch stats to update UI
+      queryClient.invalidateQueries({ queryKey: ["pipeline-deals"] });
+    }
+  });
+
+  return { ...query, syncDeals: syncMutation.mutateAsync, isSyncing: syncMutation.isPending };
 }
 
 export function groupDealsByStage(deals: Deal[] | undefined) {
   const grouped: Record<PipelineStage, Deal[]> = {} as Record<PipelineStage, Deal[]>;
-  
+
   // Initialize all stages with empty arrays
   PIPELINE_STAGES.forEach((stage) => {
     grouped[stage] = [];

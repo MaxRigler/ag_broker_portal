@@ -7,3 +7,9 @@ verify_jwt = false
 
 [functions.atom-property-lookup]
 verify_jwt = false
+
+[functions.everflow-postback]
+verify_jwt = false
+
+[functions.sync-everflow-status]
+verify_jwt = false

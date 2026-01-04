@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 
 interface AddressAutocompleteProps {
   onSelect: (address: string) => void;
+  onChange?: (value: string) => void;
   placeholder?: string;
 }
 
@@ -13,14 +14,14 @@ interface Prediction {
   description: string;
 }
 
-export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Property Address" }: AddressAutocompleteProps) {
+export function AddressAutocomplete({ onSelect, onChange, placeholder = "Enter Client's Property Address" }: AddressAutocompleteProps) {
   const [inputValue, setInputValue] = useState('');
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  
+
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -67,7 +68,7 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
 
     // Create unique callback name
     const callbackName = `initGoogleMapsAutocomplete_${Date.now()}`;
-    
+
     // Set up the callback BEFORE loading the script
     (window as any)[callbackName] = () => {
       if (initializeService()) {
@@ -145,6 +146,9 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
     const value = e.target.value;
     setInputValue(value);
 
+    // Notify parent of the change
+    onChange?.(value);
+
     // Debounce API calls
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -169,13 +173,13 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setHighlightedIndex(prev => 
+        setHighlightedIndex(prev =>
           prev < predictions.length - 1 ? prev + 1 : 0
         );
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setHighlightedIndex(prev => 
+        setHighlightedIndex(prev =>
           prev > 0 ? prev - 1 : predictions.length - 1
         );
         break;
@@ -205,7 +209,7 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
         className="pl-12 h-14 bg-card border-0 text-foreground placeholder:text-muted-foreground text-base"
         autoComplete="off"
       />
-      
+
       {isOpen && predictions.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-border rounded-lg shadow-xl overflow-hidden z-[9999] isolate">
           {predictions.map((prediction, index) => (
@@ -214,24 +218,23 @@ export function AddressAutocomplete({ onSelect, placeholder = "Enter Client's Pr
               type="button"
               onClick={() => handleSelect(prediction)}
               onMouseEnter={() => setHighlightedIndex(index)}
-              className={`w-full px-4 py-3 text-left text-foreground transition-colors ${
-                index === highlightedIndex 
-                  ? 'bg-slate-100 dark:bg-slate-800' 
+              className={`w-full px-4 py-3 text-left text-foreground transition-colors ${index === highlightedIndex
+                  ? 'bg-slate-100 dark:bg-slate-800'
                   : 'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
-              }`}
+                }`}
             >
               {prediction.description}
             </button>
           ))}
         </div>
       )}
-      
+
       {loadError && (
         <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-white dark:bg-slate-900 border border-destructive/20 rounded-lg text-destructive text-sm z-[9999] isolate">
           {loadError}
         </div>
       )}
-      
+
       {!isLoaded && !loadError && inputValue.trim() && (
         <div className="absolute top-full left-0 right-0 mt-2 px-4 py-3 bg-white dark:bg-slate-900 border border-border rounded-lg text-muted-foreground text-sm z-[9999] isolate">
           Loading address suggestions...

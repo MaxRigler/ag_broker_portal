@@ -100,6 +100,7 @@ export function WizardStep2({
   const [hpaRate, setHpaRate] = useState(0.03);
   const [showOfferLinkModal, setShowOfferLinkModal] = useState(false);
   const [generatedOfferLink, setGeneratedOfferLink] = useState('');
+  const [generatedDealId, setGeneratedDealId] = useState<string | null>(null);
   const [isCreatingDeal, setIsCreatingDeal] = useState(false);
 
   // Trigger confetti animation on mount (property pre-qualified)
@@ -115,7 +116,7 @@ export function WizardStep2({
     setIsCreatingDeal(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         toast.error('You must be logged in to generate an offer link');
         return;
@@ -204,6 +205,7 @@ export function WizardStep2({
       }
 
       setGeneratedOfferLink(offerLink);
+      setGeneratedDealId(newDeal.id);
       setShowOfferLinkModal(true);
       toast.success('Offer link generated successfully!');
     } catch (err) {
@@ -214,184 +216,185 @@ export function WizardStep2({
     }
   };
   return <div className="space-y-6">
-      {/* Main Content - Two Column on Desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column: Pre-Qualified Funding Card */}
-        <div className="p-6 bg-secondary rounded-xl border border-border">
-          {/* Property Qualified Headline */}
-          <div className="flex items-center gap-2 mb-4">
-            <CheckCircle2 className="w-6 h-6 text-[hsl(var(--success))]" />
-            <span className="text-lg font-bold text-[hsl(var(--success))]">Property Pre-Qualified</span>
-          </div>
-
-          {/* Top Row: Two columns for funding and payment */}
-          <div className="flex gap-4 mb-4">
-            <div className="flex-[2]">
-              <p className="text-xs text-foreground/70 font-medium mb-1">Maximum Funding</p>
-              <p className="text-3xl md:text-4xl font-bold text-[hsl(var(--success))]">
-                {formatCurrency(maxInvestment)}
-              </p>
-            </div>
-            <div className="flex-1">
-              <p className="text-[10px] text-foreground/70 font-medium mb-1 whitespace-nowrap">Monthly Payment</p>
-              <p className="text-xl md:text-2xl font-bold text-muted-foreground">
-                $0.00
-              </p>
-            </div>
-          </div>
-          
-          {/* Description */}
-          <p className="text-xs text-muted-foreground">
-            Your client's {getStateName(state)} property may be approved for an Equity Advance of up to {formatCurrency(maxInvestment)} with no monthly payments for up to 10 years.
-          </p>
+    {/* Main Content - Two Column on Desktop */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Left Column: Pre-Qualified Funding Card */}
+      <div className="p-6 bg-secondary rounded-xl border border-border">
+        {/* Property Qualified Headline */}
+        <div className="flex items-center gap-2 mb-4">
+          <CheckCircle2 className="w-6 h-6 text-[hsl(var(--success))]" />
+          <span className="text-lg font-bold text-[hsl(var(--success))]">Property Pre-Qualified</span>
         </div>
 
-        {/* Right Column: Property Qualified Card - Shows on Desktop and Mobile */}
-        <div className="p-6 bg-[hsl(var(--success))]/10 rounded-xl border border-[hsl(var(--success))]/30">
-            
-            {/* Qualification Criteria */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Eligible State: {getStateName(state)}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Eligible Property Type: {propertyType}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Ownership Type: {ownershipType}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Home Value: {formatCurrency(homeValue)}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">CLTV: {currentCLTV.toFixed(1)}% (under 80% max)</span>
-              </div>
-            </div>
+        {/* Top Row: Two columns for funding and payment */}
+        <div className="flex gap-4 mb-4">
+          <div className="flex-[2]">
+            <p className="text-xs text-foreground/70 font-medium mb-1">Maximum Funding</p>
+            <p className="text-3xl md:text-4xl font-bold text-[hsl(var(--success))]">
+              {formatCurrency(maxInvestment)}
+            </p>
           </div>
+          <div className="flex-1">
+            <p className="text-[10px] text-foreground/70 font-medium mb-1 whitespace-nowrap">Monthly Payment</p>
+            <p className="text-xl md:text-2xl font-bold text-muted-foreground">
+              $0.00
+            </p>
+          </div>
+        </div>
+
+        {/* Description */}
+        <p className="text-xs text-muted-foreground">
+          Your client's {getStateName(state)} property may be approved for an Equity Advance of up to {formatCurrency(maxInvestment)} with no monthly payments for up to 10 years.
+        </p>
       </div>
 
-      {/* Info Boxes Row */}
-      <div className={`grid gap-4 ${isMobile ? 'grid-cols-2' : 'grid-cols-3'}`}>
-        {/* Property Address - Desktop Only */}
-        {!isMobile && <div className="p-4 bg-secondary rounded-xl border border-border">
-            <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm text-foreground/70 font-medium">Property Address</p>
-                <p className="text-sm font-bold text-muted-foreground mt-1">{address}</p>
-              </div>
-            </div>
-          </div>}
-        
-        {/* Estimated Property Value */}
-        <div className="p-4 bg-secondary rounded-xl border border-border">
-          <div className="flex items-start gap-3">
-            <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm text-foreground/70 font-medium line-clamp-2">Est Property Value</p>
-              <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(homeValue)}</p>
-            </div>
+      {/* Right Column: Property Qualified Card - Shows on Desktop and Mobile */}
+      <div className="p-6 bg-[hsl(var(--success))]/10 rounded-xl border border-[hsl(var(--success))]/30">
+
+        {/* Qualification Criteria */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
+            <span className="text-sm text-muted-foreground">Eligible State: {getStateName(state)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
+            <span className="text-sm text-muted-foreground">Eligible Property Type: {propertyType}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
+            <span className="text-sm text-muted-foreground">Ownership Type: {ownershipType}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
+            <span className="text-sm text-muted-foreground">Home Value: {formatCurrency(homeValue)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))] flex-shrink-0" />
+            <span className="text-sm text-muted-foreground">CLTV: {currentCLTV.toFixed(1)}% (under 80% max)</span>
           </div>
         </div>
-        
-        {/* Mortgage */}
-        <div className="p-4 bg-secondary rounded-xl border border-border">
-          <div className="flex items-start gap-3">
-            <DollarSign className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm text-foreground/70 font-medium line-clamp-2">Est Mortgage Balance</p>
-              <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(mortgageBalance)}</p>
-            </div>
+      </div>
+    </div>
+
+    {/* Info Boxes Row */}
+    <div className={`grid gap-4 ${isMobile ? 'grid-cols-2' : 'grid-cols-3'}`}>
+      {/* Property Address - Desktop Only */}
+      {!isMobile && <div className="p-4 bg-secondary rounded-xl border border-border">
+        <div className="flex items-start gap-3">
+          <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-sm text-foreground/70 font-medium">Property Address</p>
+            <p className="text-sm font-bold text-muted-foreground mt-1">{address}</p>
+          </div>
+        </div>
+      </div>}
+
+      {/* Estimated Property Value */}
+      <div className="p-4 bg-secondary rounded-xl border border-border">
+        <div className="flex items-start gap-3">
+          <Home className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-sm text-foreground/70 font-medium line-clamp-2">Est Property Value</p>
+            <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(homeValue)}</p>
           </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      {isMobile ? (
-        // Mobile Layout: Generate Offer Link on top, Back + Estimator below
-        <div className="flex flex-col gap-3">
-          <Button 
-            variant="success" 
-            onClick={handleGenerateOffers} 
-            className="w-full"
-            disabled={isCreatingDeal}
-          >
-            {isCreatingDeal ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Creating Deal...
-              </>
-            ) : (
-              <>
-                Generate Offer Link
-                <Share2 className="h-4 w-4 ml-2" />
-              </>
-            )}
-          </Button>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={onBack} className="flex-1 text-muted-foreground" disabled={isCreatingDeal}>
-              Back
-            </Button>
-            <Button variant="blue" onClick={handleCalculator} className="flex-1 text-white" disabled={isCreatingDeal}>
-              Estimator
-            </Button>
+      {/* Mortgage */}
+      <div className="p-4 bg-secondary rounded-xl border border-border">
+        <div className="flex items-start gap-3">
+          <DollarSign className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-sm text-foreground/70 font-medium line-clamp-2">Est Mortgage Balance</p>
+            <p className="text-lg font-bold text-muted-foreground mt-1">{formatCurrency(mortgageBalance)}</p>
           </div>
         </div>
-      ) : (
-        // Desktop Layout: Back, Estimator, Generate Offer Link in a row
+      </div>
+    </div>
+
+    {/* Action Buttons */}
+    {isMobile ? (
+      // Mobile Layout: Generate Offer Link on top, Back + Estimator below
+      <div className="flex flex-col gap-3">
+        <Button
+          variant="success"
+          onClick={handleGenerateOffers}
+          className="w-full"
+          disabled={isCreatingDeal}
+        >
+          {isCreatingDeal ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Creating Deal...
+            </>
+          ) : (
+            <>
+              Generate Offer Link
+              <Share2 className="h-4 w-4 ml-2" />
+            </>
+          )}
+        </Button>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={onBack} className="text-muted-foreground" disabled={isCreatingDeal}>
+          <Button variant="outline" onClick={onBack} className="flex-1 text-muted-foreground" disabled={isCreatingDeal}>
             Back
           </Button>
-          <Button variant="blue" onClick={handleCalculator} className="text-white" disabled={isCreatingDeal}>
+          <Button variant="blue" onClick={handleCalculator} className="flex-1 text-white" disabled={isCreatingDeal}>
             Estimator
           </Button>
-          <Button 
-            variant="success" 
-            onClick={handleGenerateOffers} 
-            className="flex-1"
-            disabled={isCreatingDeal}
-          >
-            {isCreatingDeal ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Creating Deal...
-              </>
-            ) : (
-              <>
-                Generate Offer Link
-                <Share2 className="h-4 w-4 ml-2" />
-              </>
-            )}
-          </Button>
         </div>
-      )}
+      </div>
+    ) : (
+      // Desktop Layout: Back, Estimator, Generate Offer Link in a row
+      <div className="flex gap-3">
+        <Button variant="outline" onClick={onBack} className="text-muted-foreground" disabled={isCreatingDeal}>
+          Back
+        </Button>
+        <Button variant="blue" onClick={handleCalculator} className="text-white" disabled={isCreatingDeal}>
+          Estimator
+        </Button>
+        <Button
+          variant="success"
+          onClick={handleGenerateOffers}
+          className="flex-1"
+          disabled={isCreatingDeal}
+        >
+          {isCreatingDeal ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Creating Deal...
+            </>
+          ) : (
+            <>
+              Generate Offer Link
+              <Share2 className="h-4 w-4 ml-2" />
+            </>
+          )}
+        </Button>
+      </div>
+    )}
 
-      {/* Settlement Estimator Modal */}
-      <SettlementEstimator
-        homeValue={homeValue}
-        maxInvestment={maxInvestment}
-        fundingAmount={fundingAmount}
-        setFundingAmount={setFundingAmount}
-        settlementYear={settlementYear}
-        setSettlementYear={setSettlementYear}
-        hpaRate={hpaRate}
-        setHpaRate={setHpaRate}
-        open={showCalculator}
-        onOpenChange={setShowCalculator}
-      />
+    {/* Settlement Estimator Modal */}
+    <SettlementEstimator
+      homeValue={homeValue}
+      maxInvestment={maxInvestment}
+      fundingAmount={fundingAmount}
+      setFundingAmount={setFundingAmount}
+      settlementYear={settlementYear}
+      setSettlementYear={setSettlementYear}
+      hpaRate={hpaRate}
+      setHpaRate={setHpaRate}
+      open={showCalculator}
+      onOpenChange={setShowCalculator}
+    />
 
-      {/* Offer Link Modal */}
-      <OfferLinkModal
-        open={showOfferLinkModal}
-        onOpenChange={setShowOfferLinkModal}
-        offerLink={generatedOfferLink}
-        maxInvestment={maxInvestment}
-      />
-    </div>;
+    {/* Offer Link Modal */}
+    <OfferLinkModal
+      open={showOfferLinkModal}
+      onOpenChange={setShowOfferLinkModal}
+      offerLink={generatedOfferLink}
+      maxInvestment={maxInvestment}
+      dealId={generatedDealId}
+    />
+  </div>;
 }
