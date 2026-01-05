@@ -175,6 +175,18 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
       return;
     }
 
+    // If we have a session immediately (email confirmation disabled), treat as login
+    if (data.session) {
+      toast({
+        title: "Account created!",
+        description: "Welcome to Equity Advance.",
+      });
+
+      onLoginSuccess?.();
+      return;
+    }
+
+    // Otherwise, show the pending view (email confirmation enabled)
     // Try to create their Everflow affiliate right away (if we have an authenticated session).
     const userId = data.user?.id;
     if (userId) {
