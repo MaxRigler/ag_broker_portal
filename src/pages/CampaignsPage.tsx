@@ -117,7 +117,8 @@ export default function CampaignsPage() {
 
         let everflowData = {
             everflow_encoded_value: profile.everflow_encoded_value,
-            everflow_tracking_domain: profile.everflow_tracking_domain
+            everflow_tracking_domain: profile.everflow_tracking_domain,
+            role: profile.role
         };
 
         // If officer, use parent's Everflow config
@@ -135,7 +136,8 @@ export default function CampaignsPage() {
 
             everflowData = {
                 everflow_encoded_value: parentProfile.everflow_encoded_value,
-                everflow_tracking_domain: parentProfile.everflow_tracking_domain
+                everflow_tracking_domain: parentProfile.everflow_tracking_domain,
+                role: profile.role // Keep original role (officer)
             };
         }
 
@@ -181,9 +183,11 @@ export default function CampaignsPage() {
             }
 
             // Generate offer link with sub4 for campaign tracking
-            // Format: https://[tracking_domain]/[encoded_value]/[OFFER_HASH]/?sub4=[CAMPAIGN_ID]
+            // Format: https://[tracking_domain]/[encoded_value]/[OFFER_HASH]/?sub4=[CAMPAIGN_ID]&sub3=[OFFICER_ID]
             const OFFER_HASH = '2CTPL';
-            const offerLink = `https://${everflowConfig.everflow_tracking_domain}/${everflowConfig.everflow_encoded_value}/${OFFER_HASH}/?sub4=${newCampaign.id}`;
+            // Include sub3 (officer ID) only if user is an officer - enables granular tracking
+            const sub3Param = everflowConfig.role === 'officer' ? `&sub3=${user.id}` : '';
+            const offerLink = `https://${everflowConfig.everflow_tracking_domain}/${everflowConfig.everflow_encoded_value}/${OFFER_HASH}/?sub4=${newCampaign.id}${sub3Param}`;
 
             // Update campaign with the generated link
             const { error: updateError } = await supabase

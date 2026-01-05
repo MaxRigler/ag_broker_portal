@@ -31,35 +31,35 @@ export default function OfficerSignup() {
   });
 
   useEffect(() => {
+    const validateInviteToken = async () => {
+      if (!inviteToken) {
+        setValidating(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('full_name, company_name')
+          .eq('invite_token', inviteToken)
+          .eq('role', 'manager')
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+          setIsValidToken(true);
+          setManagerInfo(data);
+        }
+      } catch (error) {
+        console.error('Error validating invite token:', error);
+      } finally {
+        setValidating(false);
+      }
+    };
+
     validateInviteToken();
   }, [inviteToken]);
-
-  const validateInviteToken = async () => {
-    if (!inviteToken) {
-      setValidating(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('full_name, company_name')
-        .eq('invite_token', inviteToken)
-        .eq('role', 'manager')
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (data) {
-        setIsValidToken(true);
-        setManagerInfo(data);
-      }
-    } catch (error) {
-      console.error('Error validating invite token:', error);
-    } finally {
-      setValidating(false);
-    }
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({

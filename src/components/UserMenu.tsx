@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { IsoAuthModal } from "@/components/IsoAuthModal";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { User, Columns3, Users, LogOut, Upload, ChevronDown, UserCog, Megaphone } from "lucide-react";
@@ -20,6 +22,8 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
     const { user, signOut, userStatus, userRole } = useAuth();
     const [profile, setProfile] = useState<{ full_name: string | null; company_name: string | null } | null>(null);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+    const [showPendingModal, setShowPendingModal] = useState(false);
+    const [isWideModal, setIsWideModal] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -33,6 +37,15 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
         };
         fetchProfile();
     }, [user]);
+
+    const handleNavigation = (path: string) => {
+        setIsPopoverOpen(false);
+        if (userStatus === 'pending') {
+            setShowPendingModal(true);
+        } else {
+            navigate(path);
+        }
+    };
 
     const getStatusBadge = () => {
         switch (userStatus) {
@@ -53,136 +66,137 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
     const displayCompany = profile?.company_name || '';
 
     return (
-        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant={variant === "navy" ? "navy" : "ghost"}
-                    size={size}
-                    className={`flex items-center gap-2 ${className}`}
-                >
-                    {variant === "navy" ? (
-                        <>
-                            <User className="w-4 h-4" />
-                            <span className="flex flex-col items-start text-left leading-tight">
-                                <span className="text-sm font-semibold">{displayName}</span>
-                                {displayCompany && <span className="text-xs opacity-80">{displayCompany}</span>}
-                            </span>
-                        </>
-                    ) : (
-                        <>
-                            <User className="w-4 h-4 text-muted-foreground" />
-                            <span className="hidden sm:inline text-sm font-medium">
-                                {displayName}
-                            </span>
-                        </>
-                    )}
-
-                    {showArrow && <ChevronDown className={`w-4 h-4 ${variant === "navy" ? "opacity-50" : "text-muted-foreground"}`} />}
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64" align="end">
-                <div className="flex flex-col mb-3">
-                    <p className="font-medium truncate">
-                        {displayName}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                        {displayCompany || user.email}
-                    </p>
-                </div>
-
-                <Separator className="my-2" />
-
-                <div className="space-y-1 mb-2">
-                    <p className="text-xs text-muted-foreground">Account Status</p>
-                    {getStatusBadge()}
-                </div>
-
-                <Separator className="my-2" />
-
-                <div className="flex flex-col gap-1">
+        <>
+            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                <PopoverTrigger asChild>
                     <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start"
-                        onClick={() => {
-                            setIsPopoverOpen(false);
-                            navigate('/profile');
-                        }}
+                        variant={variant === "navy" ? "navy" : "ghost"}
+                        size={size}
+                        className={`flex items-center gap-2 ${className}`}
                     >
-                        <UserCog className="w-4 h-4 mr-2" />
-                        Profile Settings
-                    </Button>
+                        {variant === "navy" ? (
+                            <>
+                                <User className="w-4 h-4" />
+                                <span className="flex flex-col items-start text-left leading-tight">
+                                    <span className="text-sm font-semibold">{displayName}</span>
+                                    {displayCompany && <span className="text-xs opacity-80">{displayCompany}</span>}
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                <User className="w-4 h-4 text-muted-foreground" />
+                                <span className="hidden sm:inline text-sm font-medium">
+                                    {displayName}
+                                </span>
+                            </>
+                        )}
 
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start"
-                        onClick={() => {
-                            setIsPopoverOpen(false);
-                            navigate('/pipeline');
-                        }}
-                    >
-                        <Columns3 className="w-4 h-4 mr-2" />
-                        View Pipeline
+                        {showArrow && <ChevronDown className={`w-4 h-4 ${variant === "navy" ? "opacity-50" : "text-muted-foreground"}`} />}
                     </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64" align="end">
+                    <div className="flex flex-col mb-3">
+                        <p className="font-medium truncate">
+                            {displayName}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                            {displayCompany || user.email}
+                        </p>
+                    </div>
 
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start"
-                        onClick={() => {
-                            setIsPopoverOpen(false);
-                            navigate('/bulk-import');
-                        }}
-                    >
-                        <Upload className="w-4 h-4 mr-2" />
-                        Bulk PreQual
-                    </Button>
+                    <Separator className="my-2" />
 
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start"
-                        onClick={() => {
-                            setIsPopoverOpen(false);
-                            navigate('/campaigns');
-                        }}
-                    >
-                        <Megaphone className="w-4 h-4 mr-2" />
-                        Campaigns
-                    </Button>
+                    <div className="space-y-1 mb-2">
+                        <p className="text-xs text-muted-foreground">Account Status</p>
+                        {getStatusBadge()}
+                    </div>
 
-                    {userRole === 'manager' && (
+                    <Separator className="my-2" />
+
+                    <div className="flex flex-col gap-1">
                         <Button
                             variant="ghost"
                             size="sm"
                             className="w-full justify-start"
-                            onClick={() => {
-                                setIsPopoverOpen(false);
-                                navigate('/team');
-                            }}
+                            onClick={() => handleNavigation('/profile')}
                         >
-                            <Users className="w-4 h-4 mr-2" />
-                            Manage Team
+                            <UserCog className="w-4 h-4 mr-2" />
+                            Profile Settings
                         </Button>
-                    )}
-                </div>
 
-                <Separator className="my-2" />
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full justify-start"
+                            onClick={() => handleNavigation('/pipeline')}
+                        >
+                            <Columns3 className="w-4 h-4 mr-2" />
+                            View Pipeline
+                        </Button>
 
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-                    onClick={() => {
-                        setIsPopoverOpen(false);
-                        signOut();
-                    }}
-                >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
-                </Button>
-            </PopoverContent>
-        </Popover>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full justify-start"
+                            onClick={() => handleNavigation('/bulk-import')}
+                        >
+                            <Upload className="w-4 h-4 mr-2" />
+                            Bulk PreQual
+                        </Button>
+
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full justify-start"
+                            onClick={() => handleNavigation('/campaigns')}
+                        >
+                            <Megaphone className="w-4 h-4 mr-2" />
+                            Campaigns
+                        </Button>
+
+                        {userRole === 'manager' && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full justify-start"
+                                onClick={() => handleNavigation('/team')}
+                            >
+                                <Users className="w-4 h-4 mr-2" />
+                                Manage Team
+                            </Button>
+                        )}
+                    </div>
+
+                    <Separator className="my-2" />
+
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => {
+                            setIsPopoverOpen(false);
+                            signOut();
+                        }}
+                    >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                    </Button>
+                </PopoverContent>
+            </Popover>
+
+            <Dialog open={showPendingModal} onOpenChange={(open) => {
+                setShowPendingModal(open);
+                if (!open) {
+                    setIsWideModal(false);
+                }
+            }}>
+                <DialogContent className={`max-w-[calc(100%-2rem)] rounded-lg transition-all duration-300 ease-in-out ${isWideModal ? 'sm:max-w-2xl' : 'sm:max-w-md'}`}>
+                    <IsoAuthModal
+                        initialView="account-pending"
+                        onTabChange={(tab) => setIsWideModal(tab === 'signup')}
+                    />
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }

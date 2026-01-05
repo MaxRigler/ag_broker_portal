@@ -190,9 +190,11 @@ export function WizardStep2({
       }
 
       // Construct the offer link
-      // Format: https://[tracking_domain]/[encoded_value]/[OFFER_HASH]/?sub5=[DEAL_ID]
+      // Format: https://[tracking_domain]/[encoded_value]/[OFFER_HASH]/?sub5=[DEAL_ID]&sub3=[OFFICER_ID]
       const OFFER_HASH = '2CTPL';
-      const offerLink = `https://${everflowData.everflow_tracking_domain}/${everflowData.everflow_encoded_value}/${OFFER_HASH}/?sub5=${newDeal.id}`;
+      // Include sub3 (officer ID) only if user is an officer - enables granular tracking
+      const sub3Param = userProfile.role === 'officer' ? `&sub3=${user.id}` : '';
+      const offerLink = `https://${everflowData.everflow_tracking_domain}/${everflowData.everflow_encoded_value}/${OFFER_HASH}/?sub5=${newDeal.id}${sub3Param}`;
 
       // Save the offer link to the deal record
       const { error: updateError } = await supabase

@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
-import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, AlertCircle, TrendingUp, X, DollarSign, Calendar, RefreshCw, Home, Percent } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, MapPin, Building, User, AlertCircle, TrendingUp, X, DollarSign, Calendar, RefreshCw, Home, Percent, RotateCcw } from 'lucide-react';
 import { ELIGIBLE_STATES, INELIGIBLE_PROPERTY_TYPES, INELIGIBLE_OWNERSHIP_TYPES, validateProperty, formatCurrency, formatPercentage, calculateMaxInvestment, calculateHEACost } from '@/lib/heaCalculator';
 import { lookupProperty, detectOwnershipType } from '@/lib/api/atom';
 import { toast } from 'sonner';
@@ -395,16 +396,32 @@ export function WizardStep1({
   return (
     <div className="space-y-4">
       {/* API Error Alert */}
-      {apiError && (
-        <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-medium text-destructive">Failed to load property data</p>
-            <p className="text-sm text-destructive/80">{apiError}</p>
-            <p className="text-sm text-muted-foreground mt-1">Please verify the address or enter values manually below.</p>
+      {/* API Error Modal */}
+      <Dialog open={!!apiError} onOpenChange={(open) => !open && onBack()}>
+        <DialogContent className="sm:max-w-md" hideCloseButton>
+          <div className="flex flex-col items-center justify-center text-center p-4">
+            <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+              <AlertCircle className="w-6 h-6 text-destructive" />
+            </div>
+
+            <h2 className="text-xl font-semibold text-foreground mb-2">Invalid Property Type</h2>
+
+            <div className="space-y-2 mb-6">
+              <p className="text-sm text-muted-foreground">
+                We failed to load property data for this address.
+              </p>
+              <p className="text-xs text-destructive bg-destructive/5 px-2 py-1 rounded">
+                Edge Function returned a non-200 status code
+              </p>
+            </div>
+
+            <Button onClick={onBack} className="w-full">
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Try Again
+            </Button>
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* Desktop Layout */}
       <div className="hidden md:block">

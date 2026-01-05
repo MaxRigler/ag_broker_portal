@@ -153,6 +153,16 @@ export function AddressAutocomplete({ onSelect, onChange, placeholder = "Enter C
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    // Only allow numbers as the first character
+    if (value.length === 1 && !/^\d$/.test(value)) {
+      return;
+    }
+
+    // If there's content, ensure it starts with a number (handles paste)
+    if (value.length > 0 && !/^\d/.test(value)) {
+      return;
+    }
+
     setInputValue(value);
 
     // Notify parent of the change

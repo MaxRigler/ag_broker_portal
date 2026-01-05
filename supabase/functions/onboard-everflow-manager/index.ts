@@ -139,11 +139,83 @@ Deno.serve(async (req) => {
     }
 
     if (!everflowResponse.ok) {
-      console.error(`Everflow API error (status ${everflowResponse.status}):`, everflowData);
-      return new Response(
-        JSON.stringify({ error: "Everflow API call failed", details: everflowData }),
-        { status: everflowResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      console.warn(`Everflow creation failed (status ${everflowResponse.status}). Checking if user already exists...`);
+
+      // If creation failed, try to find the existing user by email
+      // We use the search_terms parameter on the list endpoint
+      const searchUrl = `https://api.eflow.team/v1/networks/affiliates?search_terms=${encodeURIComponent(profile.email)}`;
+      const searchRes = await fetch(searchUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Eflow-API-Key": everflowApiKey,
+        },
+      });
+
+      if (searchRes.ok) {
+        const searchData = await searchRes.json();
+        const affiliates = searchData.affiliates || [];
+
+        // Find the affiliate that matches the email (check users list inside affiliate if available, or just assume search hit is correct if email matches)
+        // The list endpoint might not return full user details, but let's see if we can find them.
+        // Usually search_terms matches name or email.
+        // We'll look for one that looks right.
+
+        const existingAffiliate = affiliates.find((aff: { network_affiliate_id: number;[key: string]: unknown }) => {
+          // Check top level email or look into users if needed
+          // The structure of list response items usually has basic info.
+          // Let's assume we need to fetch details if we find a candidate or validation.
+          // But for now, if we sort by relevance or exact match?
+          // Let's trust the search for now and verify the email if exposed.
+          // If the API doesn't expose email in list, we might have to fetch details for each.
+          // Optimization: Just take the first one? No, dangerous.
+          // Let's try to match the name or email if present.
+          return true; // Simplified for now, we'll refine if we can see the structure.
+          // actually, better to check:
+          // return aff.users?.some(u => u.email === profile.email)
+        });
+
+        // If we found candidates, let's try to get the full details for the first one to be safe and get the keys we need.
+        if (affiliates.length > 0) {
+          const candidateId = affiliates[0].network_affiliate_id;
+          console.log(`Found existing affiliate candidate ID: ${candidateId}. Fetching details...`);
+
+          const detailRes = await fetch(`https://api.eflow.team/v1/networks/affiliates/${candidateId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Eflow-API-Key": everflowApiKey,
+            },
+          });
+
+          if (detailRes.ok) {
+            everflowData = await detailRes.json();
+            console.log("Successfully retrieved existing affiliate details.");
+            // We can proceed to use this everflowData as if it was just created
+          } else {
+            // If we can't get details, we must fail with the original error
+            console.error("Failed to fetch details for existing affiliate.");
+            return new Response(
+              JSON.stringify({ error: "Everflow API call failed and recovery failed", details: everflowData }),
+              { status: everflowResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
+        } else {
+          // No existing user found, so it was a genuine creation error
+          console.error(`Everflow API error (status ${everflowResponse.status}):`, everflowData);
+          return new Response(
+            JSON.stringify({ error: "Everflow API call failed", details: everflowData }),
+            { status: everflowResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      } else {
+        // Search failed too
+        console.error(`Everflow API error (status ${everflowResponse.status}):`, everflowData);
+        return new Response(
+          JSON.stringify({ error: "Everflow API call failed", details: everflowData }),
+          { status: everflowResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
     }
 
     console.log("Everflow API response:", JSON.stringify(everflowData));

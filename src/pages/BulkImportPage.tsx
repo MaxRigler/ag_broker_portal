@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -51,7 +51,7 @@ export function BulkImportPage() {
     const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState('new');
 
-    const fetchBatches = async () => {
+    const fetchBatches = useCallback(async () => {
         if (!user) return;
 
         let query = supabase
@@ -79,11 +79,11 @@ export function BulkImportPage() {
         }
 
         if (data) setBatches(data as Batch[]);
-    };
+    }, [user, isAdmin]);
 
     useEffect(() => {
         fetchBatches();
-    }, [user, isAdmin]);
+    }, [fetchBatches]);
 
     const loadBatchDetails = async (batchId: string) => {
         const { data } = await supabase
@@ -124,7 +124,8 @@ export function BulkImportPage() {
         let everflowData = {
             everflow_id: userProfile.everflow_id,
             everflow_encoded_value: userProfile.everflow_encoded_value,
-            everflow_tracking_domain: userProfile.everflow_tracking_domain
+            everflow_tracking_domain: userProfile.everflow_tracking_domain,
+            role: userProfile.role
         };
 
         // If user is an Officer, fetch Everflow data from parent profile
@@ -143,7 +144,8 @@ export function BulkImportPage() {
             everflowData = {
                 everflow_id: parentProfile.everflow_id,
                 everflow_encoded_value: parentProfile.everflow_encoded_value,
-                everflow_tracking_domain: parentProfile.everflow_tracking_domain
+                everflow_tracking_domain: parentProfile.everflow_tracking_domain,
+                role: userProfile.role // Keep original role (officer)
             };
         }
 
@@ -288,7 +290,9 @@ export function BulkImportPage() {
 
                     // 5. Generate Link
                     const OFFER_HASH = '2CTPL';
-                    const offerLink = `https://${everflowConfig.everflow_tracking_domain}/${everflowConfig.everflow_encoded_value}/${OFFER_HASH}/?sub5=${newDeal.id}`;
+                    // Include sub3 (officer ID) only if user is an officer - enables granular tracking
+                    const sub3Param = everflowConfig.role === 'officer' ? `&sub3=${user.id}` : '';
+                    const offerLink = `https://${everflowConfig.everflow_tracking_domain}/${everflowConfig.everflow_encoded_value}/${OFFER_HASH}/?sub5=${newDeal.id}${sub3Param}`;
 
                     // Update Deal with Link
                     await supabase

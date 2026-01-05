@@ -26,44 +26,44 @@ export default function TeamManagement() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchManagerData = async () => {
+      try {
+        // Fetch manager's profile including invite token
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('invite_token, full_name, company_name')
+          .eq('id', user!.id)
+          .maybeSingle();
+
+        if (profileError) throw profileError;
+        setInviteToken(profileData?.invite_token);
+
+        // Fetch officers under this manager
+        const { data: officerData, error: officerError } = await supabase
+          .from('profiles')
+          .select('id, email, full_name, status, created_at')
+          .eq('parent_id', user!.id)
+          .eq('role', 'officer')
+          .order('created_at', { ascending: false });
+
+        if (officerError) throw officerError;
+        setOfficers(officerData || []);
+      } catch (error) {
+        console.error('Error fetching manager data:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load team data',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (user) {
       fetchManagerData();
     }
   }, [user]);
-
-  const fetchManagerData = async () => {
-    try {
-      // Fetch manager's profile including invite token
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('invite_token, full_name, company_name')
-        .eq('id', user!.id)
-        .maybeSingle();
-
-      if (profileError) throw profileError;
-      setInviteToken(profileData?.invite_token);
-
-      // Fetch officers under this manager
-      const { data: officerData, error: officerError } = await supabase
-        .from('profiles')
-        .select('id, email, full_name, status, created_at')
-        .eq('parent_id', user!.id)
-        .eq('role', 'officer')
-        .order('created_at', { ascending: false });
-
-      if (officerError) throw officerError;
-      setOfficers(officerData || []);
-    } catch (error) {
-      console.error('Error fetching manager data:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load team data',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getInviteLink = () => {
     if (!inviteToken) return '';

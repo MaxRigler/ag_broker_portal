@@ -30,29 +30,29 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setProfiles(data || []);
+      } catch (error) {
+        console.error('Error fetching profiles:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load user profiles',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchProfiles();
-  }, []);
-
-  const fetchProfiles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setProfiles(data || []);
-    } catch (error) {
-      console.error('Error fetching profiles:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load user profiles',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [toast]);
 
   const updateStatus = async (profileId: string, newStatus: UserStatus) => {
     setUpdating(profileId);
@@ -64,7 +64,7 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      setProfiles(profiles.map(p => 
+      setProfiles(profiles.map(p =>
         p.id === profileId ? { ...p, status: newStatus } : p
       ));
 
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const filterByStatus = (status: UserStatus) => 
+  const filterByStatus = (status: UserStatus) =>
     profiles.filter(p => p.status === status);
 
   const formatDate = (date: string | null) => {
