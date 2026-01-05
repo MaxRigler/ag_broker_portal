@@ -253,6 +253,80 @@ export type Database = {
             referencedColumns: ["id"]
           }
         ]
+      },
+      campaigns: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          platform: string
+          description: string | null
+          offer_link: string
+          is_active: boolean
+          total_clicks: number
+          application_created: number
+          application_qualified: number
+          estimate_prepared: number
+          application_completed: number
+          underwriting_submitted: number
+          review_requested: number
+          final_offer_presented: number
+          funds_disbursed: number
+          closed_lost: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          platform: string
+          description?: string | null
+          offer_link: string
+          is_active?: boolean
+          total_clicks?: number
+          application_created?: number
+          application_qualified?: number
+          estimate_prepared?: number
+          application_completed?: number
+          underwriting_submitted?: number
+          review_requested?: number
+          final_offer_presented?: number
+          funds_disbursed?: number
+          closed_lost?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          platform?: string
+          description?: string | null
+          offer_link?: string
+          is_active?: boolean
+          total_clicks?: number
+          application_created?: number
+          application_qualified?: number
+          estimate_prepared?: number
+          application_completed?: number
+          underwriting_submitted?: number
+          review_requested?: number
+          final_offer_presented?: number
+          funds_disbursed?: number
+          closed_lost?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {

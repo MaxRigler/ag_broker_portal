@@ -1,23 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Loader2, User, Columns3, Users, LogOut, ChevronDown, RefreshCw, Upload } from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PipelineColumn } from "@/components/pipeline/PipelineColumn";
-import { usePipelineDeals, groupDealsByStage, PIPELINE_STAGES } from "@/hooks/usePipelineDeals";
+import { usePipelineDeals, groupItemsByStage, PIPELINE_STAGES } from "@/hooks/usePipelineDeals";
 import { useAuth } from "@/hooks/useAuth";
 import { UserMenu } from "@/components/UserMenu";
-// import { supabase } from "@/integrations/supabase/client"; // Removed if no longer needed for profile fetch logic here
 
 export default function Pipeline() {
   const navigate = useNavigate();
-  const { user, loading: authLoading, signOut, userStatus, userRole } = useAuth();
-  const { data: deals, isLoading, error, syncDeals, isSyncing } = usePipelineDeals();
-  const [profile, setProfile] = useState<{ full_name: string | null; company_name: string | null } | null>(null);
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const { allItems, isLoading, error, syncDeals, isSyncing } = usePipelineDeals();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -25,12 +19,7 @@ export default function Pipeline() {
     }
   }, [user, authLoading, navigate]);
 
-
-  // Profile fetch logic removed as it is now in UserMenu. 
-  // If profile is used elsewhere in this file, we might need to keep it, but it seems only used for the menu.
-  // Checking usage... profile is only used in the Popover trigger.
-  // getStatusBadge is also only used in the menu.
-
+  const groupedDeals = useMemo(() => groupItemsByStage(allItems), [allItems]);
 
   if (authLoading) {
     return (
@@ -43,8 +32,6 @@ export default function Pipeline() {
   if (!user) {
     return null;
   }
-
-  const groupedDeals = groupDealsByStage(deals);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { User, Columns3, Users, LogOut, Upload, ChevronDown, UserCog } from "lucide-react";
+import { User, Columns3, Users, LogOut, Upload, ChevronDown, UserCog, Megaphone } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -137,6 +137,19 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
                     >
                         <Upload className="w-4 h-4 mr-2" />
                         Bulk PreQual
+                    </Button>
+
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start"
+                        onClick={() => {
+                            setIsPopoverOpen(false);
+                            navigate('/campaigns');
+                        }}
+                    >
+                        <Megaphone className="w-4 h-4 mr-2" />
+                        Campaigns
                     </Button>
 
                     {userRole === 'manager' && (

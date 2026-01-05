@@ -13,6 +13,7 @@ import { BulkImportPage } from "@/pages/BulkImportPage";
 import OfficerSignup from "./pages/OfficerSignup";
 import Profile from "./pages/Profile";
 import Pipeline from "./pages/Pipeline";
+import CampaignsPage from "./pages/CampaignsPage";
 import { IsoLoginWidget } from "./components/IsoLoginWidget";
 import { AdminRoute } from "./components/AdminRoute";
 import { ManagerRoute } from "./components/ManagerRoute";
@@ -33,6 +34,7 @@ function AppContent() {
     location.pathname === '/pipeline' ||
     location.pathname === '/bulk-import' ||
     location.pathname === '/profile' ||
+    location.pathname === '/campaigns' ||
     location.pathname.startsWith('/join/') ||
     isWizardActive;
 
@@ -50,6 +52,11 @@ function AppContent() {
         <Route path="/profile" element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/campaigns" element={
+          <ProtectedRoute>
+            <CampaignsPage />
           </ProtectedRoute>
         } />
         <Route path="/bulk-import" element={
