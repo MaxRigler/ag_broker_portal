@@ -27,6 +27,7 @@ export interface Deal {
   originator_name: string | null;
   originator_role: string;
   offer_link: string | null;
+  home_value?: number;
   type: 'deal';
 }
 
@@ -60,6 +61,7 @@ export function usePipelineDeals() {
           property_address, 
           owner_names, 
           max_investment, 
+          home_value,
           everflow_event_status,
           offer_link,
           profiles!user_id (full_name, role)
@@ -75,6 +77,7 @@ export function usePipelineDeals() {
         property_address: deal.property_address,
         owner_names: deal.owner_names,
         max_investment: deal.max_investment,
+        home_value: deal.home_value,
         everflow_event_status: deal.everflow_event_status,
         originator_name: deal.profiles?.full_name || null,
         originator_role: deal.profiles?.role || 'manager',

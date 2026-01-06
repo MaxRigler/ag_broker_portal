@@ -1,10 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, User, DollarSign, UserCheck, Link } from "lucide-react";
+import { Calendar, MapPin, User, DollarSign, UserCheck, Link, Calculator } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { memo } from "react";
+import { memo, useState } from "react";
+import { SettlementEstimator } from "@/components/SettlementEstimator";
 
 interface DealCardProps {
   deal: {
@@ -13,6 +14,7 @@ interface DealCardProps {
     property_address: string;
     owner_names: string[] | null;
     max_investment: number;
+    home_value?: number;
     originator_name: string | null;
     originator_role: string;
     offer_link: string | null;
@@ -42,60 +44,97 @@ export const DealCard = memo(function DealCard({ deal, stageName }: DealCardProp
     }
   };
 
+  /* State for Settlement Estimator */
+  const [estimatorOpen, setEstimatorOpen] = useState(false);
+  const [fundingAmount, setFundingAmount] = useState(deal.max_investment || 0);
+  const [settlementYear, setSettlementYear] = useState(10);
+  const [hpaRate, setHpaRate] = useState(0.03);
+
   const showOfferLink = stageName === "Offer Generated" && deal.offer_link;
+  const showEstimator = (stageName === "Offer Generated" || stageName === "Offer Link Clicked");
 
   return (
-    <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow cursor-default">
-      <CardContent className="p-3 space-y-2">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-3 w-3" />
-            <span>{formattedDate}</span>
+    <>
+      <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow cursor-default group">
+        <CardContent className="p-3 space-y-2">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-3 w-3" />
+              <span>{formattedDate}</span>
+            </div>
+            {showOfferLink && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0 text-primary hover:text-primary/80"
+                onClick={handleCopyLink}
+                title="Copy offer link"
+              >
+                <Link className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
-          {showOfferLink && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 text-primary hover:text-primary/80"
-              onClick={handleCopyLink}
-              title="Copy offer link"
-            >
-              <Link className="h-3.5 w-3.5" />
-            </Button>
-          )}
-        </div>
 
-        <div className="flex items-start gap-2">
-          <MapPin className="h-3 w-3 mt-0.5 text-muted-foreground shrink-0" />
-          <p className="text-sm font-medium leading-tight line-clamp-2">
-            {deal.property_address}
-          </p>
-        </div>
+          <div className="flex items-start gap-2">
+            <MapPin className="h-3 w-3 mt-0.5 text-muted-foreground shrink-0" />
+            <p className="text-sm font-medium leading-tight line-clamp-2">
+              {deal.property_address}
+            </p>
+          </div>
 
-        <div className="flex items-start gap-2">
-          <User className="h-3 w-3 mt-0.5 text-muted-foreground shrink-0" />
-          <p className="text-xs text-muted-foreground line-clamp-1">
-            {ownerNamesDisplay}
-          </p>
-        </div>
+          <div className="flex items-start gap-2">
+            <User className="h-3 w-3 mt-0.5 text-muted-foreground shrink-0" />
+            <p className="text-xs text-muted-foreground line-clamp-1">
+              {ownerNamesDisplay}
+            </p>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <UserCheck className="h-3 w-3 text-primary shrink-0" />
-          <span className="text-xs text-foreground line-clamp-1">
-            {deal.originator_name || "Unknown"}
-          </span>
-          <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 capitalize">
-            {deal.originator_role}
-          </Badge>
-        </div>
+          <div className="flex items-center gap-2">
+            <UserCheck className="h-3 w-3 text-primary shrink-0" />
+            <span className="text-xs text-foreground line-clamp-1">
+              {deal.originator_name || "Unknown"}
+            </span>
+            <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 capitalize">
+              {deal.originator_role}
+            </Badge>
+          </div>
 
-        <div className="flex items-center gap-2 pt-1 border-t border-border">
-          <DollarSign className="h-3 w-3 text-primary" />
-          <span className="text-sm font-semibold text-primary">
-            {formattedAmount}
-          </span>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex items-center justify-between pt-1 border-t border-border mt-2">
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-3 w-3 text-primary" />
+              <span className="text-sm font-semibold text-primary">
+                {formattedAmount}
+              </span>
+            </div>
+            {showEstimator && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-muted-foreground hover:text-primary"
+                onClick={() => setEstimatorOpen(true)}
+                title="View Estimator"
+              >
+                <Calculator className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {showEstimator && (
+        <SettlementEstimator
+          open={estimatorOpen}
+          onOpenChange={setEstimatorOpen}
+          homeValue={deal.home_value || 0}
+          maxInvestment={deal.max_investment}
+          fundingAmount={fundingAmount}
+          setFundingAmount={setFundingAmount}
+          settlementYear={settlementYear}
+          setSettlementYear={setSettlementYear}
+          hpaRate={hpaRate}
+          setHpaRate={setHpaRate}
+        />
+      )}
+    </>
   );
 });
