@@ -52,6 +52,9 @@ interface Campaign {
     application_completed: number;
     funds_disbursed: number;
     created_at: string;
+    profiles: {
+        full_name: string | null;
+    } | null;
 }
 
 export default function CampaignsPage() {
@@ -88,7 +91,7 @@ export default function CampaignsPage() {
         try {
             const { data, error } = await supabase
                 .from('campaigns')
-                .select('*')
+                .select('*, profiles(full_name)')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -431,6 +434,11 @@ export default function CampaignsPage() {
                                                                 >
                                                                     {platform.name}
                                                                 </Badge>
+                                                                {campaign.profiles?.full_name && (
+                                                                    <Badge variant="outline" className="mt-1 ml-2 text-xs text-muted-foreground border-muted-foreground/30">
+                                                                        by {campaign.profiles.full_name}
+                                                                    </Badge>
+                                                                )}
                                                             </div>
                                                         </div>
                                                         {campaign.is_active ? (
