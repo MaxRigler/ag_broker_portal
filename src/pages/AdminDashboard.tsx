@@ -14,15 +14,27 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useToast } from '@/hooks/use-toast';
-import { Check, X, LogOut, ArrowLeft, Building2, Phone, Mail, Calendar } from 'lucide-react';
+import { Check, X, LogOut, ArrowLeft, Building2, Phone, Mail, Calendar, ChevronDown, ChevronRight, Users, Ban } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type UserStatus = Database['public']['Enums']['user_status'];
 
+interface Officer {
+  id: string;
+  email: string;
+  full_name: string | null;
+  status: string;
+  created_at: string;
+}
+
 export default function AdminDashboard() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [officers, setOfficers] = useState<Record<string, Officer[]>>({});
+  const [expandedManagers, setExpandedManagers] = useState<Set<string>>(new Set());
+  const [loadingOfficers, setLoadingOfficers] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
   const { signOut } = useAuth();
@@ -35,6 +47,7 @@ export default function AdminDashboard() {
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
+          .eq('role', 'manager')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -54,7 +67,50 @@ export default function AdminDashboard() {
     fetchProfiles();
   }, [toast]);
 
-  const updateStatus = async (profileId: string, newStatus: UserStatus) => {
+  const fetchOfficersForManager = async (managerId: string) => {
+    if (officers[managerId]) return; // Already loaded
+
+    setLoadingOfficers(prev => new Set(prev).add(managerId));
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email, full_name, status, created_at')
+        .eq('parent_id', managerId)
+        .eq('role', 'officer')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOfficers(prev => ({ ...prev, [managerId]: data || [] }));
+    } catch (error) {
+      console.error('Error fetching officers:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load officers',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoadingOfficers(prev => {
+        const next = new Set(prev);
+        next.delete(managerId);
+        return next;
+      });
+    }
+  };
+
+  const toggleManagerExpanded = (managerId: string) => {
+    setExpandedManagers(prev => {
+      const next = new Set(prev);
+      if (next.has(managerId)) {
+        next.delete(managerId);
+      } else {
+        next.add(managerId);
+        fetchOfficersForManager(managerId);
+      }
+      return next;
+    });
+  };
+
+  const updateStatus = async (profileId: string, newStatus: UserStatus, isOfficer = false, parentId?: string) => {
     setUpdating(profileId);
     try {
       const { error } = await supabase
@@ -64,9 +120,20 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      setProfiles(profiles.map(p =>
-        p.id === profileId ? { ...p, status: newStatus } : p
-      ));
+      if (isOfficer && parentId) {
+        // Update officer in local state
+        setOfficers(prev => ({
+          ...prev,
+          [parentId]: prev[parentId]?.map(o =>
+            o.id === profileId ? { ...o, status: newStatus } : o
+          ) || []
+        }));
+      } else {
+        // Update manager in local state
+        setProfiles(profiles.map(p =>
+          p.id === profileId ? { ...p, status: newStatus } : p
+        ));
+      }
 
       toast({
         title: 'Success',
@@ -89,7 +156,7 @@ export default function AdminDashboard() {
     navigate('/');
   };
 
-  const getStatusBadge = (status: UserStatus) => {
+  const getStatusBadge = (status: UserStatus | string) => {
     switch (status) {
       case 'active':
         return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Active</Badge>;
@@ -113,6 +180,191 @@ export default function AdminDashboard() {
     });
   };
 
+  const getOfficerCount = (managerId: string) => {
+    return officers[managerId]?.length || 0;
+  };
+
+  const OfficerRow = ({ officer, parentId }: { officer: Officer; parentId: string }) => (
+    <TableRow className="bg-muted/30">
+      <TableCell className="pl-12">
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4 text-muted-foreground" />
+          <span className="font-medium">{officer.full_name || 'N/A'}</span>
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <Mail className="h-4 w-4 text-muted-foreground" />
+          {officer.email}
+        </div>
+      </TableCell>
+      <TableCell colSpan={2}></TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+          {formatDate(officer.created_at)}
+        </div>
+      </TableCell>
+      <TableCell>{getStatusBadge(officer.status)}</TableCell>
+      <TableCell className="text-right">
+        <div className="flex justify-end gap-2">
+          {officer.status === 'pending' && (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
+                onClick={() => updateStatus(officer.id, 'active', true, parentId)}
+                disabled={updating === officer.id}
+              >
+                <Check className="h-4 w-4 mr-1" />
+                Approve
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                onClick={() => updateStatus(officer.id, 'denied', true, parentId)}
+                disabled={updating === officer.id}
+              >
+                <X className="h-4 w-4 mr-1" />
+                Deny
+              </Button>
+            </>
+          )}
+          {officer.status === 'active' && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30"
+              onClick={() => updateStatus(officer.id, 'denied', true, parentId)}
+              disabled={updating === officer.id}
+            >
+              <Ban className="h-4 w-4 mr-1" />
+              Suspend
+            </Button>
+          )}
+          {officer.status === 'denied' && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
+              onClick={() => updateStatus(officer.id, 'active', true, parentId)}
+              disabled={updating === officer.id}
+            >
+              <Check className="h-4 w-4 mr-1" />
+              Reactivate
+            </Button>
+          )}
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+
+  const ManagerRow = ({ profile, showActions = false }: { profile: Profile; showActions?: boolean }) => {
+    const isExpanded = expandedManagers.has(profile.id);
+    const isLoadingOfficers = loadingOfficers.has(profile.id);
+    const managerOfficers = officers[profile.id] || [];
+    const officerCount = managerOfficers.length;
+
+    return (
+      <>
+        <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => toggleManagerExpanded(profile.id)}>
+          <TableCell className="font-medium">
+            <div className="flex items-center gap-2">
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              )}
+              {profile.full_name || 'N/A'}
+              {(officerCount > 0 || isLoadingOfficers) && (
+                <Badge variant="outline" className="ml-2 text-xs">
+                  {isLoadingOfficers ? '...' : `${officerCount} officer${officerCount !== 1 ? 's' : ''}`}
+                </Badge>
+              )}
+            </div>
+          </TableCell>
+          <TableCell>
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-muted-foreground" />
+              {profile.email}
+            </div>
+          </TableCell>
+          <TableCell>
+            <div className="flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+              {profile.company_name || 'N/A'}
+            </div>
+          </TableCell>
+          <TableCell>
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-muted-foreground" />
+              {profile.cell_phone || 'N/A'}
+            </div>
+          </TableCell>
+          <TableCell>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              {formatDate(profile.created_at)}
+            </div>
+          </TableCell>
+          <TableCell>{getStatusBadge(profile.status)}</TableCell>
+          {showActions && (
+            <TableCell className="text-right" onClick={e => e.stopPropagation()}>
+              <div className="flex justify-end gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
+                  onClick={() => updateStatus(profile.id, 'active')}
+                  disabled={updating === profile.id}
+                >
+                  <Check className="h-4 w-4 mr-1" />
+                  Approve
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                  onClick={() => updateStatus(profile.id, 'denied')}
+                  disabled={updating === profile.id}
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Deny
+                </Button>
+              </div>
+            </TableCell>
+          )}
+        </TableRow>
+        {isExpanded && (
+          <>
+            {isLoadingOfficers ? (
+              <TableRow className="bg-muted/30">
+                <TableCell colSpan={showActions ? 7 : 6} className="text-center py-4 text-muted-foreground">
+                  Loading officers...
+                </TableCell>
+              </TableRow>
+            ) : managerOfficers.length === 0 ? (
+              <TableRow className="bg-muted/30">
+                <TableCell colSpan={showActions ? 7 : 6} className="text-center py-4 text-muted-foreground pl-12">
+                  <div className="flex items-center justify-center gap-2">
+                    <Users className="h-4 w-4" />
+                    No officers under this manager
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              managerOfficers.map(officer => (
+                <OfficerRow key={officer.id} officer={officer} parentId={profile.id} />
+              ))
+            )}
+          </>
+        )}
+      </>
+    );
+  };
+
   const UserTable = ({ users, showActions = false }: { users: Profile[]; showActions?: boolean }) => (
     <Table>
       <TableHeader>
@@ -130,65 +382,12 @@ export default function AdminDashboard() {
         {users.length === 0 ? (
           <TableRow>
             <TableCell colSpan={showActions ? 7 : 6} className="text-center text-muted-foreground py-8">
-              No users found
+              No managers found
             </TableCell>
           </TableRow>
         ) : (
           users.map((profile) => (
-            <TableRow key={profile.id}>
-              <TableCell className="font-medium">{profile.full_name || 'N/A'}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  {profile.email}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-muted-foreground" />
-                  {profile.company_name || 'N/A'}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  {profile.cell_phone || 'N/A'}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  {formatDate(profile.created_at)}
-                </div>
-              </TableCell>
-              <TableCell>{getStatusBadge(profile.status)}</TableCell>
-              {showActions && (
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
-                      onClick={() => updateStatus(profile.id, 'active')}
-                      disabled={updating === profile.id}
-                    >
-                      <Check className="h-4 w-4 mr-1" />
-                      Approve
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
-                      onClick={() => updateStatus(profile.id, 'denied')}
-                      disabled={updating === profile.id}
-                    >
-                      <X className="h-4 w-4 mr-1" />
-                      Deny
-                    </Button>
-                  </div>
-                </TableCell>
-              )}
-            </TableRow>
+            <ManagerRow key={profile.id} profile={profile} showActions={showActions} />
           ))
         )}
       </TableBody>

@@ -6,7 +6,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { IsoAuthModal } from "@/components/IsoAuthModal";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { User, Columns3, Users, LogOut, Upload, ChevronDown, UserCog, Megaphone } from "lucide-react";
+import { User, Columns3, LogOut, Upload, ChevronDown, UserCog, Megaphone } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -154,17 +154,7 @@ export function UserMenu({ className, showArrow = true, variant = "ghost", size 
                             Campaigns
                         </Button>
 
-                        {userRole === 'manager' && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="w-full justify-start"
-                                onClick={() => handleNavigation('/team')}
-                            >
-                                <Users className="w-4 h-4 mr-2" />
-                                Manage Team
-                            </Button>
-                        )}
+
                     </div>
 
                     <Separator className="my-2" />
