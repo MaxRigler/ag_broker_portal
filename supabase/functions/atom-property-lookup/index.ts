@@ -107,6 +107,93 @@ interface ResultData {
 
 // --- End Type Definitions ---
 
+// Helper function to extract state abbreviation from address string as fallback
+function extractStateFromAddress(address: string): string {
+  const stateAbbrs = [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'
+  ];
+
+  // Normalize: remove "USA" suffix, convert to uppercase
+  const normalized = address.replace(/,?\s*USA?\s*$/i, '').toUpperCase();
+  const parts = normalized.split(/[,\s]+/);
+
+  // Check each part for a valid state abbreviation
+  for (const part of parts) {
+    const trimmed = part.trim();
+    if (stateAbbrs.includes(trimmed)) {
+      return trimmed;
+    }
+  }
+  return '';
+}
+
+// Helper function to geocode address using Google Maps API
+// Returns the canonical/corrected address format
+interface GeocodeResult {
+  formattedAddress: string;
+  streetNumber: string;
+  route: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+
+async function geocodeAddress(address: string, apiKey: string): Promise<GeocodeResult | null> {
+  try {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      console.error('Google Geocoding API error:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (data.status !== 'OK' || !data.results?.length) {
+      console.log('Google Geocoding returned no results for:', address);
+      return null;
+    }
+
+    const result = data.results[0];
+    const components = result.address_components || [];
+
+    // Extract address components
+    let streetNumber = '';
+    let route = '';
+    let city = '';
+    let state = '';
+    let zip = '';
+
+    for (const comp of components) {
+      const types = comp.types || [];
+      if (types.includes('street_number')) streetNumber = comp.long_name;
+      if (types.includes('route')) route = comp.long_name;
+      if (types.includes('locality')) city = comp.long_name;
+      if (types.includes('administrative_area_level_1')) state = comp.short_name;
+      if (types.includes('postal_code')) zip = comp.long_name;
+    }
+
+    console.log(`Google Geocoding corrected "${address}" to "${result.formatted_address}"`);
+
+    return {
+      formattedAddress: result.formatted_address,
+      streetNumber,
+      route,
+      city,
+      state,
+      zip
+    };
+  } catch (error) {
+    console.error('Error calling Google Geocoding API:', error);
+    return null;
+  }
+}
+
 serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -179,11 +266,130 @@ serve(async (req: Request) => {
       }
 
       if (isNoResult) {
-        console.warn(`Property lookup returned SuccessWithoutResult (400) for address: ${address}. Returning empty result.`);
+        console.warn(`Property lookup returned SuccessWithoutResult (400) for address: ${address}.`);
+
+        // Attempt Google Geocoding fallback to correct the address
+        const googleApiKey = Deno.env.get('GOOGLE_MAPS_API_KEY');
+        if (googleApiKey) {
+          console.log('Attempting Google Geocoding fallback...');
+          const geocoded = await geocodeAddress(address, googleApiKey);
+
+          if (geocoded && geocoded.formattedAddress !== address) {
+            // Build corrected address for ATTOM retry
+            const correctedAddress1 = `${geocoded.streetNumber} ${geocoded.route}`.trim();
+            const correctedAddress2 = `${geocoded.city}, ${geocoded.state} ${geocoded.zip}`.trim();
+
+            console.log(`Retrying ATTOM with corrected address: ${correctedAddress1}, ${correctedAddress2}`);
+
+            const retryUrl = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail?address1=${encodeURIComponent(correctedAddress1)}&address2=${encodeURIComponent(correctedAddress2)}`;
+
+            const retryResponse = await fetch(retryUrl, {
+              headers: {
+                'apikey': apiKey,
+                'Accept': 'application/json'
+              }
+            });
+
+            if (retryResponse.ok) {
+              // Success! Parse and continue with the corrected data
+              const retryData: AtomPropertyResponse = await retryResponse.json();
+              console.log('ATTOM retry succeeded with corrected address!');
+
+              // Continue processing with retryData instead of returning empty
+              // We need to process this data the same way as a successful initial lookup
+              // For simplicity, we'll recursively call the same processing logic
+              // by setting propertyData and continuing
+
+              // Return the data from the retry - process it inline
+              const retryMainProp = retryData.property?.[0];
+
+              // Get AVM for corrected address
+              const retryAvmUrl = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/attomavm/detail?address1=${encodeURIComponent(correctedAddress1)}&address2=${encodeURIComponent(correctedAddress2)}`;
+              let retryAvmData: AtomAVMResponse | null = null;
+              let retryEstimatedValue = 0;
+
+              const retryAvmResponse = await fetch(retryAvmUrl, {
+                headers: { 'apikey': apiKey, 'Accept': 'application/json' }
+              });
+
+              if (retryAvmResponse.ok) {
+                retryAvmData = await retryAvmResponse.json();
+                const avmProp = retryAvmData?.property?.[0];
+                if (avmProp?.avm) {
+                  retryEstimatedValue = avmProp.avm.amount?.value || 0;
+                }
+              }
+
+              const retryAvmProp = retryAvmData?.property?.[0];
+
+              // Extract owner names
+              let retryOwnerNames = 'Unknown Owner';
+              const extractOwnerRetry = (ownerObj: AtomOwnerData) => {
+                const owners: string[] = [];
+                if (ownerObj?.owner1) {
+                  if (ownerObj.owner1.fullname) owners.push(ownerObj.owner1.fullname);
+                  else if (ownerObj.owner1.lastname) owners.push(`${ownerObj.owner1.firstnameandmi || ownerObj.owner1.firstname || ''} ${ownerObj.owner1.lastname}`.trim());
+                }
+                if (ownerObj?.owner2) {
+                  if (ownerObj.owner2.fullname) owners.push(ownerObj.owner2.fullname);
+                  else if (ownerObj.owner2.lastname) owners.push(`${ownerObj.owner2.firstnameandmi || ownerObj.owner2.firstname || ''} ${ownerObj.owner2.lastname}`.trim());
+                }
+                return owners;
+              };
+
+              let retryOwnersList: string[] = [];
+              if (retryMainProp?.assessment?.owner) retryOwnersList = extractOwnerRetry(retryMainProp.assessment.owner);
+              if (retryOwnersList.length === 0 && retryAvmProp?.assessment?.owner) retryOwnersList = extractOwnerRetry(retryAvmProp.assessment.owner);
+              if (retryOwnersList.length === 0 && retryAvmProp?.owner) retryOwnersList = extractOwnerRetry(retryAvmProp.owner);
+              if (retryOwnersList.length > 0) retryOwnerNames = retryOwnersList.join(' & ');
+
+              // State - use geocoded state as primary source since we know it's correct
+              const retryState = geocoded.state || retryMainProp?.address?.countrySubd || '';
+
+              // Property type
+              const retryPropertyType = retryMainProp?.summary?.propertyType || retryMainProp?.summary?.propclass || 'Single Family';
+
+              // Mortgage
+              let retryMortgageBalance = 0;
+              if (retryMainProp?.assessment?.mortgage) {
+                const m = retryMainProp.assessment.mortgage;
+                retryMortgageBalance = (m.FirstConcAmount || 0) + (m.SecondConcAmount || 0);
+              }
+              if (retryMortgageBalance === 0 && retryAvmProp?.sale?.mortgage) {
+                const m = retryAvmProp.sale.mortgage;
+                retryMortgageBalance = (m.FirstConcurrent?.amount || 0) + (m.SecondConcurrent?.amount || 0);
+              }
+
+              const retryResult = {
+                ownerNames: retryOwnerNames,
+                state: retryState,
+                propertyType: retryPropertyType,
+                estimatedValue: retryEstimatedValue,
+                estimatedMortgageBalance: retryMortgageBalance,
+                rawPropertyData: retryData,
+                rawAvmData: retryAvmData,
+                rawMortgageHistory: null,
+                correctedAddress: geocoded.formattedAddress // Include the corrected address
+              };
+
+              console.log('Returning corrected address result:', JSON.stringify(retryResult));
+
+              return new Response(
+                JSON.stringify(retryResult),
+                { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            } else {
+              console.warn('ATTOM retry with corrected address also failed');
+            }
+          }
+        }
+
+        // If geocoding fallback didn't help, return empty result with extracted state from original address
+        const fallbackState = extractStateFromAddress(address);
         return new Response(
           JSON.stringify({
             ownerNames: '',
-            state: '',
+            state: fallbackState,
             propertyType: '',
             estimatedValue: 0,
             estimatedMortgageBalance: 0,
@@ -276,8 +482,17 @@ serve(async (req: Request) => {
       ownerNames = ownersList.join(' & ');
     }
 
-    // State
-    const state = mainProp?.address?.countrySubd || avmProp?.address?.countrySubd || ''; // "CO"
+    // State - with fallback extraction from address
+    let state = mainProp?.address?.countrySubd || avmProp?.address?.countrySubd || '';
+
+    // Fallback: Extract state from original address if API didn't return it
+    if (!state) {
+      const extractedState = extractStateFromAddress(address);
+      if (extractedState) {
+        console.log(`State extracted from address string: ${extractedState}`);
+        state = extractedState;
+      }
+    }
 
     // Property Type
     // Priority: summary.propertyType (e.g. "SINGLE FAMILY RESIDENCE") -> summary.propclass (e.g. "Single Family ... / Townhouse")

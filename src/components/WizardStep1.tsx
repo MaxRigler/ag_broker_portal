@@ -218,6 +218,8 @@ export function WizardStep1({
     errors: string[];
   } | null>(null);
   const [homeValue, setHomeValue] = useState(0);
+  const [homeValueInput, setHomeValueInput] = useState(''); // Raw input for property value
+  const [isHomeValueFocused, setIsHomeValueFocused] = useState(false);
   const [propertyOwner, setPropertyOwner] = useState('');
   const [mortgageBalance, setMortgageBalance] = useState(0);
 
@@ -280,6 +282,7 @@ export function WizardStep1({
         setPropertyType(data.propertyType);
         const fetchedHomeValue = data.estimatedValue || 500000;
         setHomeValue(fetchedHomeValue);
+        setHomeValueInput(fetchedHomeValue.toString());
 
         // Use estimated mortgage if available, otherwise default to 50%
         if (data.estimatedMortgageBalance > 0) {
@@ -302,6 +305,7 @@ export function WizardStep1({
         setPropertyType('Single Family');
         setOwnershipType('Personal');
         setHomeValue(500000);
+        setHomeValueInput('500000');
         setMortgageBalance(250000);
         setPropertyOwner('Unknown');
       } finally {
@@ -315,25 +319,57 @@ export function WizardStep1({
 
   // Auto-validate whenever key values change
   useEffect(() => {
-    if (!isLoading && state && propertyType && ownershipType && homeValue >= 175000) {
+    if (!isLoading && state && propertyType && ownershipType) {
+      // Validate with current homeValue regardless of minimum - we'll show errors if below 175K
       const result = validateProperty(state, propertyType, ownershipType, homeValue);
       setValidation(result);
     }
   }, [state, propertyType, ownershipType, homeValue, isLoading]);
 
+  // Used by slider (always clamps to valid range)
   const handleHomeValueChange = (value: number) => {
     const clampedValue = Math.min(Math.max(value, 175000), 3000000);
     setHomeValue(clampedValue);
+    setHomeValueInput(clampedValue.toString());
     // Clamp mortgage if it exceeds new home value
     if (mortgageBalance > clampedValue) {
       setMortgageBalance(clampedValue);
     }
   };
 
+  // Used by text input - allows free typing, syncs numeric value without clamping minimum
   const handleHomeValueInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
-    const numValue = parseInt(value) || 175000;
-    handleHomeValueChange(numValue);
+    setHomeValueInput(value);
+    // Update numeric value for calculations, but don't clamp to minimum during typing
+    const numValue = parseInt(value) || 0;
+    setHomeValue(Math.min(numValue, 3000000)); // Only clamp max, allow zero for typing
+    // Clamp mortgage if it exceeds new home value (but only if home value is positive)
+    if (numValue > 0 && mortgageBalance > numValue) {
+      setMortgageBalance(numValue);
+    }
+  };
+
+  // Blur handler - sync display with formatted value, clamp if needed
+  const handleHomeValueBlur = () => {
+    setIsHomeValueFocused(false);
+    // If value is valid (>= 175000), use it; otherwise keep as-is to show error
+    const numValue = parseInt(homeValueInput) || 0;
+    if (numValue >= 175000) {
+      const clampedValue = Math.min(numValue, 3000000);
+      setHomeValue(clampedValue);
+      setHomeValueInput(clampedValue.toString());
+    } else {
+      // Keep the low value to trigger validation error, but ensure state is synced
+      setHomeValue(numValue);
+      setHomeValueInput(numValue > 0 ? numValue.toString() : '');
+    }
+  };
+
+  const handleHomeValueFocus = () => {
+    setIsHomeValueFocused(true);
+    // Show raw number when focused for easier editing
+    setHomeValueInput(homeValue > 0 ? homeValue.toString() : '');
   };
 
   const handleMortgageChange = (value: number) => {
@@ -453,9 +489,11 @@ export function WizardStep1({
             <div className="flex justify-center mb-4">
               <Input
                 type="text"
-                value={formatCurrency(homeValue)}
+                value={isHomeValueFocused ? `$${Number(homeValueInput || 0).toLocaleString()}` : formatCurrency(homeValue)}
                 onChange={handleHomeValueInputChange}
-                className="text-2xl font-bold bg-background h-14 w-44 text-center border-2 border-accent"
+                onFocus={handleHomeValueFocus}
+                onBlur={handleHomeValueBlur}
+                className={`text-2xl font-bold bg-background h-14 w-44 text-center border-2 ${homeValue < 175000 ? 'border-destructive' : 'border-accent'}`}
               />
             </div>
             <div className="px-2">
@@ -596,9 +634,11 @@ export function WizardStep1({
           <div className="flex justify-center mb-4">
             <Input
               type="text"
-              value={formatCurrency(homeValue)}
+              value={isHomeValueFocused ? `$${Number(homeValueInput || 0).toLocaleString()}` : formatCurrency(homeValue)}
               onChange={handleHomeValueInputChange}
-              className="text-xl font-bold bg-background h-12 w-40 text-center border-2 border-accent"
+              onFocus={handleHomeValueFocus}
+              onBlur={handleHomeValueBlur}
+              className={`text-xl font-bold bg-background h-12 w-40 text-center border-2 ${homeValue < 175000 ? 'border-destructive' : 'border-accent'}`}
             />
           </div>
           <div className="px-2">
