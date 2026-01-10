@@ -238,7 +238,8 @@ export function IsoAuthModal({ onLoginSuccess, disclaimerMessage, initialView = 
 
     toast({
       title: "Check your email",
-      description: "We've sent you a password reset link.",
+      description: "We've sent you a password reset link. Make sure to check your junk/spam folder as well. The email will come from confirm@noreply.equityadvance.com",
+      duration: Infinity,
     });
 
     setView('login');

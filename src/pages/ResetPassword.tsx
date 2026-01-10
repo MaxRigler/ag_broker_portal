@@ -18,40 +18,118 @@ export default function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Listen for auth state changes - this will fire when Supabase processes the URL tokens
+    let isMounted = true;
+
+    const verifyToken = async () => {
+      // Extract token from URL hash
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const accessToken = params.get('access_token');
+      const tokenType = params.get('type');
+      const refreshToken = params.get('refresh_token');
+
+      // If we have a token in the URL, try to verify it
+      if (accessToken && tokenType === 'recovery') {
+        try {
+          // Check if it's a short OTP token (not a JWT)
+          const isOtpToken = !accessToken.includes('.');
+
+          if (isOtpToken) {
+            // Verify OTP token to establish session
+            const { data, error } = await supabase.auth.verifyOtp({
+              token_hash: accessToken,
+              type: 'recovery',
+            });
+
+            if (error) {
+              console.error('OTP verification error:', error);
+              if (isMounted) {
+                setIsVerifying(false);
+                toast({
+                  title: "Invalid or expired link",
+                  description: "Please request a new password reset link.",
+                  variant: "destructive",
+                });
+                navigate('/');
+              }
+              return;
+            }
+
+            if (data.session && isMounted) {
+              setIsValidSession(true);
+              setIsVerifying(false);
+            }
+          } else {
+            // It's a JWT access token - try to set the session directly
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || '',
+            });
+
+            if (error) {
+              console.error('Session error:', error);
+              if (isMounted) {
+                setIsVerifying(false);
+                toast({
+                  title: "Invalid or expired link",
+                  description: "Please request a new password reset link.",
+                  variant: "destructive",
+                });
+                navigate('/');
+              }
+              return;
+            }
+
+            if (data.session && isMounted) {
+              setIsValidSession(true);
+              setIsVerifying(false);
+            }
+          }
+        } catch (err) {
+          console.error('Verification error:', err);
+          if (isMounted) {
+            setIsVerifying(false);
+            toast({
+              title: "Invalid or expired link",
+              description: "Please request a new password reset link.",
+              variant: "destructive",
+            });
+            navigate('/');
+          }
+        }
+      } else {
+        // No token in URL - check for existing session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && isMounted) {
+          setIsValidSession(true);
+          setIsVerifying(false);
+        } else if (isMounted) {
+          setIsVerifying(false);
+          toast({
+            title: "Invalid or expired link",
+            description: "Please request a new password reset link.",
+            variant: "destructive",
+          });
+          navigate('/');
+        }
+      }
+    };
+
+    // Listen for auth state changes as a fallback
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
+      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session && isMounted) {
         setIsValidSession(true);
         setIsVerifying(false);
       }
     });
 
-    // Also check if there's already a session (in case the event already fired)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setIsValidSession(true);
-        setIsVerifying(false);
-      }
-    });
-
-    // Timeout after 5 seconds if no session is established
-    const timeout = setTimeout(() => {
-      if (!isValidSession) {
-        setIsVerifying(false);
-        toast({
-          title: "Invalid or expired link",
-          description: "Please request a new password reset link.",
-          variant: "destructive",
-        });
-        navigate('/');
-      }
-    }, 5000);
+    verifyToken();
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
-      clearTimeout(timeout);
     };
-  }, [navigate, isValidSession]);
+  }, [navigate]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
